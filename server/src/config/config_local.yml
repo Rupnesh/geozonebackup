@@ -1,0 +1,26 @@
+environment: local
+api:
+  port: 8080
+db:
+  username: root
+  password:
+  database: Falcon
+  dialect: mysql
+  host: '127.0.0.1'
+  port: 3306
+  wipe: true
+  logging: false
+secret: "falcon2016"
+apiVersion: 'v1'
+
+
+smtpConfig:
+  host: smtp.gmail.com
+  port: 465
+  secure: true
+  auth:
+    user: 'falcongeozone@gmail.com'
+    pass: 'falcongeozone2017'
+logoUrl: https://photos-3.dropbox.com/t/2/AABKuW1Z5dGPe_Nrcp54nrbl8y8F1Eo1IY7QTztzlSCDgA/12/92103949/png/32x32/1/_/1/2/logo_geozone.png/ENim--AFGAogBygH/ARtXIuRdE7XDn2c2jGauoDM8OKCYG0udawG-oTswExA?size=2048x1536&size_mode=3
+temrsUrl: http://falcon.io/terms
+privacyUrl: http://falcon.io/privacy
