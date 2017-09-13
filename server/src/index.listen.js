@@ -6,7 +6,7 @@ const amqp = require('amqp');
 module.exports = function listen(app) {
   const server = http.Server(app);
   const io = socketIO(server);
-  const rabbitMQConnection = amqp.createConnection(rabbitMQ);
+  const rabbitMQConnection = amqp.createConnection(rabbitMQ, { defaultExchangeName: '' });
   
   server.listen(api.port, function started() {
     const address = this.address();
@@ -19,9 +19,11 @@ module.exports = function listen(app) {
   rabbitMQConnection.on('error', function(e) {
     console.log("Error from amqp: ", e);
   });
-  rabbitMQConnection.on('ready', function () {f
+  rabbitMQConnection.on('ready', function () {
+    console.log('MSGQ READY');
     // Use the default 'amq.topic' exchange
     rabbitMQConnection.queue('IMU_1', function(q) {
+      console.log('messages -', q);
       // Catch all messages
       q.bind('#');
     
@@ -47,7 +49,7 @@ module.exports = function listen(app) {
         socket.leave('queue');
       });
       
-      RabbitMQ.on('receive', (data) => {
+      EventBus.on('dataQueue', (data) => {
         socket.broadcast.to('queue').emit('data', data);
       })
     }

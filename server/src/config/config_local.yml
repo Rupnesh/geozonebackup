@@ -5,11 +5,11 @@ api:
 rabbitMQ:
   host: donkey.rmq.cloudamqp.com
   port: 1883
-  login: 'oynylrww:oynylrww'
-  password: 'GgJXP1k3PYaAZ_8NXPmNbf8OZRyTnu3k'
-  authMechanism: 'AMQPLAIN'
+  login: oynylrww:oynylrww
+  password: GgJXP1k3PYaAZ_8NXPmNbf8OZRyTnu3k
+  authMechanism: AMQPLAIN
   connectionTimeout: 10000
-  vhost: '/oynylrww'
+  vhost: /oynylrww
   ssl:
     enabled: false
 
