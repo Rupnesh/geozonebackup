@@ -51,24 +51,6 @@ module.exports = {
     });
   },
 
-  findByEmails(emails) {
-    return new Promise((resolve, reject) => {
-      User
-        .findAll({
-          where: {
-            email: {
-              $in: emails
-            }
-          }
-        })
-        .then((res) => {
-          resolve(res);
-        })
-        .catch((error) => {
-          reject(error);
-        });
-    });
-  },
   
   /**
    * Update a specific user on database

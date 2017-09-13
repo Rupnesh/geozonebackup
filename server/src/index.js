@@ -38,7 +38,7 @@ endpoints(router, apiVersion); // load the v1 of the endpoints
 app.use(`/${apiVersion}`, router);
 
 // Initialize swagger
-if (environment === 'local' || environment === 'prod') {
+if (environment === 'local' || environment === 'dev') {
   console.log('--- SWAGGER INIT ---');
   swagger(app);
 }

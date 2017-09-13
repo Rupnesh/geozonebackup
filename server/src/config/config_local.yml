@@ -1,16 +1,28 @@
 environment: local
 api:
   port: 8080
+
+rabbitMQ:
+  host: donkey.rmq.cloudamqp.com
+  port: 1883
+  login: 'oynylrww:oynylrww'
+  password: 'GgJXP1k3PYaAZ_8NXPmNbf8OZRyTnu3k'
+  authMechanism: 'AMQPLAIN'
+  connectionTimeout: 10000
+  vhost: '/oynylrww'
+  ssl:
+    enabled: false
+
 db:
   username: root
   password:
-  database: Falcon
+  database: falcon
   dialect: mysql
   host: '127.0.0.1'
   port: 3306
   wipe: true
   logging: false
-secret: "falcon2016"
+secret: 'falcon2018'
 apiVersion: 'v1'
 
 

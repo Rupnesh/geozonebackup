@@ -5,21 +5,23 @@ const { UserSession } = require(`${appRoot}/src/models`);
 const Promise = require('bluebird');
 
 /**
- * Class that represents User orchestration trough database
+ * Module that represents User Login
  */
 module.exports = {
   /**
    * Search for a specific user
    *
    * @param {string} email - user email
+   * @param {string} password - user password
    * @returns {Object}
    */
-  findByEmail(email) {
+  findByEmailPassword(email, password) {
     return new Promise((resolve, reject) => {
       User
         .findOne({
           where: {
-            email
+            email,
+            password
           }
         })
         .then((res) => {
