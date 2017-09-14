@@ -19,10 +19,10 @@ module.exports = function listen(app) {
   rabbitMQConnection.on('error', function(e) {
     console.log("Error from amqp: ", e);
   });
-  rabbitMQConnection.on('ready', function () {
+  rabbitMQConnection.on('command_in', function () {
     console.log('MSGQ READY');
     // Use the default 'amq.topic' exchange
-    rabbitMQConnection.queue('IMU_1', function(q) {
+    rabbitMQConnection.queue('GPSJSON', function(q) {
       console.log('messages -', q);
       // Catch all messages
       q.bind('#');

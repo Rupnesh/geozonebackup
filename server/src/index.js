@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const listen = require('./index.listen');
 const swagger = require('./index.swagger');
+const reactApp = require('./index.reactapp');
 const { db, environment } = require('./config');
 const sequelize = require('./sequelize');
 const { apiVersion } = require('./config');
@@ -45,3 +46,6 @@ if (environment === 'local' || environment === 'dev') {
 
 // Initialize Server
 listen(app);
+
+// Initialize the app static expose
+reactApp(app);
