@@ -1,0 +1,22 @@
+// Here you can add other styles
+.field-error {
+    margin-top    : -20px;
+    margin-bottom : 10px;
+    color         : $brand-danger;
+}
+
+.error {
+    color : $brand-danger;
+}
+
+input[type=date] {
+    &.no-spinner {
+        &::-webkit-inner-spin-button,
+        &::-webkit-outer-spin-button {
+            -webkit-appearance : none;
+            -moz-appearance    : none;
+            appearance         : none;
+            margin             : 0;
+        }
+    }
+}
