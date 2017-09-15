@@ -1,0 +1,101 @@
+{
+  "data": {
+    "class": "SKY",
+    "tag": "MID4",
+    "device": "/dev/ttyUSB0",
+    "time": "2017-09-14T14:42:36.000Z",
+    "xdop": 0.92,
+    "ydop": 0.70,
+    "vdop": 1.75,
+    "tdop": 1.15,
+    "hdop": 1.00,
+    "gdop": 2.40,
+    "pdop": 2.10,
+    "satellites": [
+      {
+        "PRN": 17,
+        "el": 36,
+        "az": 43,
+        "ss": 21,
+        "used": true
+      },
+      {
+        "PRN": 2,
+        "el": 40,
+        "az": 187,
+        "ss": 16,
+        "used": true
+      },
+      {
+        "PRN": 6,
+        "el": 65,
+        "az": 124,
+        "ss": 22,
+        "used": true
+      },
+      {
+        "PRN": 12,
+        "el": 26,
+        "az": 307,
+        "ss": 2,
+        "used": false
+      },
+      {
+        "PRN": 13,
+        "el": 6,
+        "az": 207,
+        "ss": 13,
+        "used": true
+      },
+      {
+        "PRN": 15,
+        "el": 7,
+        "az": 238,
+        "ss": 20,
+        "used": true
+      },
+      {
+        "PRN": 19,
+        "el": 57,
+        "az": 27,
+        "ss": 12,
+        "used": true
+      },
+      {
+        "PRN": 24,
+        "el": 48,
+        "az": 292,
+        "ss": 19,
+        "used": true
+      },
+      {
+        "PRN": 28,
+        "el": 18,
+        "az": 99,
+        "ss": 15,
+        "used": true
+      },
+      {
+        "PRN": 3,
+        "el": 2,
+        "az": 51,
+        "ss": 20,
+        "used": false
+      },
+      {
+        "PRN": 4,
+        "el": 18,
+        "az": 198,
+        "ss": 0,
+        "used": false
+      },
+      {
+        "PRN": 138,
+        "el": 48,
+        "az": 160,
+        "ss": 0,
+        "used": false
+      }
+    ]
+  }
+}
