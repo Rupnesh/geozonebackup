@@ -121,7 +121,7 @@ class HeaderView extends Component {
 
 HeaderView.defaultProps = {
   userData: {
-    name: 'Admin'
+    name: 'Andrei'
   }
 };
 
