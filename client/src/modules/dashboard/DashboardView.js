@@ -1,3 +1,4 @@
+import ReactSVG from 'react-svg';
 import React, { Component } from 'react';
 import { Bar, Line } from 'react-chartjs-2';
 import { Dropdown, DropdownMenu, DropdownItem, Progress } from 'reactstrap';
@@ -162,7 +163,7 @@ const cardChartData4 = {
 
 const cardChartOpts4 = {
     maintainAspectRatio: false,
-    legend: {
+    /*legend: {
         display: false
     },
     scales: {
@@ -173,7 +174,7 @@ const cardChartOpts4 = {
         yAxes: [{
             display: false,
         }]
-    }
+    }*/
 }
 
 // Main Chart
@@ -266,6 +267,73 @@ const mainChartOpts = {
     }
 }
 
+const bar = {
+    labels: ['2', '5', '12', '17', '19', '24', '25', '28', '29', '46', '48', '51'],
+    datasets: [
+        {
+            label: 'My First dataset',
+            backgroundColor: 'rgba(0,255,0,0.2)',
+            borderColor: 'rgba(0,255,0,1)',
+            borderWidth: 1,
+            hoverBackgroundColor: 'rgba(0,255,0,0.4)',
+            hoverBorderColor: 'rgba(0,255,0,1)',
+            data: [36, 0, 35, 0, 34, 34, 44, 0, 18, 0, 29, 0, 0]
+        }
+    ]
+};
+
+const options = {
+    maintainAspectRatio: false,
+    responsive: true,
+    tooltips: {
+        mode: 'label'
+    }/*,
+    elements: {
+        line: {
+            fill: false
+        }
+    },
+    scales: {
+        xAxes: [
+            {
+                display: true,
+                gridLines: {
+                    display: false
+                },
+                labels: {
+                    show: true
+                }
+            }
+        ],
+        yAxes: [
+            {
+                type: 'category',
+                display: true,
+                position: 'left',
+                id: 'y-axis-1',
+                gridLines: {
+                    display: false
+                },
+                labels: {
+                    show: true
+                }
+            },
+            {
+                type: 'linear',
+                display: true,
+                position: 'top',
+                id: 'y-axis-2',
+                gridLines: {
+                    display: false
+                },
+                labels: {
+                    show: true
+                }
+            }
+        ]
+    }*/
+};
+
 class Dashboard extends Component {
 
     constructor(props) {
@@ -287,7 +355,7 @@ class Dashboard extends Component {
         return (
             <div className='animated fadeIn'>
                 <div className='row'>
-                    <div className='col-sm-6 col-lg-3'>
+                    {/*<div className='col-sm-6 col-lg-3'>
                         <div className='card card-inverse card-primary'>
                             <div className='card-block pb-0'>
                                 <div className='btn-group float-right'>
@@ -369,10 +437,147 @@ class Dashboard extends Component {
                                 <Line data={cardChartData3} options={cardChartOpts3} height={70}/>
                             </div>
                         </div>
+                    </div>*/}
+
+                    <div className='col-sm-6'>
+                        <div className='card'>
+                            <div className='card-block pb-0'>
+                                <ReactSVG
+                                    path="img/skyplot.svg"
+                                    callback={svg => {
+                                        {/*svg.setAttribute('height', '100%');
+                                        svg.setAttribute('width', '100%');
+                                        svg.setAttribute('style', 'max-height: 550px;');
+                                        svg.querySelector('#Group').setAttribute('fill', '#88e885');*/}
+                                    }}
+                                    className="skyplot"
+                                />
+                            </div>
+                        </div>
                     </div>
 
-                    <div className='col-sm-6 col-lg-3'>
-                        <div className='card card-inverse card-danger'>
+                    <div className='col-sm-6 mb-4 background-white'>
+                        <div className="card-block">
+                            <div className="form-group row">
+                                <img className="spirit-level" src="img/spirit-level/Vectorillustration_design_4_no bubble.png" alt=""/>
+                            </div>
+                        </div>
+                        <div className='card-block pb-0'>
+                            <div className="form-group row">
+                                <label className="col-md-3 form-control-label" htmlFor="recordata">GPS OFF</label>
+                                <label className="switch switch-3d switch-primary">
+                                    <input type="checkbox" className="switch-input"/>
+                                    <span className="switch-label"></span>
+                                    <span className="switch-handle"></span>
+                                </label>
+                            </div>
+                            <div className="form-group row">
+                                <label className="col-md-3 form-control-label" htmlFor="recordata">Start Recording</label>
+                                <label className="switch switch-3d switch-primary">
+                                    <input type="checkbox" className="switch-input"/>
+                                    <span className="switch-label"></span>
+                                    <span className="switch-handle"></span>
+                                </label>
+                            </div>
+                            <div className="form-group row">
+                                <label className="col-md-3 form-control-label" htmlFor="recordata">IMU OFF</label>
+                                <label className="switch switch-3d switch-primary">
+                                    <input type="checkbox" className="switch-input"/>
+                                    <span className="switch-label"></span>
+                                    <span className="switch-handle"></span>
+                                </label>
+                            </div>
+                            <div className="form-group row">
+                                <label className="col-md-3 form-control-label" htmlFor="recordata">Hide GPS Data</label>
+                                <label className="switch switch-3d switch-primary">
+                                    <input type="checkbox" className="switch-input"/>
+                                    <span className="switch-label"></span>
+                                    <span className="switch-handle"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div className="card-block">
+                            <table className="table table-striped">
+                                <tbody>
+                                <tr>
+                                    <th>Latitude</th>
+                                    <td> </td>
+                                    <td> </td>
+                                    <td> </td>
+                                    <td>
+                                        34.17833267
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Longitude</th>
+                                    <td> </td>
+                                    <td> </td>
+                                    <td> </td>
+                                    <td>
+                                        -118.34633750
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Altitude</th>
+                                    <td> </td>
+                                    <td> </td>
+                                    <td> </td>
+                                    <td>
+                                        189.500
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Fix Time</th>
+                                    <td> </td>
+                                    <td> </td>
+                                    <td> </td>
+                                    <td>
+                                        165258.000
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Geoid Hit</th>
+                                    <td> </td>
+                                    <td> </td>
+                                    <td> </td>
+                                    <td>
+                                        -32.600
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Quality</th>
+                                    <td> </td>
+                                    <td> </td>
+                                    <td> </td>
+                                    <td>
+                                        DgpsFix
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Fix Type</th>
+                                    <td> </td>
+                                    <td>Fix3D</td>
+                                    <td>VDOP</td>
+                                    <td>
+                                        2.33
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>HDOP</th>
+                                    <td> </td>
+                                    <td>1.25</td>
+                                    <td>PDOP</td>
+                                    <td>
+                                        NaN
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div className='col-sm-12'>
+                        <div className='card card-inverse'>
                             <div className='card-block pb-0'>
                                 <div className='btn-group float-right'>
                                     <Dropdown isOpen={this.state.card4} toggle={() => {
@@ -394,13 +599,15 @@ class Dashboard extends Component {
                                 <p>Members online</p>
                             </div>
                             <div className='chart-wrapper px-3'>
-                                <Bar data={cardChartData4} options={cardChartOpts4} height={70}/>
+                                <Bar data={bar}
+                                     options={options}
+                                />
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div className='card'>
+                {/*<div className='card'>
                     <div className='card-block'>
                         <div className='row'>
                             <div className='col-sm-5'>
@@ -1089,7 +1296,7 @@ class Dashboard extends Component {
                             </div>
                         </div>
                     </div>
-                </div>
+                </div>*/}
             </div>
         )
     }
