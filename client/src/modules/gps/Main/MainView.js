@@ -85,7 +85,7 @@ class MainView extends Component {
                                         </div>
                                     </div>
                                     <div className="form-group row">
-                                        <label className="col-md-3 form-control-label" htmlFor="recordata">Record Data Off</label>
+                                        <label className="col-md-3 form-control-label mw-75" htmlFor="recordata">Record Data Off</label>
                                         <label className="switch switch-3d switch-primary">
                                             <input type="checkbox" className="switch-input"/>
                                             <span className="switch-label"></span>
@@ -93,7 +93,7 @@ class MainView extends Component {
                                         </label>
                                     </div>
                                     <div className="form-group row">
-                                        <label className="col-md-3 form-control-label" htmlFor="geometadata">Save GeoMetadata Off</label>
+                                        <label className="col-md-3 form-control-label mw-75" htmlFor="geometadata">Save GeoMetadata Off</label>
                                         <label className="switch switch-3d switch-primary">
                                             <input type="checkbox" className="switch-input"/>
                                             <span className="switch-label"></span>

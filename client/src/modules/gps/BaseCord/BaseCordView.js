@@ -54,7 +54,7 @@ class BaseCordView extends Component {
                                 </form>
                             </div>
                             <div className="card-footer">
-                                <button className="btn btn-sm btn-block btn-success w-25"><i className="fa fa-dot-circle-o"></i> Snap</button>
+                                <button className="btn btn-sm btn-success col-lg-4 col-md-4 col-sm-5"><i className="fa fa-dot-circle-o"></i> Snap</button>
                             </div>
                         </div>
                     </div>

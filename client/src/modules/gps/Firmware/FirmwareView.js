@@ -36,8 +36,8 @@ class FirmwareView extends Component {
                                 </form>
                             </div>
                             <div className="card-footer">
-                                <button className="btn btn-sm btn-block btn-success w-25"><i className="fa fa-dot-circle-o"></i> Check For Update</button>
-                                <button className="btn btn-sm btn-block btn-success w-25"><i className="fa fa-dot-circle-o"></i> Upload Firmware</button>
+                                <button className="btn btn-sm btn-success d-block mb-2 col-md-3 col-sm-6"><i className="fa fa-dot-circle-o"></i> Check For Update</button>
+                                <button className="btn btn-sm btn-success d-block mb-2 col-md-3 col-sm-6"><i className="fa fa-dot-circle-o"></i> Upload Firmware</button>
                             </div>
                         </div>
                     </div>

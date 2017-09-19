@@ -37,7 +37,7 @@ class WifiView extends Component {
                             </div>
                         </div>
                     </div>
-                    <div className="col-md-6">
+                    <div className="col-sm-6">
                         <div className="card">
                             <div className="card-header">
                                 <strong>Credentials</strong>

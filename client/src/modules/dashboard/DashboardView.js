@@ -206,6 +206,72 @@ for (var i = 0; i <= elements; i++) {
     data3.push(65);
 }
 
+const plotCalculations = () => {
+    const pi      = 3.1416;
+    const rad2deg = 180 / pi;
+
+    const deg2rad = pi / 180;
+
+
+// Satellite Information
+
+    const prn = [14, 18, 1, 9, 12, 30, 22, 32, 5, 31];               //Satellite PRN
+
+    const azi = [55, 135.2, -83, 49, 95, 135, 159, -56, 116, -145];  //Azimuth in degrees
+
+    const el = [69, 35, 40, 30, 30, 24, 78, 62, 32, 22];             //Elevation angle in degrees
+
+
+// Plot Figure
+
+    //const a = azi * deg2rad;                                  //Convert degrees to radians
+    const a = [];
+
+    for (let i = 0; i < azi.length; i++) {
+        a[i] = azi[i] * deg2rad;
+    }
+
+    //const r = 90 - el;                                        //Convert elevation angle to zenith
+    const r = [];
+
+    for (let i = 0; i < el.length; i++) {
+        r[i] = 90 - el[i];
+    }
+
+
+    /*for i=1:size(azi,2),
+
+     svx(i)=r(i)*cos(a(i))  ; svy(i)=r(i)*sin(a(i)); //Calculate polar co-ordinates
+
+     end*/
+    const svx = [];
+    const svy = [];
+
+    for (let i = 0; i < azi.length; i++) {
+        svx[i] = r[i] * Math.sin(a[i]);
+        svy[i] = r[i] * Math.cos(a[i]);
+    }
+
+    console.log('SVX:', svx, 'SVY:', svy);
+
+    const canvas = document.querySelector("canvas");
+    const cx =  canvas.getContext("2d");
+    const svg = document.querySelector('svg');
+
+    canvas.style.position = 'absolute';
+    cx.canvas.height = svg.height.baseVal.value;
+    cx.canvas.width = svg.width.baseVal.value;
+
+    cx.translate(canvas.clientWidth / 2, canvas.clientHeight / 2);   // Move (0,0) to (180, 184)
+    cx.scale(1,-1);          // Make y grow up rather than down
+
+    for (let i = 0; i < svx.length; i++) {
+        cx.beginPath();
+        cx.arc(svx[i], svy[i], 5, 0, 2 * Math.PI);
+        cx.stroke();
+        cx.closePath();
+    }
+};
 
 const bar = {
     labels: ['2', '5', '12', '17', '19', '24', '25', '28', '29', '46', '48', '51'],
@@ -253,13 +319,21 @@ class Dashboard extends Component {
                 <div className='row'>
                     <div className='col-sm-6 card'>
                       <div className='card-block pb-0'>
+                        <canvas>
+                            <circle cx="100" cy="100" r="75"></circle>
+                        </canvas>
                         <ReactSVG
                           path="img/skyplot.svg"
                           callback={svg => {
-                            {svg.setAttribute('height', '100%');
+                              svg.setAttribute('height', '100%');
                               svg.setAttribute('width', '100%');
                               svg.setAttribute('style', 'max-height: 550px;');
-                              svg.querySelector('#Combined-Shape').setAttribute('fill', '#88e885');}
+                              svg.querySelector('#Combined-Shape').setAttribute('fill', '#88e885');
+
+                              setTimeout(plotCalculations, 0);
+                              window.addEventListener('resize', function(event){
+                                  plotCalculations();
+                              });
                           }}
                           className="skyplot"
                         />
@@ -268,14 +342,17 @@ class Dashboard extends Component {
 
                     <div className='col-sm-6 mb-4 background-white'>
                         <div className='row'>
-                          <div className="card-block ml-3 col-sm-4">
-                              <div className="form-group">
-                                  <img width="200" height="200" className="spirit-level" src="img/spirit-level/Vectorillustration_design_4_no bubble.png" alt=""/>
+                          <div className="row col-sm-6 col-md-6 col-lg-6">
+                              <div className="card-block">
+                                  <img width="100%" height="auto" className="spirit-level" src="img/spirit-level/Vectorillustration_design_4_no_bubble.png" alt=""/>
+                              </div>
+                              <div className="card-block">
+                                  <label>In built GPS Active</label>
                               </div>
                           </div>
-                          <div className='card-block pb-0 col-sm-6'>
+                          <div className='card-block col-sm-6 col-md-6 col-lg-6'>
                               <div className="form-group row">
-                                  <label className="col-md-5 form-control-label" htmlFor="recordata">GPS OFF</label>
+                                  <label className="col-md-5 form-control-label mw-75" htmlFor="recordata">GPS OFF</label>
                                   <label className="switch switch-3d switch-primary">
                                       <input type="checkbox" className="switch-input"/>
                                       <span className="switch-label"></span>
@@ -283,7 +360,7 @@ class Dashboard extends Component {
                                   </label>
                               </div>
                               <div className="form-group row">
-                                  <label className="col-md-5 form-control-label" htmlFor="recordata">Start Recording</label>
+                                  <label className="col-md-5 form-control-label mw-75" htmlFor="recordata">Start Recording</label>
                                   <label className="switch switch-3d switch-primary">
                                       <input type="checkbox" className="switch-input"/>
                                       <span className="switch-label"></span>
@@ -291,7 +368,7 @@ class Dashboard extends Component {
                                   </label>
                               </div>
                               <div className="form-group row">
-                                  <label className="col-md-5 form-control-label" htmlFor="recordata">IMU OFF</label>
+                                  <label className="col-md-5 form-control-label mw-75" htmlFor="recordata">IMU OFF</label>
                                   <label className="switch switch-3d switch-primary">
                                       <input type="checkbox" className="switch-input"/>
                                       <span className="switch-label"></span>
@@ -299,7 +376,7 @@ class Dashboard extends Component {
                                   </label>
                               </div>
                               <div className="form-group row">
-                                  <label className="col-md-5 form-control-label" htmlFor="recordata">Hide GPS Data</label>
+                                  <label className="col-md-5 form-control-label mw-75" htmlFor="recordata">Hide GPS Data</label>
                                   <label className="switch switch-3d switch-primary">
                                       <input type="checkbox" className="switch-input"/>
                                       <span className="switch-label"></span>
@@ -308,7 +385,7 @@ class Dashboard extends Component {
                               </div>
                           </div>
                         </div>
-                        <div className="card-block">
+                        <div className="card dashboard-table">
                             <table className="table table-striped">
                                 <tbody>
                                 <tr>

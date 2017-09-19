@@ -82,7 +82,7 @@ class DeviceView extends Component {
                                         </div>
                                     </div>
                                     <div className="form-group row">
-                                        <label className="col-md-3 form-control-label" htmlFor="multipath">MultiPath Off</label>
+                                        <label className="col-md-3 form-control-label mw-75" htmlFor="multipath">MultiPath Off</label>
                                         <label className="switch switch-3d switch-primary">
                                             <input type="checkbox" className="switch-input"/>
                                             <span className="switch-label"></span>

@@ -59,7 +59,7 @@ class StarFireView extends Component {
                                         </div>
                                     </div>
                                     <div className="form-group row">
-                                        <label className="col-md-3 form-control-label" htmlFor="recordata">Allow SFOIP Switching</label>
+                                        <label className="col-md-3 form-control-label mw-75" htmlFor="recordata">Allow SFOIP Switching</label>
                                         <label className="switch switch-3d switch-primary">
                                             <input type="checkbox" className="switch-input"/>
                                             <span className="switch-label"></span>
@@ -67,7 +67,7 @@ class StarFireView extends Component {
                                         </label>
                                     </div>
                                     <div className="form-group row">
-                                        <label className="col-md-3 form-control-label" htmlFor="geometadata">Use Rapid Recovery</label>
+                                        <label className="col-md-3 form-control-label mw-75" htmlFor="geometadata">Use Rapid Recovery</label>
                                         <label className="switch switch-3d switch-primary">
                                             <input type="checkbox" className="switch-input"/>
                                             <span className="switch-label"></span>
