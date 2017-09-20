@@ -19,7 +19,8 @@ module.exports = (callback) => {
       host: db.host,
       port: db.port,
       user: db.username,
-      password: db.password
+      password: db.password,
+      database: db.database
     });
   } else {
     return ;
