@@ -32,5 +32,11 @@ module.exports = {
     if (this.handlers[evt]) {
       this.handlers[evt] = this.handlers[evt].filter(event => event.scope !== scope);
     }
+  },
+  
+  unsubscribeAll(scope) {
+    Object.keys(this.handlers).forEach((eventName) => {
+      this.unsubscribe(eventName, scope);
+    })
   }
 };

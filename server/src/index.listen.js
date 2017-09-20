@@ -15,31 +15,34 @@ module.exports = function listen(app) {
     console.log('Swagger Doc started at at http://%s:%s/docs', host, port);
   });
   
-  // start messaging queues
-  ampq('GPSJSON');
-  
   io.on('connection', (socket) => {
       console.log('=== SOCKET CONNECTED === ');
+      PubSubService.unsubscribeAll(socket);
+      // start messaging queues
       socket.on('disconnectMe', () => {
         console.log('DISCONNECT');
         socket.disconnect(0);
       });
       
       socket.on('subscribe', (queue) => {
-        console.log('SUBSCRIBE -'+ queue);
+        console.log('SUBSCRIBE - '+ queue);
         socket.join(queue);
-        PubSubService.subscribe(queue, (data) => {
-          console.log('data = ', data);
-          socket.broadcast.to(queue).emit('data', data);
-        }, socket);
+        setTimeout(() => {
+          PubSubService.subscribe(queue, (data) => {
+            socket.broadcast.to(queue).emit('data', data);
+          }, socket);
+        }, 1000);
       });
       
       socket.on('unsubscribe', (queue) => {
-        console.log('UNSUBSCRIBE -'+ queue);
-        socket.leave(queue);
+        console.log('UNSUBSCRIBE - '+ queue);
         PubSubService.unsubscribe(queue, socket);
+        socket.leave(queue);
       });
     }
   );
+  setTimeout(() => {
+    ampq.start('GPSJSON');
+  }, 1000);
 };
 
