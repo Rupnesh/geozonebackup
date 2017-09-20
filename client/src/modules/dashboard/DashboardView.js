@@ -31,21 +31,6 @@ function getImageSrc(nr) {
   }
 }
 
-const bar = {
-  labels: ['2', '5', '12', '17', '19', '24', '25', '28', '29', '46', '48', '51'],
-  datasets: [
-    {
-      label: 'My First dataset',
-      backgroundColor: 'rgba(0,255,0,0.2)',
-      borderColor: 'rgba(0,255,0,1)',
-      borderWidth: 1,
-      hoverBackgroundColor: 'rgba(0,255,0,0.4)',
-      hoverBorderColor: 'rgba(0,255,0,1)',
-      data: [36, 0, 35, 0, 34, 34, 44, 0, 18, 0, 29, 0, 0]
-    }
-  ]
-};
-
 const options = {
   maintainAspectRatio: false,
   responsive: true,
@@ -198,6 +183,34 @@ class Dashboard extends Component {
       };
       newImage.src = 'img/icons/' + getImageSrc(prn[i]);
     }
+  };
+  
+  getGraphData = () => {
+    const data = this.state.satelliteData;
+    const labels = [];
+    const values = [];
+
+    if (data) {
+      data.satellites.forEach((satellite) => {
+        labels.push(satellite['PRN']);
+        values.push(satellite['ss']);
+      });
+    }
+
+    return {
+      labels: labels,
+      datasets: [
+        {
+          label: 'Signal to Noise Ratio',
+          backgroundColor: 'rgba(0,255,0,0.2)',
+          borderColor: 'rgba(0,255,0,1)',
+          borderWidth: 1,
+          hoverBackgroundColor: 'rgba(0,255,0,0.4)',
+          hoverBorderColor: 'rgba(0,255,0,1)',
+          data: values
+        }
+      ]
+    };
   };
   
   render() {
@@ -377,7 +390,7 @@ class Dashboard extends Component {
               <p>Members online</p>
             </div>
             <div className='chart-wrapper px-3'>
-              <Bar data={bar}
+              <Bar data={this.getGraphData}
                    options={options}
               />
             </div>
