@@ -1,13 +1,12 @@
 import ReactSVG from 'react-svg';
 import React, { Component } from 'react';
 import { Bar, Line } from 'react-chartjs-2';
+import { socketConnect } from 'socket.io-react';
 import { Dropdown, DropdownMenu, DropdownItem, Progress } from 'reactstrap';
 import ResizeObserver from 'react-resize-observer';
 
 const brandPrimary = '#20a8d8';
-const brandSuccess = '#4dbd74';
 const brandInfo = '#63c2de';
-const brandDanger = '#f86c6b';
 
 // Card Chart 1
 const cardChartData1 = {
@@ -22,43 +21,6 @@ const cardChartData1 = {
     ],
 };
 
-const cardChartOpts1 = {
-    maintainAspectRatio: false,
-    legend: {
-        display: false
-    },
-    scales: {
-        xAxes: [{
-            gridLines: {
-                color: 'transparent',
-                zeroLineColor: 'transparent'
-            },
-            ticks: {
-                fontSize: 2,
-                fontColor: 'transparent',
-            }
-        }],
-        yAxes: [{
-            display: false,
-            ticks: {
-                display: false,
-                min: Math.min.apply(Math, cardChartData1.datasets[0].data) - 5,
-                max: Math.max.apply(Math, cardChartData1.datasets[0].data) + 5,
-            }
-        }],
-    },
-    elements: {
-        line: {
-            borderWidth: 1
-        },
-        point: {
-            radius: 4,
-            hitRadius: 10,
-            hoverRadius: 4,
-        },
-    }
-}
-
 // Card Chart 2
 const cardChartData2 = {
     labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
@@ -72,124 +34,6 @@ const cardChartData2 = {
     ],
 };
 
-const cardChartOpts2 = {
-    maintainAspectRatio: false,
-    legend: {
-        display: false
-    },
-    scales: {
-        xAxes: [{
-            gridLines: {
-                color: 'transparent',
-                zeroLineColor: 'transparent'
-            },
-            ticks: {
-                fontSize: 2,
-                fontColor: 'transparent',
-            }
-
-        }],
-        yAxes: [{
-            display: false,
-            ticks: {
-                display: false,
-                min: Math.min.apply(Math, cardChartData2.datasets[0].data) - 5,
-                max: Math.max.apply(Math, cardChartData2.datasets[0].data) + 5,
-            }
-        }],
-    },
-    elements: {
-        line: {
-            tension: 0.00001,
-            borderWidth: 1
-        },
-        point: {
-            radius: 4,
-            hitRadius: 10,
-            hoverRadius: 4,
-        },
-    }
-}
-
-// Card Chart 3
-const cardChartData3 = {
-    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-    datasets: [
-        {
-            label: 'My First dataset',
-            backgroundColor: 'rgba(255,255,255,.2)',
-            borderColor: 'rgba(255,255,255,.55)',
-            data: [78, 81, 80, 45, 34, 12, 40]
-        }
-    ],
-};
-
-const cardChartOpts3 = {
-    maintainAspectRatio: false,
-    legend: {
-        display: false
-    },
-    scales: {
-        xAxes: [{
-            display: false
-        }],
-        yAxes: [{
-            display: false
-        }],
-    },
-    elements: {
-        line: {
-            borderWidth: 2
-        },
-        point: {
-            radius: 0,
-            hitRadius: 10,
-            hoverRadius: 4,
-        },
-    }
-}
-
-// Card Chart 4
-const cardChartData4 = {
-    labels: ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
-    datasets: [
-        {
-            label: 'My First dataset',
-            backgroundColor: 'rgba(255,255,255,.3)',
-            borderColor: 'transparent',
-            data: [78, 81, 80, 45, 34, 12, 40, 75, 34, 89, 32, 68, 54, 72, 18, 98]
-        }
-    ],
-};
-
-const cardChartOpts4 = {
-    maintainAspectRatio: false,
-    /*legend: {
-        display: false
-    },
-    scales: {
-        xAxes: [{
-            display: false,
-            barPercentage: 0.6,
-        }],
-        yAxes: [{
-            display: false,
-        }]
-    }*/
-}
-
-// Main Chart
-
-// convert Hex to RGBA
-function convertHex(hex, opacity) {
-    hex = hex.replace('#', '');
-    var r = parseInt(hex.substring(0, 2), 16);
-    var g = parseInt(hex.substring(2, 4), 16);
-    var b = parseInt(hex.substring(4, 6), 16);
-
-    var result = 'rgba(' + r + ',' + g + ',' + b + ',' + opacity / 100 + ')';
-    return result;
-}
 
 //Random Numbers
 function random(min, max) {
@@ -298,19 +142,57 @@ const options = {
 };
 
 class Dashboard extends Component {
-
+  
+    state = {
+      GPS: true,
+      IMU: false
+    };
     constructor(props) {
         super(props);
-
-        this.toggle = this.toggle.bind(this);
-        this.state = {
-            dropdownOpen: false
-        };
+        this.toggleGPS = this.toggleGPS.bind(this);
+    }
+    componentDidMount() {
+        const { socket } = this.props;
+        if (this.state.GPS === true) {
+          socket && socket.emit('subscribe', 'GPSJSON');
+        }
+        if (this.state.IMU === true) {
+          socket && socket.emit('subscribe', 'IMU_1');
+        }
+        socket.on('data', this.handleData)
+    }
+    componentWillUnmount() {
+      const { socket } = this.props;
+      socket && socket.emit('unsubscribe', 'GPSJSON');
+      socket && socket.emit('unsubscribe', 'IMU_1');
+    }
+  
+    handleData(data) {
+        console.log(JSON.parse(data));
+        const data = JSON.parse(data);
+        switch(data.class) {
+          case 'SKY':
+            this.updateSatellites(data);
+            break;
+          case 'TPV':
+            this.updateTPV(data);
+            break;
+        }
+    }
+  
+    updateSatellites(data) {
+      console.log('SATELITE = ', data);
+    }
+    updateTPV(data) {
+      console.log('TPV = ', data);
     }
 
-    toggle() {
+    toggleGPS() {
+      const { socket } = this.props;
+      const state = !this.state.GPS ? 'subscribe': 'unsubscribe';
+      socket && socket.emit(state, 'GPSJSON');
         this.setState({
-            dropdownOpen: !this.state.dropdownOpen
+            GPS: !this.state.GPS
         });
     }
 
@@ -356,7 +238,11 @@ class Dashboard extends Component {
                               <div className="form-group row">
                                   <label className="col-md-5 form-control-label mw-75" htmlFor="recordata">GPS OFF</label>
                                   <label className="switch switch-3d switch-primary">
-                                      <input type="checkbox" className="switch-input"/>
+                                      <input
+                                        type="checkbox"
+                                        className="switch-input"
+                                        checked={this.state.GPS}
+                                        onClick={this.toggleGPS}/>
                                       <span className="switch-label"></span>
                                       <span className="switch-handle"></span>
                                   </label>
@@ -501,4 +387,4 @@ class Dashboard extends Component {
     }
 }
 
-export default Dashboard;
+export default socketConnect(Dashboard);

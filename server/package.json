@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "JSONStream": "^1.1.1",
-    "amqp": "^0.2.6",
+    "amqplib": "^0.5.1",
     "app-root-path": "^2.0.1",
     "async": "^2.1.2",
     "bcrypt": "^1.0.0",

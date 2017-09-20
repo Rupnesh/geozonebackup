@@ -1,16 +1,9 @@
 environment: prod
 api:
   port: 8080
-rabbitMQ:
-  host: donkey.rmq.cloudamqp.com
-  port: 1883
-  login: oynylrww:oynylrww
-  password: GgJXP1k3PYaAZ_8NXPmNbf8OZRyTnu3k
-  authMechanism: AMQPLAIN
-  connectionTimeout: 10000
-  vhost: /oynylrww
-  ssl:
-    enabled: false
+
+CLOUDAMQP_URL: amqp://oynylrww:GgJXP1k3PYaAZ_8NXPmNbf8OZRyTnu3k@donkey.rmq.cloudamqp.com/oynylrww
+
 db:
   username: root
   password:
