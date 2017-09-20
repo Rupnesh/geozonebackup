@@ -156,6 +156,7 @@
     "babel/object-shorthand": 1,
     "babel/arrow-parens": 0,
     "babel/no-await-in-loop": 1,
-    "import/prefer-default-export": 0
+    "import/prefer-default-export": 0,
+    "jsx-a11y/href-no-hash": [ 0, [ "Link", "Anchor" ] ]
   }
 }

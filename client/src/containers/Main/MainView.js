@@ -40,11 +40,11 @@ export default class MainView extends PureComponent {
   render() {
     return (
       <div className='app'>
-        <Header />
+        <Header/>
         <div className='app-body'>
           <Sidebar {...this.props}/>
           <main className='main'>
-            <Breadcrumb />
+            <Breadcrumb/>
             <div className='container-fluid'>
               <Switch>
                 <Route path='/dashboard' name='Dashboard' component={Dashboard}/>
@@ -81,9 +81,9 @@ export default class MainView extends PureComponent {
               </Switch>
             </div>
           </main>
-          <Aside />
+          <Aside/>
         </div>
-        <Footer />
+        <Footer/>
       </div>
     );
   }
