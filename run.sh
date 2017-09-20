@@ -1,4 +1,3 @@
-#!/usr/bin/env bash
 cd client/
 rm -rf node_modules/
 npm install
