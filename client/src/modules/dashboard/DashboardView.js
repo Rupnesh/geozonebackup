@@ -2,6 +2,7 @@ import ReactSVG from 'react-svg';
 import React, { Component } from 'react';
 import { Bar, Line } from 'react-chartjs-2';
 import { Dropdown, DropdownMenu, DropdownItem, Progress } from 'reactstrap';
+import ResizeObserver from 'react-resize-observer';
 
 const brandPrimary = '#20a8d8';
 const brandSuccess = '#4dbd74';
@@ -224,26 +225,20 @@ const plotCalculations = () => {
 
 // Plot Figure
 
-    //const a = azi * deg2rad;                                  //Convert degrees to radians
+    //Convert degrees to radians
     const a = [];
 
     for (let i = 0; i < azi.length; i++) {
         a[i] = azi[i] * deg2rad;
     }
 
-    //const r = 90 - el;                                        //Convert elevation angle to zenith
+    //Convert elevation angle to zenith
     const r = [];
 
     for (let i = 0; i < el.length; i++) {
         r[i] = 90 - el[i];
     }
 
-
-    /*for i=1:size(azi,2),
-
-     svx(i)=r(i)*cos(a(i))  ; svy(i)=r(i)*sin(a(i)); //Calculate polar co-ordinates
-
-     end*/
     const svx = [];
     const svy = [];
 
@@ -258,6 +253,10 @@ const plotCalculations = () => {
     const cx =  canvas.getContext("2d");
     const svg = document.querySelector('svg');
 
+    if (!svg) {
+        return;
+    }
+
     canvas.style.position = 'absolute';
     cx.canvas.height = svg.height.baseVal.value;
     cx.canvas.width = svg.width.baseVal.value;
@@ -265,9 +264,11 @@ const plotCalculations = () => {
     cx.translate(canvas.clientWidth / 2, canvas.clientHeight / 2);   // Move (0,0) to (180, 184)
     cx.scale(1,-1);          // Make y grow up rather than down
 
+    const sizeOffest = canvas.clientHeight / 200;
+
     for (let i = 0; i < svx.length; i++) {
         cx.beginPath();
-        cx.arc(svx[i], svy[i], 5, 0, 2 * Math.PI);
+        cx.arc(svx[i] * sizeOffest, svy[i] * sizeOffest, cx.canvas.height / 50, 0, 2 * Math.PI);
         cx.stroke();
         cx.closePath();
     }
@@ -317,10 +318,15 @@ class Dashboard extends Component {
         return (
             <div className='animated fadeIn'>
                 <div className='row'>
-                    <div className='col-sm-6 card'>
-                      <div className='card-block pb-0'>
+                    <div className='col-sm-12 col-md-6 col-lg-6 card'>
+
+                      <div id="svg-container" className='card-block pb-0'>
+                          <ResizeObserver
+                              onResize={() => {
+                                  plotCalculations();
+                              }}
+                          />
                         <canvas>
-                            <circle cx="100" cy="100" r="75"></circle>
                         </canvas>
                         <ReactSVG
                           path="img/skyplot.svg"
@@ -330,17 +336,13 @@ class Dashboard extends Component {
                               svg.setAttribute('style', 'max-height: 550px;');
                               svg.querySelector('#Combined-Shape').setAttribute('fill', '#88e885');
 
-                              setTimeout(plotCalculations, 0);
-                              window.addEventListener('resize', function(event){
-                                  plotCalculations();
-                              });
                           }}
                           className="skyplot"
                         />
                       </div>
                     </div>
 
-                    <div className='col-sm-6 mb-4 background-white'>
+                    <div className='col-sm-12 col-md-6 col-lg-6 mb-4 background-white'>
                         <div className='row'>
                           <div className="row col-sm-6 col-md-6 col-lg-6">
                               <div className="card-block">
