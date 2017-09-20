@@ -31,79 +31,6 @@ function getImageSrc(nr) {
   }
 }
 
-const plotCalculations = (data) => {
-  const pi = 3.1416;
-  
-  const deg2rad = pi / 180;
-  
-  // Satellite Information
-  
-  const prn = [];               //Satellite PRN
-  
-  const azi = [];  //Azimuth in degrees
-  
-  const el = [];             //Elevation ang
-  
-  if (data) {
-    data.satellites.forEach((satellite) => {
-      prn.push(satellite['PRN']);
-      azi.push(satellite['az']);
-      el.push(satellite['el']);
-    });
-  }
-  
-  // Plot Figure
-  
-  //Convert degrees to radians
-  const a = [];
-  
-  for (let i = 0; i < azi.length; i++) {
-    a[i] = azi[i] * deg2rad;
-  }
-  
-  //Convert elevation angle to zenith
-  const r = [];
-  
-  for (let i = 0; i < el.length; i++) {
-    r[i] = 90 - el[i];
-  }
-  
-  const svx = [];
-  const svy = [];
-  
-  for (let i = 0; i < azi.length; i++) {
-    svx[i] = r[i] * Math.sin(a[i]);
-    svy[i] = r[i] * Math.cos(a[i]);
-  }
-  
-  const canvas = document.querySelector("canvas");
-  const cx = canvas.getContext("2d");
-  const svg = document.querySelector('svg');
-  
-  if (!svg) {
-    return;
-  }
-  
-  canvas.style.position = 'absolute';
-  cx.canvas.height = svg.height.baseVal.value;
-  cx.canvas.width = svg.width.baseVal.value;
-  
-  cx.translate(canvas.clientWidth / 2, canvas.clientHeight / 2);   // Move (0,0) to (180, 184)
-  //cx.scale(1,-1);          // Make y grow up rather than down
-  
-  const sizeOffest = canvas.clientHeight / 200;
-  const imageSizeOffset = canvas.clientHeight / 400;
-  
-  for (let i = 0; i < svx.length; i++) {
-    let newImage = new Image();
-    
-    newImage.onload = () => {
-      cx.drawImage(newImage, (svx[i] - 10) * sizeOffest, -(svy[i] + 15) * sizeOffest, newImage.width * imageSizeOffset, newImage.height * imageSizeOffset);
-    };
-    newImage.src = 'img/icons/' + getImageSrc(prn[i]);
-  }
-};
-
 const bar = {
   labels: ['2', '5', '12', '17', '19', '24', '25', '28', '29', '46', '48', '51'],
   datasets: [
@@ -177,11 +104,16 @@ class Dashboard extends Component {
   
   updateSatellites(data) {
     console.log('SATELITE = ', data);
-    plotCalculations(data);
+    this.setState({
+      satelliteData: data
+    });
   }
   
   updateTPV(data) {
     console.log('TPV = ', data);
+    this.setState({
+      satelliteTPV: data
+    });
   }
   
   toggleGPS() {
@@ -193,18 +125,92 @@ class Dashboard extends Component {
     });
   }
   
+  plotCalculations = () => {
+    const data = this.state.satelliteData;
+  
+    if (!data) {
+      return;
+    }
+
+    const deg2rad = Math.PI / 180;
+    
+    // Satellite Information
+    
+    const prn = [];               //Satellite PRN
+    
+    const azi = [];  //Azimuth in degrees
+    
+    const el = [];             //Elevation ang
+    
+    data.satellites.forEach((satellite) => {
+      prn.push(satellite['PRN']);
+      azi.push(satellite['az']);
+      el.push(satellite['el']);
+    });
+    
+    // Plot Figure
+    
+    //Convert degrees to radians
+    const a = [];
+    
+    for (let i = 0; i < azi.length; i++) {
+      a[i] = azi[i] * deg2rad;
+    }
+    
+    //Convert elevation angle to zenith
+    const r = [];
+    
+    for (let i = 0; i < el.length; i++) {
+      r[i] = 90 - el[i];
+    }
+    
+    const svx = [];
+    const svy = [];
+    
+    for (let i = 0; i < azi.length; i++) {
+      svx[i] = r[i] * Math.sin(a[i]);
+      svy[i] = r[i] * Math.cos(a[i]);
+    }
+    
+    const canvas = document.querySelector("canvas");
+    const cx = canvas.getContext("2d");
+    const svg = document.querySelector('svg');
+    
+    if (!svg) {
+      return;
+    }
+    
+    //canvas.style.position = 'absolute';
+    cx.canvas.height = svg.height.baseVal.value;
+    cx.canvas.width = svg.width.baseVal.value;
+    
+    cx.translate(canvas.clientWidth / 2, canvas.clientHeight / 2);   // Move (0,0) to (180, 184)
+    //cx.scale(1,-1);          // Make y grow up rather than down
+    
+    const sizeOffest = canvas.clientHeight / 200;
+    const imageSizeOffset = canvas.clientHeight / 400;
+    
+    for (let i = 0; i < svx.length; i++) {
+      let newImage = new Image();
+      
+      newImage.onload = () => {
+        cx.drawImage(newImage, (svx[i] - 10) * sizeOffest, -(svy[i] + 15) * sizeOffest, newImage.width * imageSizeOffset, newImage.height * imageSizeOffset);
+      };
+      newImage.src = 'img/icons/' + getImageSrc(prn[i]);
+    }
+  };
+  
   render() {
+    setTimeout(this.plotCalculations, 0);
     return (
       <div className='animated fadeIn'>
         <div className='row'>
           <div className='col-sm-12 col-md-6 col-lg-6 card'>
             <div id="svg-container" className='card-block pb-0'>
               <ResizeObserver
-                onResize={() => {
-                  plotCalculations();
-                }}
+                onResize={this.plotCalculations}
               />
-              <canvas>
+              <canvas style={{position: 'absolute'}}>
               </canvas>
               <ReactSVG
                 path="img/skyplot.svg"
@@ -231,7 +237,7 @@ class Dashboard extends Component {
               </div>
               <div className='card-block col-sm-6 col-md-6 col-lg-6'>
                 <div className="form-group row">
-                  <label className="col-md-5 form-control-label mw-75" htmlFor="recordata">GPS OFF</label>
+                  <label className="col-md-5 form-control-label mw-75" htmlFor="recordata">GPS Enabled</label>
                   <label className="switch switch-3d switch-primary">
                     <input
                       type="checkbox"
@@ -251,7 +257,7 @@ class Dashboard extends Component {
                   </label>
                 </div>
                 <div className="form-group row">
-                  <label className="col-md-5 form-control-label mw-75" htmlFor="recordata">IMU OFF</label>
+                  <label className="col-md-5 form-control-label mw-75" htmlFor="recordata">IMU Enabled</label>
                   <label className="switch switch-3d switch-primary">
                     <input type="checkbox" className="switch-input"/>
                     <span className="switch-label"></span>
