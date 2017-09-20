@@ -1,16 +1,29 @@
 const mysql = require('mysql');
+const { Client } = require('pg');
 const models = require('./models');
 const { db } = require('./config');
 
 const { sequelize } = models;
 
 module.exports = (callback) => {
-  const connection = mysql.createConnection({
-    host: db.host,
-    port: db.port,
-    user: db.username,
-    password: db.password
-  });
+  let connection = null;
+  if (db.dialect === 'mysql') {
+    connection = mysql.createConnection({
+      host: db.host,
+      port: db.port,
+      user: db.username,
+      password: db.password
+    });
+  } else if ( db.dialect === 'postgres' ) {
+    connection = new Client({
+      host: db.host,
+      port: db.port,
+      user: db.username,
+      password: db.password
+    });
+  } else {
+    return ;
+  }
   connection.connect();
   connection.query(`CREATE DATABASE IF NOT EXISTS ${db.database};`, (err) => {
     if (err) {
