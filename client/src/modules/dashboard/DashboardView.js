@@ -159,23 +159,27 @@ class Dashboard extends Component {
         if (this.state.IMU === true) {
           socket && socket.emit('subscribe', 'IMU_1');
         }
-        socket.on('data', this.handleData)
+        socket.on('data', (data) => {this.handleData(data)})
     }
     componentWillUnmount() {
       const { socket } = this.props;
-      socket && socket.emit('unsubscribe', 'GPSJSON');
-      socket && socket.emit('unsubscribe', 'IMU_1');
+      if (this.state.GPS === true) {
+        socket && socket.emit('unsubscribe', 'GPSJSON');
+      }
+      if (this.state.IMU === true) {
+        socket && socket.emit('unsubscribe', 'IMU_1');
+      }
     }
   
     handleData(data) {
-        console.log(JSON.parse(data));
-        const data = JSON.parse(data);
-        switch(data.class) {
+        // console.log(JSON.parse(data));
+        const parsedData = JSON.parse(data);
+        switch(parsedData.class) {
           case 'SKY':
-            this.updateSatellites(data);
+            this.updateSatellites(parsedData);
             break;
           case 'TPV':
-            this.updateTPV(data);
+            this.updateTPV(parsedData);
             break;
         }
     }
