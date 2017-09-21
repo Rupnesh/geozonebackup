@@ -42,7 +42,13 @@ module.exports = function listen(app) {
     }
   );
   setTimeout(() => {
-    ampq.start('GPSJSON');
+    ampq.connect()
+      .then((ch) => {
+        // connect to the following channels and yield data
+        ampq.start(ch, 'GPSJSON');
+        ampq.start(ch, 'IMU_1');
+      })
+      .catch(() => {});
   }, 1000);
 };
 
