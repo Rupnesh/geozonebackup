@@ -299,7 +299,7 @@ class Dashboard extends Component {
                   </label>
                 </div>
                 <div className="form-group row">
-                  <label className="col-md-5 form-control-label mw-75" htmlFor="recordata">Hide GPS Data</label>
+                  <label className="col-md-5 form-control-label mw-75" htmlFor="recordata">Show GPS Data</label>
                   <label className="switch switch-3d switch-primary">
                     <input type="checkbox" className="switch-input"/>
                     <span className="switch-label"></span>
