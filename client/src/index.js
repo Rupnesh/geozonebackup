@@ -7,7 +7,11 @@ import registerServiceWorker from './registerServiceWorker';
 
 import { SocketProvider } from 'socket.io-react';
 import io from 'socket.io-client';
-const socket = io.connect('http://localhost:8080');
+let URL = `http://${window.location.hostname}:8080`;
+if (process.env.NODE_ENV === 'production') {
+  URL = `http://${window.location.hostname}:${window.location.port}`;
+}
+const socket = io.connect(URL);
 /* global document */
 render(
   <SocketProvider socket={socket}>
