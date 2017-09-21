@@ -27,17 +27,17 @@ export const loginUserRequest = (email, password) => {
     client_secret: 'drupalsoftare'
   };
 
-  /* return callApi({
-    url: '/oauth/token',
+   return callApi({
+    url: '/login',
     method: 'post',
     data: JSON.stringify(object)
-  });*/
-  return new Promise((resolve, reject) => {
+  });
+  /*return new Promise((resolve, reject) => {
     resolve({ status: 200, user: { name: 'Alexandru Lazar', email: 'alex@mcro-e.com' } });
     if (object === null) {
       reject({ message: 'nothing' });
     }
-  });
+  });*/
 };
 
 export const logoutUserRequest = () => {

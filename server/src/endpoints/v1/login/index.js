@@ -43,21 +43,26 @@ module.exports = (router) => {
    *         description: "bad request"
    */
   router.post('/login', (req, res) => {
-    const email = req.body.emails[0].value;
-    const password = req.body.password[0].value;
+    const email = req.body.email;
+    const password = req.body.password;
     Login
       .findByEmailPassword(email, password)
       .then((user) => {
+      let jsonBody = {
+        success: false
+      };
         if (user) {
           let token = jwt.sign(user.dataValues, secret, {
             expiresIn: "7d"
           });
-          res.json({
+          jsonBody = {
             success: true,
             user: user,
             token,
-          });
+          };
         }
+  
+        res.json(jsonBody);
       })
       .catch((error) => {
         res.status(400).send(error);
