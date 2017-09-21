@@ -29,7 +29,7 @@ module.exports = function listen(app) {
         socket.join(queue);
         setTimeout(() => {
           PubSubService.subscribe(queue, (data) => {
-            socket.broadcast.to(queue).emit('data', data);
+            socket.broadcast.to(queue).emit(`data-${queue}`, data);
           }, socket);
         }, 1000);
       });

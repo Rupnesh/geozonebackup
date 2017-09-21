@@ -43,12 +43,13 @@ class Dashboard extends Component {
   
   state = {
     GPS: true,
-    IMU: false
+    IMU: true
   };
   
   constructor(props) {
     super(props);
     this.toggleGPS = this.toggleGPS.bind(this);
+    this.toggleIMU = this.toggleIMU.bind(this);
   }
   
   componentDidMount() {
@@ -59,8 +60,11 @@ class Dashboard extends Component {
     if (this.state.IMU === true) {
       socket && socket.emit('subscribe', 'IMU_1');
     }
-    socket.on('data', (data) => {
-      this.handleData(data)
+    socket.on('data-GPSJSON', (data) => {
+      this.handleGPSJSONData(data)
+    });
+    socket.on('data-IMU_1', (data) => {
+      this.handleIMU1Data(data)
     })
   }
   
@@ -74,7 +78,12 @@ class Dashboard extends Component {
     }
   }
   
-  handleData(data) {
+  handleIMU1Data(data) {
+    console.log('IMU = ', data);
+    // this.updateTable(data);
+  }
+  
+  handleGPSJSONData(data) {
     // console.log(JSON.parse(data));
     const parsedData = JSON.parse(data);
     switch (parsedData.class) {
@@ -110,6 +119,14 @@ class Dashboard extends Component {
     });
   }
   
+  toggleIMU() {
+    const { socket } = this.props;
+    const state = !this.state.IMU ? 'subscribe' : 'unsubscribe';
+    socket && socket.emit(state, 'IMU_1');
+    this.setState({
+      IMU: !this.state.IMU
+    });
+  }
   plotCalculations = () => {
     const data = this.state.satelliteData;
   
@@ -272,7 +289,11 @@ class Dashboard extends Component {
                 <div className="form-group row">
                   <label className="col-md-5 form-control-label mw-75" htmlFor="recordata">IMU Enabled</label>
                   <label className="switch switch-3d switch-primary">
-                    <input type="checkbox" className="switch-input"/>
+                    <input
+                      type="checkbox"
+                      className="switch-input"
+                      checked={this.state.IMU}
+                      onClick={this.toggleIMU}/>
                     <span className="switch-label"></span>
                     <span className="switch-handle"></span>
                   </label>
