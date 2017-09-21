@@ -1,13 +1,16 @@
 import { connect } from 'react-redux';
 import HeaderView from './HeaderView';
 
-import { logoutUser } from '../../modules/auth/AuthReducer';
+import { logoutUser, getUserData } from '../../modules/auth/AuthReducer';
 
 const mapStateToProps = (state) => {
-  const { userData } = state;
+  const { auth } = state;
+  const { userData } = auth;
+
   return { userData };
 };
 
 export default connect(mapStateToProps, {
-  logoutUser
+  logoutUser,
+  getUserData
 })(HeaderView);

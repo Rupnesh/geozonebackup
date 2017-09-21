@@ -49,7 +49,8 @@ module.exports = (router) => {
       .findByEmailPassword(email, password)
       .then((user) => {
       let jsonBody = {
-        success: false
+        success: false,
+        message: 'Invalid credentials.'
       };
         if (user) {
           let token = jwt.sign(user.dataValues, secret, {
@@ -60,12 +61,28 @@ module.exports = (router) => {
             user: user,
             token,
           };
+          res.json(jsonBody);
+        } else {
+          res.status(403).json(jsonBody);
         }
-  
-        res.json(jsonBody);
       })
       .catch((error) => {
         res.status(400).send(error);
       });
+  });
+  
+  router.post('/auth', (req, res) => {
+    const token = req.body.token;
+    let stillActive = jwt.verify(token, secret);
+    
+    if (stillActive) {
+      res.json({
+        success: true
+      });
+    } else {
+      res.status(400).send({
+        success: false
+      })
+    }
   });
 };

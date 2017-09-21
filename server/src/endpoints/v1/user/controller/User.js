@@ -50,6 +50,29 @@ module.exports = {
         });
     });
   },
+  
+  /**
+   * Get a specific user
+   *
+   * @param {integer} id - id
+   * @returns {Object}
+   */
+  findById(id) {
+    return new Promise((resolve, reject) => {
+      User
+        .findOne({
+          where: {
+            id
+          }
+        })
+        .then((res) => {
+          resolve(res);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+  },
 
   
   /**

@@ -128,6 +128,33 @@ module.exports = (router) => {
       });
     }
   });
+  
+  router.get('/users/:id', (req, res) => {
+    const tokenValidity = tokenValidation.validateToken(req);
+    
+    if (tokenValidity.success === true) {
+      User
+        .findById(req.params.id)
+        .then((data) => {
+          if (data <= 0) {
+            res.sendStatus(404);
+          } else {
+            res.send({
+              success : true,
+              user: data
+            });
+          }
+        })
+        .catch((error) => {
+          res.status(400).send(error);
+        });
+    } else {
+      return res.status(403).send({
+        success: false,
+        message: 'No token provided.'
+      });
+    }
+  });
 
   /**
    * @swagger

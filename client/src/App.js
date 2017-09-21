@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Router, Route, Switch } from 'react-router-dom';
 import { history } from './utils/history';
 import auth from './utils/authentication';
-import { configureDefaults } from './services/api';
+import { verifyTokenAvailability, configureDefaults } from './services/api';
 
 // Containers
 import Main from './containers/Main';
@@ -16,16 +16,25 @@ import Page404 from './modules/error/Page404';
 import Page500 from './modules/error/Page500';
 
 class App extends Component {
-
+  
   componentWillMount() {
+    const authData = auth.get();
+  
     configureDefaults();
-    if (auth.get()) {
-      history.push('/dashboard');
+
+    if (authData.token) {
+      verifyTokenAvailability(authData.token)
+        .then(() => {
+          history.push('/dashboard')
+        })
+        .catch(() => {
+          history.push('/login')
+        });
     } else {
-      history.push('/login');
+      history.push('/login')
     }
   }
-
+  
   render() {
     return (
       <Router history={history}>

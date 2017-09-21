@@ -9,15 +9,19 @@ import {
   registerCreateAccountRequest,
   verifyRegisterCodeRequest,
   forgottenPasswordRequest,
-  resendCodeEmailRequest
+  resendCodeEmailRequest,
+  getUserDataRequest
 } from '../../services/api';
 import auth from '../../utils/authentication';
 
 // Helpers
 
-const authenticationSuccess = (token) => {
-  auth.set(token);
-  axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+const authenticationSuccess = (data) => {
+  auth.set({
+    userId: data.user.id,
+    token: data.token
+  });
+  axios.defaults.headers.common.Authorization = `Bearer ${data.token}`;
 };
 
 // Actions
@@ -36,7 +40,7 @@ export const login = {
     dispatch(createAction(LOGIN.SUCCESS, { response }));
     reset('loginForm');
     if (!otherConfigurations || (otherConfigurations && !otherConfigurations.registrationFlag)) {
-      authenticationSuccess(response.accessToken);
+      authenticationSuccess(response.data);
       history.push('/dashboard');
     }
   },
@@ -110,17 +114,8 @@ export const loginUser = (email, password) => (
       .then(response => login.success(dispatch, response))
       .catch((error) => {
         switch (error.status) {
-          case 401: {
+          case 403: {
             login.failure(dispatch, error.data.message);
-            break;
-          }
-          case 402: {
-            login.failure(dispatch, error.data.message);
-            /* dispatch(history.go('/#/code_confirm', {
-              routeName: 'RegisterStep2',
-              params: { registeredWithoutCode: true, userData: { email, password } }
-            }));*/
-            history.replace('/#/code_confirm');
             break;
           }
           default: {
@@ -227,6 +222,31 @@ export const forgottenPassword = (email) => (
   }
 );
 
+export const getUserData = () => (
+  (dispatch) => {
+    const data = auth.get();
+    if (!data) {
+      return;
+    }
+    getUserDataRequest(data.userId)
+      .then(response => {
+        dispatch(createAction(LOGIN.SUCCESS, { response }));
+      })
+      .catch((error) => {
+        switch (error.status) {
+          case 403: {
+            login.failure(dispatch, error.data.message);
+            break;
+          }
+          default: {
+            login.failure(dispatch, 'Login failed with unknown reason.');
+            break;
+          }
+        }
+      });
+  }
+);
+
 //  this is used to reset the message that is shown after user clicks 'resend email'
 export const resetResentEmail = () => (
   (dispatch) => {
@@ -258,6 +278,7 @@ export default (state = initialState, action) => {
     case LOGIN.SUCCESS:
       return {
         ...state,
+        userData: action.payload.response.data.user,
         isLogged: true,
         isPending: false,
         loginError: null

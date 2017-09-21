@@ -21,10 +21,7 @@ function callApi(config) {
 export const loginUserRequest = (email, password) => {
   const object = {
     email,
-    password,
-    grant_type: 'password',
-    client_id: 'aefe9131-a89c-4e03-9b11-c8f683c66666',
-    client_secret: 'drupalsoftare'
+    password
   };
 
    return callApi({
@@ -38,6 +35,31 @@ export const loginUserRequest = (email, password) => {
       reject({ message: 'nothing' });
     }
   });*/
+};
+
+export const verifyTokenAvailability = (token) => {
+  const object = {
+    token
+  };
+  
+  return callApi({
+    url: '/auth',
+    method: 'post',
+    data: JSON.stringify(object)
+  });
+  /*return new Promise((resolve, reject) => {
+   resolve({ status: 200, user: { name: 'Alexandru Lazar', email: 'alex@mcro-e.com' } });
+   if (object === null) {
+   reject({ message: 'nothing' });
+   }
+   });*/
+};
+
+export const getUserDataRequest = (id) => {
+  return callApi({
+    url: '/users/' + id,
+    method: 'get'
+  });
 };
 
 export const logoutUserRequest = () => {
@@ -127,9 +149,9 @@ export const loginToWifiRequest = (username, password) => {
 };
 
 export const configureDefaults = async () => {
-  axios.defaults.baseURL = 'http://localhost:8001/api/v1';
-  const token = auth.get();
-  axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+  axios.defaults.baseURL = 'http://localhost:8080/v1';
+  const data = auth.get();
+  axios.defaults.headers.common.Authorization = `Bearer ${data.token}`;
   axios.defaults.headers.post['Content-Type'] = 'application/json';
   axios.defaults.headers.post.Accept = 'application/json';
 };
