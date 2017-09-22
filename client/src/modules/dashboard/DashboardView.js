@@ -44,7 +44,7 @@ class Dashboard extends PureComponent {
   state = {
     GPS: true,
     IMU: false,
-    graphData : {
+    graphData: {
       labels: [],
       datasets: [
         {
@@ -113,10 +113,10 @@ class Dashboard extends PureComponent {
   }
   
   updateSatellites(data) {
-    console.log('SATELITE = ', data.satellites);
+    //console.log('SATELITE = ', data.satellites);
     this.satelliteData = data;
-    this.populateGraphData();
     this.plotCalculations();
+    this.populateGraphData();
   }
   
   updateTPV(data) {
@@ -142,7 +142,7 @@ class Dashboard extends PureComponent {
     });
   }
   
-  arraysEqual(a, b) {
+  arraysEqual(a, b, callback) {
     if (a === b) return true;
     if (a == null || b == null) return false;
     if (a.length != b.length) return false;
@@ -151,18 +151,18 @@ class Dashboard extends PureComponent {
     // the array, you should sort both arrays here.
     
     for (var i = 0; i < a.length; ++i) {
-      if (a[i] !== b[i]) return false;
+      if (callback(a[i], b[i])) return false;
     }
     return true;
   }
   
   plotCalculations = () => {
     const data = this.satelliteData;
-  
+    
     if (!data) {
       return;
     }
-
+    
     const deg2rad = Math.PI / 180;
     
     // Satellite Information
@@ -179,10 +179,10 @@ class Dashboard extends PureComponent {
       el.push(satellite['el']);
     });
     /*const prn = [14, 18, 1, 9, 12, 30, 22, 32, 5, 31];               //Satellite PRN
-  
-    const azi = [55, 135.2, -83, 49, 95, 135, 159, -56, 116, -145];  //Azimuth in degrees
-  
-    const el = [69, 35, 40, 30, 30, 24, 78, 62, 32, 22];             //Elevation angle in degrees*/
+     
+     const azi = [55, 135.2, -83, 49, 95, 135, 159, -56, 116, -145];  //Azimuth in degrees
+     
+     const el = [69, 35, 40, 30, 30, 24, 78, 62, 32, 22];             //Elevation angle in degrees*/
     
     // Plot Figure
     
@@ -207,46 +207,60 @@ class Dashboard extends PureComponent {
       svx[i] = r[i] * Math.sin(a[i]);
       svy[i] = r[i] * Math.cos(a[i]);
     }
-
-    const canvas = document.querySelector("canvas");
-    const cx = canvas.getContext("2d");
-    const svg = document.querySelector('svg');
     
-    if (!svg) {
+    const sameData = this.arraysEqual(data.satellites, this.oldSatellites, (a, b) => {
+      //PRN: 7, el: 57, az: 67, ss: 42, used: true}
+      return !(a['PRN'] == b['PRN'] && a['az'] == b['az'] && a['el'] == b['el']);
+    });
+    
+    if (sameData) {
       return;
     }
-
-    cx.canvas.height = svg.height.baseVal.value;
-    cx.canvas.width = svg.width.baseVal.value;
     
-    cx.translate(canvas.clientWidth / 2, canvas.clientHeight / 2);   // Move (0,0) to (180, 184)
-    //cx.scale(1,-1);          // Make y grow up rather than down
+    this.oldSatellites = data.satellites;
     
-    const sizeOffest = canvas.clientHeight / 200;
-    const imageSizeOffset = canvas.clientHeight / 600;
-    
-    for (let i = 0; i < svx.length; i++) {
-      let newImage = new Image();
+    setTimeout(() => {
+      const canvas = document.querySelector("canvas");
+      const cx = canvas.getContext("2d");
+      const svg = document.querySelector('svg');
       
-      newImage.onload = () => {
-        cx.drawImage(newImage, (svx[i] - 10) * sizeOffest, -(svy[i] + 15) * sizeOffest, newImage.width * imageSizeOffset, newImage.height * imageSizeOffset);
-      };
-      newImage.src = 'img/icons/' + getImageSrc(prn[i]);
-    }
+      if (!svg) {
+        return;
+      }
+      
+      console.log('Changed');
+      cx.canvas.height = svg.height.baseVal.value;
+      cx.canvas.width = svg.width.baseVal.value;
+      
+      cx.translate(canvas.clientWidth / 2, canvas.clientHeight / 2);   // Move (0,0) to (180, 184)
+      //cx.scale(1,-1);          // Make y grow up rather than down
+      
+      const sizeOffest = canvas.clientHeight / 200;
+      const imageSizeOffset = canvas.clientHeight / 600;
+      
+      for (let i = 0; i < svx.length; i++) {
+        let newImage = new Image();
+        
+        newImage.onload = () => {
+          cx.drawImage(newImage, (svx[i] - 10) * sizeOffest, -(svy[i] + 15) * sizeOffest, newImage.width * imageSizeOffset, newImage.height * imageSizeOffset);
+        };
+        newImage.src = 'img/icons/' + getImageSrc(prn[i]);
+      }
+    }, 500);
   };
   
   populateGraphData = () => {
     const data = this.satelliteData;
     const labels = [];
     const values = [];
-
+    
     if (data) {
       data.satellites.forEach((satellite) => {
         labels.push(satellite['PRN']);
         values.push(satellite['ss']);
       });
     }
-  
+    
     this.setState({
       graphData: {
         labels: labels,
@@ -275,7 +289,7 @@ class Dashboard extends PureComponent {
               <ResizeObserver
                 onResize={this.plotCalculations}
               />
-              <canvas style={{position: 'absolute'}}>
+              <canvas style={{ position: 'absolute' }}>
               </canvas>
               <ReactSVG
                 path="img/skyplot.svg"
