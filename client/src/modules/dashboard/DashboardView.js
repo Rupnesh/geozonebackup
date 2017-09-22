@@ -329,7 +329,7 @@ class Dashboard extends PureComponent {
               />
             </div>
           </div>
-          
+        
           <div style={{maxHeight: '500px', position:'relative'}} className='col-sm-12 col-md-6 col-lg-6 mb-4 background-white'>
             <div className='row'>
               <div className="row col-sm-6 col-md-6 col-lg-6">
@@ -463,15 +463,12 @@ class Dashboard extends PureComponent {
             </div>
           </div>
         </div>
-        <div className='col-sm-12'>
-          <div className='row'>
+        <div className='row'>
           <div className='col-sm-12 card card-inverse'>
             <div style={{maxHeight: '200px', position:'relative'}} className='chart-wrapper px-3'>
               <Bar data={this.state.graphData}
-                   options={options}
-              /></div>
+                   options={options}/>
             </div>
-          </div>
           </div>
         </div>
       </div>
