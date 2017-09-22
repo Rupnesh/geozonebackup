@@ -32,8 +32,8 @@ function getImageSrc(nr) {
 }
 
 const options = {
-  maintainAspectRatio: false,
-  responsive: true,
+  //maintainAspectRatio: false,
+  //responsive: true,
   tooltips: {
     mode: 'label'
   }
@@ -202,10 +202,14 @@ class Dashboard extends PureComponent {
     
     const svx = [];
     const svy = [];
-    
+    let index = 0;
+
     for (let i = 0; i < azi.length; i++) {
-      svx[i] = r[i] * Math.sin(a[i]);
-      svy[i] = r[i] * Math.cos(a[i]);
+      if (data.satellites[i].used) {
+        svx[index] = r[i] * Math.sin(a[i]);
+        svy[index] = r[i] * Math.cos(a[i]);
+        index++;
+      }
     }
     
     const sameData = this.arraysEqual(data.satellites, this.oldSatellites, (a, b) => {
@@ -236,13 +240,32 @@ class Dashboard extends PureComponent {
     //cx.scale(1,-1);          // Make y grow up rather than down
   
     const sizeOffest = canvas.clientHeight / 200;
-    const imageSizeOffset = canvas.clientHeight / 600;
+    const imageSizeOffset = canvas.clientHeight / 700;
   
+    function drawImage(cx, img, x, y, width, height) {
+      let opacity = 0;
+  
+      (function fadeIn() {
+        cx.globalAlpha = opacity;
+        cx.drawImage(img, x, y, width, height);
+        opacity += 0.02;
+
+        if (opacity < 1) {
+          requestAnimationFrame(fadeIn);
+        }
+      })();
+
+    }
+    
     for (let i = 0; i < svx.length; i++) {
       let newImage = new Image();
     
       newImage.onload = () => {
-        cx.drawImage(newImage, (svx[i] - 10) * sizeOffest, -(svy[i] + 15) * sizeOffest, newImage.width * imageSizeOffset, newImage.height * imageSizeOffset);
+        if (onResize) {
+          cx.drawImage(newImage, (svx[i] - 10) * sizeOffest, -(svy[i] + 15) * sizeOffest, newImage.width * imageSizeOffset, newImage.height * imageSizeOffset);
+        } else {
+          drawImage(cx, newImage, (svx[i] - 10) * sizeOffest, -(svy[i] + 15) * sizeOffest, newImage.width * imageSizeOffset, newImage.height * imageSizeOffset);
+        }
       };
       newImage.src = 'img/icons/' + getImageSrc(prn[i]);
     }
@@ -250,11 +273,15 @@ class Dashboard extends PureComponent {
   
   populateGraphData = () => {
     const data = this.satelliteData;
-    const labels = [];
-    const values = [];
+    let labels = [];
+    let values = [];
     
     if (data) {
-      data.satellites.forEach((satellite) => {
+      const satellites = [...data.satellites];
+      satellites.sort((a, b) => {
+        return a['PRN'] - b['PRN'];
+      });
+      satellites.forEach((satellite) => {
         labels.push(satellite['PRN']);
         values.push(satellite['ss']);
       });
@@ -436,12 +463,15 @@ class Dashboard extends PureComponent {
             </div>
           </div>
         </div>
-        <div className='row'>
+        <div className='col-sm-12'>
+          <divclassName='row'>
           <div className='col-sm-12 card card-inverse'>
             <div style={{maxHeight: '200px', position:'relative'}} className='chart-wrapper px-3'>
               <Bar data={this.state.graphData}
-                   options={options}/>
+                   options={options}
+              /></div>
             </div>
+          </div>
           </div>
         </div>
       </div>
