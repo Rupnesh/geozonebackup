@@ -283,7 +283,7 @@ class Dashboard extends PureComponent {
     return (
       <div className='animated fadeIn'>
         <div className='row'>
-          <div className='col-sm-12 col-md-6 col-lg-6 card'>
+          <div style={{maxHeight: '500px', position:'relative'}} className='col-sm-12 col-md-6 col-lg-6 card'>
             <div id="svg-container" className='card-block pb-0'>
               <ResizeObserver
                 onResize={() => this.plotCalculations(true)}
@@ -295,7 +295,7 @@ class Dashboard extends PureComponent {
                 callback={svg => {
                   svg.setAttribute('height', '100%');
                   svg.setAttribute('width', '100%');
-                  svg.setAttribute('style', 'max-height: 550px;');
+                  svg.setAttribute('style', 'max-height: 450px;');
                   svg.querySelector('#Combined-Shape').setAttribute('fill', '#88e885');
                 }}
                 className="skyplot"
@@ -303,11 +303,11 @@ class Dashboard extends PureComponent {
             </div>
           </div>
           
-          <div className='col-sm-12 col-md-6 col-lg-6 mb-4 background-white'>
+          <div style={{maxHeight: '500px', position:'relative'}} className='col-sm-12 col-md-6 col-lg-6 mb-4 background-white'>
             <div className='row'>
               <div className="row col-sm-6 col-md-6 col-lg-6">
                 <div className="card-block">
-                  <img width="100%" height="auto" className="spirit-level" src="img/spirit-level/Vectorillustration_design_4_no_bubble.png" alt=""/>
+                  <img style={{maxHeight: '150px', position:'relative'}} className="spirit-level" src="img/spirit-level/Vectorillustration_design_4_no_bubble.png" alt=""/>
                 </div>
                 <div className="card-block">
                   <label>In built GPS Active</label>
@@ -438,30 +438,9 @@ class Dashboard extends PureComponent {
         </div>
         <div className='row'>
           <div className='col-sm-12 card card-inverse'>
-            <div className='card-block pb-0'>
-              <div className='btn-group float-right'>
-                <Dropdown isOpen={this.state.card4} toggle={() => {
-                  this.setState({ card4: !this.state.card4 });
-                }}>
-                  <button onClick={() => {
-                    this.setState({ card4: !this.state.card4 });
-                  }} className='btn btn-transparent active dropdown-toggle p-0' data-toggle='dropdown' aria-haspopup='true' aria-expanded={this.state.card4}>
-                    <i className='icon-settings'></i>
-                  </button>
-                  <DropdownMenu>
-                    <DropdownItem>Action</DropdownItem>
-                    <DropdownItem>Another action</DropdownItem>
-                    <DropdownItem>Something else here</DropdownItem>
-                  </DropdownMenu>
-                </Dropdown>
-              </div>
-              <h4 className='mb-0'>9.823</h4>
-              <p>Members online</p>
-            </div>
-            <div className='chart-wrapper px-3'>
+            <div style={{maxHeight: '200px', position:'relative'}} className='chart-wrapper px-3'>
               <Bar data={this.state.graphData}
-                   options={options}
-              />
+                   options={options}/>
             </div>
           </div>
         </div>
