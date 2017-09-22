@@ -26,7 +26,7 @@ module.exports = {
       return ch.consume(q , function(msg) {
         if (msg !== null) {
           // console.log('==== start === ');
-          console.log("q=", q, " --- ", msg.content.toString());
+          // console.log("q=", q, " --- ", msg.content.toString());
           // console.log('==== end === ');
           PubSubService.publish(q, msg.content.toString());
         }
