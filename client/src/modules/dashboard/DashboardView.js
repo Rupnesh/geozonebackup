@@ -32,8 +32,8 @@ function getImageSrc(nr) {
 }
 
 const options = {
-  maintainAspectRatio: false,
-  responsive: true,
+  //maintainAspectRatio: false,
+  //responsive: true,
   tooltips: {
     mode: 'label'
   }
@@ -238,11 +238,30 @@ class Dashboard extends PureComponent {
     const sizeOffest = canvas.clientHeight / 200;
     const imageSizeOffset = canvas.clientHeight / 600;
   
+    function drawImage(cx, img, x, y, width, height) {
+      let opacity = 0;
+  
+      (function fadeIn() {
+        cx.globalAlpha = opacity;
+        cx.drawImage(img, x, y, width, height);
+        opacity += 0.02;
+
+        if (opacity < 1) {
+          requestAnimationFrame(fadeIn);
+        }
+      })();
+
+    }
+    
     for (let i = 0; i < svx.length; i++) {
       let newImage = new Image();
     
       newImage.onload = () => {
-        cx.drawImage(newImage, (svx[i] - 10) * sizeOffest, -(svy[i] + 15) * sizeOffest, newImage.width * imageSizeOffset, newImage.height * imageSizeOffset);
+        if (onResize) {
+          cx.drawImage(newImage, (svx[i] - 10) * sizeOffest, -(svy[i] + 15) * sizeOffest, newImage.width * imageSizeOffset, newImage.height * imageSizeOffset);
+        } else {
+          drawImage(cx, newImage, (svx[i] - 10) * sizeOffest, -(svy[i] + 15) * sizeOffest, newImage.width * imageSizeOffset, newImage.height * imageSizeOffset);
+        }
       };
       newImage.src = 'img/icons/' + getImageSrc(prn[i]);
     }
@@ -250,8 +269,8 @@ class Dashboard extends PureComponent {
   
   populateGraphData = () => {
     const data = this.satelliteData;
-    const labels = [];
-    const values = [];
+    let labels = [];
+    let values = [];
     
     if (data) {
       data.satellites.forEach((satellite) => {
@@ -282,187 +301,195 @@ class Dashboard extends PureComponent {
     setTimeout(this.plotCalculations, 0);
     return (
       <div className='animated fadeIn'>
-        <div className='row'>
-          <div className='col-sm-12 col-md-6 col-lg-6 card'>
-            <div id="svg-container" className='card-block pb-0'>
-              <ResizeObserver
-                onResize={() => this.plotCalculations(true)}
-              />
-              <canvas style={{ position: 'absolute' }}>
-              </canvas>
-              <ReactSVG
-                path="img/skyplot.svg"
-                callback={svg => {
-                  svg.setAttribute('height', '100%');
-                  svg.setAttribute('width', '100%');
-                  svg.setAttribute('style', 'max-height: 550px;');
-                  svg.querySelector('#Combined-Shape').setAttribute('fill', '#88e885');
-                }}
-                className="skyplot"
-              />
-            </div>
-          </div>
-          
-          <div className='col-sm-12 col-md-6 col-lg-6 mb-4 background-white'>
-            <div className='row'>
-              <div className="row col-sm-6 col-md-6 col-lg-6">
-                <div className="card-block">
-                  <img width="100%" height="auto" className="spirit-level" src="img/spirit-level/Vectorillustration_design_4_no_bubble.png" alt=""/>
-                </div>
-                <div className="card-block">
-                  <label>In built GPS Active</label>
-                </div>
-              </div>
-              <div className='card-block col-sm-6 col-md-6 col-lg-6'>
-                <div className="form-group row">
-                  <label className="col-md-5 form-control-label mw-75" htmlFor="recordata">GPS Enabled</label>
-                  <label className="switch switch-3d switch-primary">
-                    <input
-                      type="checkbox"
-                      className="switch-input"
-                      checked={this.state.GPS}
-                      onClick={this.toggleGPS}/>
-                    <span className="switch-label"></span>
-                    <span className="switch-handle"></span>
-                  </label>
-                </div>
-                <div className="form-group row">
-                  <label className="col-md-5 form-control-label mw-75" htmlFor="recordata">Start Recording</label>
-                  <label className="switch switch-3d switch-primary">
-                    <input type="checkbox" className="switch-input"/>
-                    <span className="switch-label"></span>
-                    <span className="switch-handle"></span>
-                  </label>
-                </div>
-                <div className="form-group row">
-                  <label className="col-md-5 form-control-label mw-75" htmlFor="recordata">IMU Enabled</label>
-                  <label className="switch switch-3d switch-primary">
-                    <input
-                      type="checkbox"
-                      className="switch-input"
-                      checked={this.state.IMU}
-                      onClick={this.toggleIMU}/>
-                    <span className="switch-label"></span>
-                    <span className="switch-handle"></span>
-                  </label>
-                </div>
-                <div className="form-group row">
-                  <label className="col-md-5 form-control-label mw-75" htmlFor="recordata">Show GPS Data</label>
-                  <label className="switch switch-3d switch-primary">
-                    <input type="checkbox" className="switch-input"/>
-                    <span className="switch-label"></span>
-                    <span className="switch-handle"></span>
-                  </label>
-                </div>
+        <div className="row mh-50">
+          <div className="col-sm-12 mh-75">
+          <div className='row'>
+            <div className='col-sm-12 col-md-6 col-lg-6 card'>
+              <div id="svg-container" className='card-block pb-0'>
+                <ResizeObserver
+                  onResize={() => this.plotCalculations(true)}
+                />
+                <canvas style={{ position: 'absolute' }}>
+                </canvas>
+                <ReactSVG
+                  path="img/skyplot.svg"
+                  callback={svg => {
+                    svg.setAttribute('height', '100%');
+                    svg.setAttribute('width', '100%');
+                    svg.setAttribute('style', 'max-height: 400px;');
+                    svg.querySelector('#Combined-Shape').setAttribute('fill', '#88e885');
+                  }}
+                  className="skyplot"
+                />
               </div>
             </div>
-            <div className="card dashboard-table">
-              <table className="table table-striped">
-                <tbody>
-                  <tr>
-                    <th>Latitude</th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                      34.17833267
-                    </td>
-                  </tr>
-                  <tr>
-                    <th>Longitude</th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                      -118.34633750
-                    </td>
-                  </tr>
-                  <tr>
-                    <th>Altitude</th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                      189.500
-                    </td>
-                  </tr>
-                  <tr>
-                    <th>Fix Time</th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                      165258.000
-                    </td>
-                  </tr>
-                  <tr>
-                    <th>Geoid Hit</th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                      -32.600
-                    </td>
-                  </tr>
-                  <tr>
-                    <th>Quality</th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                      DgpsFix
-                    </td>
-                  </tr>
-                  <tr>
-                    <th>Fix Type</th>
-                    <td></td>
-                    <td>Fix3D</td>
-                    <td>VDOP</td>
-                    <td>
-                      2.33
-                    </td>
-                  </tr>
-                  <tr>
-                    <th>HDOP</th>
-                    <td></td>
-                    <td>1.25</td>
-                    <td>PDOP</td>
-                    <td>
-                      NaN
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+            
+            <div className='col-sm-12 col-md-6 col-lg-6 mb-4 background-white'>
+              <div className='row'>
+                <div className="row col-sm-6 col-md-6 col-lg-6">
+                  <div className="card-block">
+                    <img width="100%" height="auto" style={{
+                      maxHeight: "400px"
+                    }} className="spirit-level" src="img/spirit-level/Vectorillustration_design_4_no_bubble.png" alt=""/>
+                  </div>
+                  <div className="card-block">
+                    <label>In built GPS Active</label>
+                  </div>
+                </div>
+                <div className='card-block col-sm-6 col-md-6 col-lg-6'>
+                  <div className="form-group row">
+                    <label className="col-md-5 form-control-label mw-75" htmlFor="recordata">GPS Enabled</label>
+                    <label className="switch switch-3d switch-primary">
+                      <input
+                        type="checkbox"
+                        className="switch-input"
+                        checked={this.state.GPS}
+                        onClick={this.toggleGPS}/>
+                      <span className="switch-label"></span>
+                      <span className="switch-handle"></span>
+                    </label>
+                  </div>
+                  <div className="form-group row">
+                    <label className="col-md-5 form-control-label mw-75" htmlFor="recordata">Start Recording</label>
+                    <label className="switch switch-3d switch-primary">
+                      <input type="checkbox" className="switch-input"/>
+                      <span className="switch-label"></span>
+                      <span className="switch-handle"></span>
+                    </label>
+                  </div>
+                  <div className="form-group row">
+                    <label className="col-md-5 form-control-label mw-75" htmlFor="recordata">IMU Enabled</label>
+                    <label className="switch switch-3d switch-primary">
+                      <input
+                        type="checkbox"
+                        className="switch-input"
+                        checked={this.state.IMU}
+                        onClick={this.toggleIMU}/>
+                      <span className="switch-label"></span>
+                      <span className="switch-handle"></span>
+                    </label>
+                  </div>
+                  <div className="form-group row">
+                    <label className="col-md-5 form-control-label mw-75" htmlFor="recordata">Show GPS Data</label>
+                    <label className="switch switch-3d switch-primary">
+                      <input type="checkbox" className="switch-input"/>
+                      <span className="switch-label"></span>
+                      <span className="switch-handle"></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div className="card dashboard-table">
+                <table className="table table-striped">
+                  <tbody>
+                    <tr>
+                      <th>Latitude</th>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td>
+                        34.17833267
+                      </td>
+                    </tr>
+                    <tr>
+                      <th>Longitude</th>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td>
+                        -118.34633750
+                      </td>
+                    </tr>
+                    <tr>
+                      <th>Altitude</th>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td>
+                        189.500
+                      </td>
+                    </tr>
+                    <tr>
+                      <th>Fix Time</th>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td>
+                        165258.000
+                      </td>
+                    </tr>
+                    <tr>
+                      <th>Geoid Hit</th>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td>
+                        -32.600
+                      </td>
+                    </tr>
+                    <tr>
+                      <th>Quality</th>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td>
+                        DgpsFix
+                      </td>
+                    </tr>
+                    <tr>
+                      <th>Fix Type</th>
+                      <td></td>
+                      <td>Fix3D</td>
+                      <td>VDOP</td>
+                      <td>
+                        2.33
+                      </td>
+                    </tr>
+                    <tr>
+                      <th>HDOP</th>
+                      <td></td>
+                      <td>1.25</td>
+                      <td>PDOP</td>
+                      <td>
+                        NaN
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
-        </div>
-        <div className='row'>
-          <div className='col-sm-12 card card-inverse'>
-            <div className='card-block pb-0'>
-              <div className='btn-group float-right'>
-                <Dropdown isOpen={this.state.card4} toggle={() => {
-                  this.setState({ card4: !this.state.card4 });
-                }}>
-                  <button onClick={() => {
+          </div>
+          <div className='col-sm-12 mh-25'>
+          <div className='row'>
+            <div className='col-sm-12 card card-inverse'>
+              <div className='card-block pb-0'>
+                <div className='btn-group float-right'>
+                  <Dropdown isOpen={this.state.card4} toggle={() => {
                     this.setState({ card4: !this.state.card4 });
-                  }} className='btn btn-transparent active dropdown-toggle p-0' data-toggle='dropdown' aria-haspopup='true' aria-expanded={this.state.card4}>
-                    <i className='icon-settings'></i>
-                  </button>
-                  <DropdownMenu>
-                    <DropdownItem>Action</DropdownItem>
-                    <DropdownItem>Another action</DropdownItem>
-                    <DropdownItem>Something else here</DropdownItem>
-                  </DropdownMenu>
-                </Dropdown>
+                  }}>
+                    <button onClick={() => {
+                      this.setState({ card4: !this.state.card4 });
+                    }} className='btn btn-transparent active dropdown-toggle p-0' data-toggle='dropdown' aria-haspopup='true' aria-expanded={this.state.card4}>
+                      <i className='icon-settings'></i>
+                    </button>
+                    <DropdownMenu>
+                      <DropdownItem>Action</DropdownItem>
+                      <DropdownItem>Another action</DropdownItem>
+                      <DropdownItem>Something else here</DropdownItem>
+                    </DropdownMenu>
+                  </Dropdown>
+                </div>
+                <h4 className='mb-0'>9.823</h4>
+                <p>Members online</p>
               </div>
-              <h4 className='mb-0'>9.823</h4>
-              <p>Members online</p>
+              <div className='chart-wrapper px-3'>
+                <Bar data={this.state.graphData}
+                     options={options}
+                />
+              </div>
             </div>
-            <div className='chart-wrapper px-3'>
-              <Bar data={this.state.graphData}
-                   options={options}
-              />
-            </div>
+          </div>
           </div>
         </div>
       </div>
