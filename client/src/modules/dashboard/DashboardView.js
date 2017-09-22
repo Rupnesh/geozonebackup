@@ -45,6 +45,8 @@ class Dashboard extends Component {
     GPS: true,
     IMU: true
   };
+  satelliteData = null;
+  tpvData = null;
   
   constructor(props) {
     super(props);
@@ -98,16 +100,13 @@ class Dashboard extends Component {
   
   updateSatellites(data) {
     console.log('SATELITE = ', data);
-    this.setState({
-      satelliteData: data
-    });
+    this.satelliteData = data;
+    this.plotCalculations();
   }
   
   updateTPV(data) {
     console.log('TPV = ', data);
-    this.setState({
-      satelliteTPV: data
-    });
+    this.tpvData = data;
   }
   
   toggleGPS() {
@@ -127,8 +126,9 @@ class Dashboard extends Component {
       IMU: !this.state.IMU
     });
   }
+
   plotCalculations = () => {
-    const data = this.state.satelliteData;
+    const data = this.satelliteData;
   
     if (!data) {
       return;
@@ -231,7 +231,6 @@ class Dashboard extends Component {
   };
   
   render() {
-    setTimeout(this.plotCalculations, 0);
     return (
       <div className='animated fadeIn'>
         <div className='row'>
@@ -249,6 +248,7 @@ class Dashboard extends Component {
                   svg.setAttribute('width', '100%');
                   svg.setAttribute('style', 'max-height: 550px;');
                   svg.querySelector('#Combined-Shape').setAttribute('fill', '#88e885');
+                  this.plotCalculations();
                 }}
                 className="skyplot"
               />
