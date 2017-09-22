@@ -202,10 +202,14 @@ class Dashboard extends PureComponent {
     
     const svx = [];
     const svy = [];
-    
+    let index = 0;
+
     for (let i = 0; i < azi.length; i++) {
-      svx[i] = r[i] * Math.sin(a[i]);
-      svy[i] = r[i] * Math.cos(a[i]);
+      if (data.satellites[i].used) {
+        svx[index] = r[i] * Math.sin(a[i]);
+        svy[index] = r[i] * Math.cos(a[i]);
+        index++;
+      }
     }
     
     const sameData = this.arraysEqual(data.satellites, this.oldSatellites, (a, b) => {
@@ -236,7 +240,7 @@ class Dashboard extends PureComponent {
     //cx.scale(1,-1);          // Make y grow up rather than down
   
     const sizeOffest = canvas.clientHeight / 200;
-    const imageSizeOffset = canvas.clientHeight / 600;
+    const imageSizeOffset = canvas.clientHeight / 700;
   
     function drawImage(cx, img, x, y, width, height) {
       let opacity = 0;
@@ -273,10 +277,11 @@ class Dashboard extends PureComponent {
     let values = [];
     
     if (data) {
-      data.satellites.sort((a, b) => {
+      const satellites = [...data.satellites];
+      satellites.sort((a, b) => {
         return a['PRN'] - b['PRN'];
       });
-      data.satellites.forEach((satellite) => {
+      satellites.forEach((satellite) => {
         labels.push(satellite['PRN']);
         values.push(satellite['ss']);
       });
@@ -304,8 +309,8 @@ class Dashboard extends PureComponent {
     setTimeout(this.plotCalculations, 0);
     return (
       <div className='animated fadeIn'>
-        <div className="row mh-50">
-          <div className="col-sm-12 mh-75">
+        <div className="row">
+          <div className="col-sm-12">
           <div className='row'>
             <div className='col-sm-12 col-md-6 col-lg-6 card'>
               <div id="svg-container" className='card-block pb-0'>
@@ -463,7 +468,7 @@ class Dashboard extends PureComponent {
             </div>
           </div>
           </div>
-          <div className='col-sm-12 mh-25'>
+          <div className='col-sm-12'>
           <div className='row'>
             <div className='col-sm-12 card card-inverse'>
               <div className='card-block pb-0'>
