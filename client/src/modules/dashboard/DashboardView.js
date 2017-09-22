@@ -156,7 +156,7 @@ class Dashboard extends PureComponent {
     return true;
   }
   
-  plotCalculations = () => {
+  plotCalculations = (onResize) => {
     const data = this.satelliteData;
     
     if (!data) {
@@ -213,40 +213,39 @@ class Dashboard extends PureComponent {
       return !(a['PRN'] == b['PRN'] && a['az'] == b['az'] && a['el'] == b['el']);
     });
     
-    if (sameData) {
+    if (sameData && !onResize) {
       return;
     }
     
     this.oldSatellites = data.satellites;
+  
+    const canvas = document.querySelector("canvas");
+    const cx = canvas.getContext("2d");
+    const svg = document.querySelector('svg');
+  
+    if (!svg) {
+      return;
+    }
+  
+    console.log('Changed');
+    cx.canvas.height = svg.height.baseVal.value;
+    cx.canvas.width = svg.width.baseVal.value;
+  
+    cx.clearRect(0, 0, canvas.width, canvas.height);
+    cx.translate(canvas.clientWidth / 2, canvas.clientHeight / 2);   // Move (0,0) to (180, 184)
+    //cx.scale(1,-1);          // Make y grow up rather than down
+  
+    const sizeOffest = canvas.clientHeight / 200;
+    const imageSizeOffset = canvas.clientHeight / 600;
+  
+    for (let i = 0; i < svx.length; i++) {
+      let newImage = new Image();
     
-    setTimeout(() => {
-      const canvas = document.querySelector("canvas");
-      const cx = canvas.getContext("2d");
-      const svg = document.querySelector('svg');
-      
-      if (!svg) {
-        return;
-      }
-      
-      console.log('Changed');
-      cx.canvas.height = svg.height.baseVal.value;
-      cx.canvas.width = svg.width.baseVal.value;
-      
-      cx.translate(canvas.clientWidth / 2, canvas.clientHeight / 2);   // Move (0,0) to (180, 184)
-      //cx.scale(1,-1);          // Make y grow up rather than down
-      
-      const sizeOffest = canvas.clientHeight / 200;
-      const imageSizeOffset = canvas.clientHeight / 600;
-      
-      for (let i = 0; i < svx.length; i++) {
-        let newImage = new Image();
-        
-        newImage.onload = () => {
-          cx.drawImage(newImage, (svx[i] - 10) * sizeOffest, -(svy[i] + 15) * sizeOffest, newImage.width * imageSizeOffset, newImage.height * imageSizeOffset);
-        };
-        newImage.src = 'img/icons/' + getImageSrc(prn[i]);
-      }
-    }, 500);
+      newImage.onload = () => {
+        cx.drawImage(newImage, (svx[i] - 10) * sizeOffest, -(svy[i] + 15) * sizeOffest, newImage.width * imageSizeOffset, newImage.height * imageSizeOffset);
+      };
+      newImage.src = 'img/icons/' + getImageSrc(prn[i]);
+    }
   };
   
   populateGraphData = () => {
@@ -287,7 +286,7 @@ class Dashboard extends PureComponent {
           <div className='col-sm-12 col-md-6 col-lg-6 card'>
             <div id="svg-container" className='card-block pb-0'>
               <ResizeObserver
-                onResize={this.plotCalculations}
+                onResize={() => this.plotCalculations(true)}
               />
               <canvas style={{ position: 'absolute' }}>
               </canvas>
