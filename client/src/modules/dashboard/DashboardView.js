@@ -1,5 +1,5 @@
 import ReactSVG from 'react-svg';
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Bar, Line } from 'react-chartjs-2';
 import { socketConnect } from 'socket.io-react';
 import { Dropdown, DropdownMenu, DropdownItem, Progress } from 'reactstrap';
@@ -39,14 +39,29 @@ const options = {
   }
 };
 
-class Dashboard extends Component {
+class Dashboard extends PureComponent {
   
   state = {
     GPS: true,
-    IMU: false
+    IMU: false,
+    graphData : {
+      labels: [],
+      datasets: [
+        {
+          label: 'Signal to Noise Ratio',
+          backgroundColor: 'rgba(0,255,0,0.2)',
+          borderColor: 'rgba(0,255,0,1)',
+          borderWidth: 1,
+          hoverBackgroundColor: 'rgba(0,255,0,0.4)',
+          hoverBorderColor: 'rgba(0,255,0,1)',
+          data: []
+        }
+      ]
+    }
   };
   satelliteData = null;
   tpvData = null;
+  oldSatellites = [];
   
   constructor(props) {
     super(props);
@@ -86,7 +101,6 @@ class Dashboard extends Component {
   }
   
   handleGPSJSONData(data) {
-    console.log(JSON.parse(data));
     const parsedData = JSON.parse(data);
     switch (parsedData.class) {
       case 'SKY':
@@ -99,8 +113,9 @@ class Dashboard extends Component {
   }
   
   updateSatellites(data) {
-    // console.log('SATELITE = ', data);
+    console.log('SATELITE = ', data.satellites);
     this.satelliteData = data;
+    this.populateGraphData();
     this.plotCalculations();
   }
   
@@ -126,7 +141,21 @@ class Dashboard extends Component {
       IMU: !this.state.IMU
     });
   }
-
+  
+  arraysEqual(a, b) {
+    if (a === b) return true;
+    if (a == null || b == null) return false;
+    if (a.length != b.length) return false;
+    
+    // If you don't care about the order of the elements inside
+    // the array, you should sort both arrays here.
+    
+    for (var i = 0; i < a.length; ++i) {
+      if (a[i] !== b[i]) return false;
+    }
+    return true;
+  }
+  
   plotCalculations = () => {
     const data = this.satelliteData;
   
@@ -149,6 +178,11 @@ class Dashboard extends Component {
       azi.push(satellite['az']);
       el.push(satellite['el']);
     });
+    /*const prn = [14, 18, 1, 9, 12, 30, 22, 32, 5, 31];               //Satellite PRN
+  
+    const azi = [55, 135.2, -83, 49, 95, 135, 159, -56, 116, -145];  //Azimuth in degrees
+  
+    const el = [69, 35, 40, 30, 30, 24, 78, 62, 32, 22];             //Elevation angle in degrees*/
     
     // Plot Figure
     
@@ -173,7 +207,7 @@ class Dashboard extends Component {
       svx[i] = r[i] * Math.sin(a[i]);
       svy[i] = r[i] * Math.cos(a[i]);
     }
-    
+
     const canvas = document.querySelector("canvas");
     const cx = canvas.getContext("2d");
     const svg = document.querySelector('svg');
@@ -181,8 +215,7 @@ class Dashboard extends Component {
     if (!svg) {
       return;
     }
-    
-    //canvas.style.position = 'absolute';
+
     cx.canvas.height = svg.height.baseVal.value;
     cx.canvas.width = svg.width.baseVal.value;
     
@@ -190,7 +223,7 @@ class Dashboard extends Component {
     //cx.scale(1,-1);          // Make y grow up rather than down
     
     const sizeOffest = canvas.clientHeight / 200;
-    const imageSizeOffset = canvas.clientHeight / 400;
+    const imageSizeOffset = canvas.clientHeight / 600;
     
     for (let i = 0; i < svx.length; i++) {
       let newImage = new Image();
@@ -202,8 +235,8 @@ class Dashboard extends Component {
     }
   };
   
-  getGraphData = () => {
-    const data = this.state.satelliteData;
+  populateGraphData = () => {
+    const data = this.satelliteData;
     const labels = [];
     const values = [];
 
@@ -213,24 +246,27 @@ class Dashboard extends Component {
         values.push(satellite['ss']);
       });
     }
-
-    return {
-      labels: labels,
-      datasets: [
-        {
-          label: 'Signal to Noise Ratio',
-          backgroundColor: 'rgba(0,255,0,0.2)',
-          borderColor: 'rgba(0,255,0,1)',
-          borderWidth: 1,
-          hoverBackgroundColor: 'rgba(0,255,0,0.4)',
-          hoverBorderColor: 'rgba(0,255,0,1)',
-          data: values
-        }
-      ]
-    };
+  
+    this.setState({
+      graphData: {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Signal to Noise Ratio',
+            backgroundColor: 'rgba(0,255,0,0.2)',
+            borderColor: 'rgba(0,255,0,1)',
+            borderWidth: 1,
+            hoverBackgroundColor: 'rgba(0,255,0,0.4)',
+            hoverBorderColor: 'rgba(0,255,0,1)',
+            data: values
+          }
+        ]
+      }
+    });
   };
   
   render() {
+    setTimeout(this.plotCalculations, 0);
     return (
       <div className='animated fadeIn'>
         <div className='row'>
@@ -248,7 +284,6 @@ class Dashboard extends Component {
                   svg.setAttribute('width', '100%');
                   svg.setAttribute('style', 'max-height: 550px;');
                   svg.querySelector('#Combined-Shape').setAttribute('fill', '#88e885');
-                  this.plotCalculations();
                 }}
                 className="skyplot"
               />
@@ -411,7 +446,7 @@ class Dashboard extends Component {
               <p>Members online</p>
             </div>
             <div className='chart-wrapper px-3'>
-              <Bar data={this.getGraphData}
+              <Bar data={this.state.graphData}
                    options={options}
               />
             </div>
