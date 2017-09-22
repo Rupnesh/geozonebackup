@@ -11,7 +11,7 @@ class HeaderView extends Component {
     this.toggle = this.toggle.bind(this);
     this.logout = this.logout.bind(this);
   
-    this.props.getUserData();
+    //this.props.getUserData();
     
     this.state = {
       dropdownOpen: false

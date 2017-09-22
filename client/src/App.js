@@ -22,7 +22,7 @@ class App extends Component {
   
     configureDefaults();
 
-    if (authData.token) {
+    /*if (authData.token) {
       verifyTokenAvailability(authData.token)
         .then(() => {
           history.push('/dashboard')
@@ -32,7 +32,8 @@ class App extends Component {
         });
     } else {
       history.push('/login')
-    }
+    }*/
+    history.push('/dashboard')
   }
   
   render() {
