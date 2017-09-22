@@ -46,7 +46,7 @@ module.exports = function listen(app) {
       .then((ch) => {
         // connect to the following channels and yield data
         ampq.start(ch, 'GPSJSON');
-        ampq.start(ch, 'IMU_1');
+        //ampq.start(ch, 'IMU_1');
       })
       .catch(() => {});
   }, 1000);

@@ -43,7 +43,7 @@ class Dashboard extends Component {
   
   state = {
     GPS: true,
-    IMU: true
+    IMU: false
   };
   satelliteData = null;
   tpvData = null;
@@ -81,12 +81,12 @@ class Dashboard extends Component {
   }
   
   handleIMU1Data(data) {
-    console.log('IMU = ', data);
+    // console.log('IMU = ', data);
     // this.updateTable(data);
   }
   
   handleGPSJSONData(data) {
-    // console.log(JSON.parse(data));
+    console.log(JSON.parse(data));
     const parsedData = JSON.parse(data);
     switch (parsedData.class) {
       case 'SKY':
@@ -99,13 +99,13 @@ class Dashboard extends Component {
   }
   
   updateSatellites(data) {
-    console.log('SATELITE = ', data);
+    // console.log('SATELITE = ', data);
     this.satelliteData = data;
     this.plotCalculations();
   }
   
   updateTPV(data) {
-    console.log('TPV = ', data);
+    // console.log('TPV = ', data);
     this.tpvData = data;
   }
   
