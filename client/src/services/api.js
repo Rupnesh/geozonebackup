@@ -149,7 +149,11 @@ export const loginToWifiRequest = (username, password) => {
 };
 
 export const configureDefaults = async () => {
-  axios.defaults.baseURL = 'http://localhost:8080/v1';
+  let URL = `http://${window.location.hostname}:8080`;
+  if (process.env.NODE_ENV === 'production') {
+    URL = `http://${window.location.hostname}:${window.location.port}`;
+  }
+  axios.defaults.baseURL = `${URL}/v1`;
   const data = auth.get();
   axios.defaults.headers.common.Authorization = `Bearer ${data.token}`;
   axios.defaults.headers.post['Content-Type'] = 'application/json';
