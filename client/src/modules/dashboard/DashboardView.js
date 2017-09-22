@@ -32,8 +32,8 @@ function getImageSrc(nr) {
 }
 
 const options = {
-  //maintainAspectRatio: false,
-  //responsive: true,
+  maintainAspectRatio: false,
+  responsive: true,
   tooltips: {
     mode: 'label'
   }
@@ -464,7 +464,7 @@ class Dashboard extends PureComponent {
           </div>
         </div>
         <div className='col-sm-12'>
-          <divclassName='row'>
+          <div className='row'>
           <div className='col-sm-12 card card-inverse'>
             <div style={{maxHeight: '200px', position:'relative'}} className='chart-wrapper px-3'>
               <Bar data={this.state.graphData}
