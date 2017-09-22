@@ -87,12 +87,8 @@ class Dashboard extends PureComponent {
   
   componentWillUnmount() {
     const { socket } = this.props;
-    if (this.state.GPS === true) {
-      socket && socket.emit('unsubscribe', 'GPSJSON');
-    }
-    if (this.state.IMU === true) {
-      socket && socket.emit('unsubscribe', 'IMU_1');
-    }
+    socket && socket.emit('unsubscribe', 'GPSJSON');
+    socket && socket.emit('unsubscribe', 'IMU_1');
   }
   
   handleIMU1Data(data) {
@@ -102,6 +98,7 @@ class Dashboard extends PureComponent {
   
   handleGPSJSONData(data) {
     const parsedData = JSON.parse(data);
+    // console.log(parsedData);
     switch (parsedData.class) {
       case 'SKY':
         this.updateSatellites(parsedData);
