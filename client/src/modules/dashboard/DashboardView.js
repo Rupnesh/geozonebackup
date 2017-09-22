@@ -273,6 +273,9 @@ class Dashboard extends PureComponent {
     let values = [];
     
     if (data) {
+      data.satellites.sort((a, b) => {
+        return a['PRN'] - b['PRN'];
+      });
       data.satellites.forEach((satellite) => {
         labels.push(satellite['PRN']);
         values.push(satellite['ss']);
