@@ -307,7 +307,7 @@ class Dashboard extends PureComponent {
     return (
       <div className='animated fadeIn'>
         <div className='row'>
-          <div style={{maxHeight: '500px', position:'relative'}} className='col-sm-12 col-md-6 col-lg-6 card'>
+          <div style={{maxHeight: '550px', position:'relative', border: 0}} className='col-sm-12 col-md-6 col-lg-6 card'>
             <div id="svg-container" className='card-block pb-0'>
               <ResizeObserver
                 onResize={() => this.plotCalculations(true)}
@@ -327,7 +327,7 @@ class Dashboard extends PureComponent {
             </div>
           </div>
         
-          <div style={{maxHeight: '500px', position:'relative'}} className='col-sm-12 col-md-6 col-lg-6 mb-4 background-white'>
+          <div style={{position:'relative'}} className='col-sm-12 col-md-6 col-lg-6 mb-4 background-white'>
             <div className='row'>
               <div className="row col-sm-6 col-md-6 col-lg-6">
                 <div className="card-block">
