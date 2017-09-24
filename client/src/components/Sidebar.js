@@ -30,59 +30,59 @@ class Sidebar extends Component {
               Settings
             </li>
             <li className={this.activeRoute('/connection')}>
-              <a className='nav-link nav-dropdown-toggle' href='#' onClick={this.handleClick}><i className='icon-puzzle'></i> Connection</a>
+              <a className='nav-link nav-dropdown-toggle' href='#' onClick={this.handleClick}><i className='fa fa-plug'></i> Connection</a>
               <ul className='nav-dropdown-items'>
                 <li className='nav-item'>
-                  <NavLink to={'/connection/wifi'} className='nav-link' activeClassName='active'><i className='icon-puzzle'></i> WiFi</NavLink>
+                  <NavLink to={'/connection/wifi'} className='nav-link' activeClassName='active'>WiFi</NavLink>
                 </li>
                 <li className='nav-item'>
-                  <NavLink to={'/connection/bluetooth'} className='nav-link' activeClassName='active'><i className='icon-puzzle'></i> BlueTooth</NavLink>
+                  <NavLink to={'/connection/bluetooth'} className='nav-link' activeClassName='active'>BlueTooth</NavLink>
                 </li>
                 <li className='nav-item'>
-                  <NavLink to={'/connection/cable'} className='nav-link' activeClassName='active'><i className='icon-puzzle'></i> RS232-Cable</NavLink>
+                  <NavLink to={'/connection/cable'} className='nav-link' activeClassName='active'>RS232-Cable</NavLink>
                 </li>
               </ul>
             </li>
             <li className={this.activeRoute('/gps')}>
-              <a className='nav-link nav-dropdown-toggle' href='#' onClick={this.handleClick}><i className='icon-star'></i> GPS</a>
+              <a className='nav-link nav-dropdown-toggle' href='#' onClick={this.handleClick}><i className="fa fa-location-arrow"></i> GPS</a>
               <ul className='nav-dropdown-items'>
                 <li className='nav-item'>
-                  <NavLink to={'/gps/main'} className='nav-link' activeClassName='active'><i className='icon-star'></i> Main</NavLink>
+                  <NavLink to={'/gps/main'} className='nav-link' activeClassName='active'>Main</NavLink>
                 </li>
                 <li className='nav-item'>
-                  <NavLink to={'/gps/device'} className='nav-link' activeClassName='active'><i className='icon-star'></i> Device</NavLink>
+                  <NavLink to={'/gps/device'} className='nav-link' activeClassName='active'>Device</NavLink>
                 </li>
                 <li className='nav-item'>
-                  <NavLink to={'/gps/calibration'} className='nav-link' activeClassName='active'><i className='icon-star'></i> Calibration</NavLink>
+                  <NavLink to={'/gps/calibration'} className='nav-link' activeClassName='active'>Calibration</NavLink>
                 </li>
                 <li className='nav-item'>
-                  <NavLink to={'/gps/radios'} className='nav-link' activeClassName='active'><i className='icon-star'></i> Radios</NavLink>
+                  <NavLink to={'/gps/radios'} className='nav-link' activeClassName='active'>Radios</NavLink>
                 </li>
                 <li className='nav-item'>
-                  <NavLink to={'/gps/ntrip'} className='nav-link' activeClassName='active'><i className='icon-star'></i> NTRIP</NavLink>
+                  <NavLink to={'/gps/ntrip'} className='nav-link' activeClassName='active'>NTRIP</NavLink>
                 </li>
                 <li className='nav-item'>
-                  <NavLink to={'/gps/senzors'} className='nav-link' activeClassName='active'><i className='icon-star'></i> Senzors</NavLink>
+                  <NavLink to={'/gps/senzors'} className='nav-link' activeClassName='active'>Senzors</NavLink>
                 </li>
                 <li className='nav-item'>
-                  <NavLink to={'/gps/firmware'} className='nav-link' activeClassName='active'><i className='icon-star'></i> Firmware</NavLink>
+                  <NavLink to={'/gps/firmware'} className='nav-link' activeClassName='active'> Firmware</NavLink>
                 </li>
                 <li className='nav-item'>
-                  <NavLink to={'/gps/starfire'} className='nav-link' activeClassName='active'><i className='icon-star'></i> StarFire</NavLink>
+                  <NavLink to={'/gps/starfire'} className='nav-link' activeClassName='active'>StarFire</NavLink>
                 </li>
                 <li className='nav-item'>
-                  <NavLink to={'/gps/basecord'} className='nav-link' activeClassName='active'><i className='icon-star'></i> Base Cord</NavLink>
+                  <NavLink to={'/gps/basecord'} className='nav-link' activeClassName='active'>Base Cord</NavLink>
                 </li>
                 <li className='nav-item'>
-                  <NavLink to={'/gps/logdata'} className='nav-link' activeClassName='active'><i className='icon-star'></i> Log Data</NavLink>
+                  <NavLink to={'/gps/logdata'} className='nav-link' activeClassName='active'>Log Data</NavLink>
                 </li>
               </ul>
             </li>
             <li className='nav-item'>
-              <NavLink to={'/cloud'} className='nav-link' activeClassName='active'><i className='icon-calculator'></i> Cloud</NavLink>
+              <NavLink to={'/cloud'} className='nav-link' activeClassName='active'><i className="fa fa-cloud"></i> Cloud</NavLink>
             </li>
             <li className='nav-item'>
-              <NavLink to={'/survey'} className='nav-link' activeClassName='active'><i className='icon-pie-chart'></i> Survey</NavLink>
+              <NavLink to={'/survey'} className='nav-link' activeClassName='active'><i className='fa fa-question'></i> Survey</NavLink>
             </li>
             <li className='divider'></li>
           </ul>
