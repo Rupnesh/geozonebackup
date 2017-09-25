@@ -57,10 +57,12 @@ class Dashboard extends PureComponent {
           data: []
         }
       ]
-    }
+    },
+    tpvData: null
   };
   satelliteData = null;
-  tpvData = null;
+  spiritLevelData = null;
+  imuData = null;
   oldSatellites = [];
   
   constructor(props) {
@@ -93,7 +95,10 @@ class Dashboard extends PureComponent {
   
   handleIMU1Data(data) {
     // console.log('IMU = ', data);
-    // this.updateTable(data);
+    if (data !== JSON.stringify(this.imuData)) {
+      this.imuData = JSON.parse(data);
+      this.spiritLevelCalculations();
+    }
   }
   
   handleGPSJSONData(data) {
@@ -118,7 +123,40 @@ class Dashboard extends PureComponent {
   
   updateTPV(data) {
     // console.log('TPV = ', data);
-    this.tpvData = data;
+    this.updateTableData(data);
+  }
+  
+  updateTableData(data) {
+    if (!this.satelliteData) {
+      return;
+    }
+    
+    const
+      //Fix type depends on mode: %d, 0=no mode value yet seen, 1=no fix, 2=2D, 3=3D.
+      fixType = {
+        0: 'No mode',
+        1: 'No fix',
+        2: 'Fix2D',
+        3: 'Fix3D'
+      },
+      tableData = {
+        'alt': data['alt'],
+        'lon': data['lon'],
+        'lat': data['lat'],
+        'vdop': this.satelliteData['vdop'],
+        'hdop': this.satelliteData['hdop'],
+        'pdop': this.satelliteData['pdop'],
+        'geoid': (-32.6).toFixed(4),
+        'fixTime': data['time'] ? new Date(data['time']).getTime() : "",
+        'fixType': fixType[data['mode']],
+        'quality': data['status'] === 2 ? 'DGPS fix' : 'Not Present'
+      };
+    
+    if (JSON.stringify(tableData) !== JSON.stringify(this.state.tableData)) {
+      this.setState({
+        tableData: tableData
+      });
+    }
   }
   
   toggleGPS() {
@@ -200,7 +238,7 @@ class Dashboard extends PureComponent {
     const svx = [];
     const svy = [];
     let index = 0;
-
+    
     for (let i = 0; i < azi.length; i++) {
       if (data.satellites[i].used) {
         svx[index] = r[i] * Math.sin(a[i]);
@@ -219,44 +257,44 @@ class Dashboard extends PureComponent {
     }
     
     this.oldSatellites = data.satellites;
-  
-    const canvas = document.querySelector("canvas");
+    
+    const canvas = document.querySelector("#svg-container canvas");
     const cx = canvas.getContext("2d");
     const svg = document.querySelector('svg');
-  
+    
     if (!svg) {
       return;
     }
-  
+    
     console.log('Changed');
     cx.canvas.height = svg.height.baseVal.value;
     cx.canvas.width = svg.width.baseVal.value;
-  
+    
     cx.clearRect(0, 0, canvas.width, canvas.height);
     cx.translate(canvas.clientWidth / 2, canvas.clientHeight / 2);   // Move (0,0) to (180, 184)
     //cx.scale(1,-1);          // Make y grow up rather than down
-  
+    
     const sizeOffest = canvas.clientHeight / 200;
     const imageSizeOffset = canvas.clientHeight / 700;
-  
+    
     function drawImage(cx, img, x, y, width, height) {
       let opacity = 0;
-  
+      
       (function fadeIn() {
         cx.globalAlpha = opacity;
         cx.drawImage(img, x, y, width, height);
         opacity += 0.02;
-
+        
         if (opacity < 1) {
           requestAnimationFrame(fadeIn);
         }
       })();
-
+      
     }
     
     for (let i = 0; i < svx.length; i++) {
       let newImage = new Image();
-    
+      
       newImage.onload = () => {
         if (onResize) {
           cx.drawImage(newImage, (svx[i] - 10) * sizeOffest, -(svy[i] + 15) * sizeOffest, newImage.width * imageSizeOffset, newImage.height * imageSizeOffset);
@@ -265,6 +303,88 @@ class Dashboard extends PureComponent {
         }
       };
       newImage.src = 'img/icons/' + getImageSrc(prn[i]);
+    }
+  };
+  
+  spiritLevelCalculations() {
+    const data = this.imuData;
+    const canvas = document.querySelector('#spirit-level-container canvas');
+    const cx = canvas.getContext("2d");
+    const hSlideLimit = [29,79];
+    const vSlideLimit = [18,72];
+    const ChSlideLimit = [44,83];
+    const CvSlideLimit = [14,63];
+    const angleLimit = 90;
+    const ACC_LPF_FACTOR = 0.3;
+    const CFangleX = data['cfangleX'];
+    const CFangleY = data['cfangleY'];
+    const CFangleZ = data['cfangleZ'];
+    
+    function scaleH(value) {
+      const min = -angleLimit;
+      const max = angleLimit;
+      const minScale = hSlideLimit[0];
+      const maxScale = hSlideLimit[1];
+      return minScale + (value - min) / (max - min) * (maxScale - minScale);
+    }
+    
+    function scaleV(value) {
+      const min = -angleLimit;
+      const max = angleLimit;
+      const minScale = vSlideLimit[0];
+      const maxScale = vSlideLimit[1];
+      return minScale + (value - min) / (max - min) * (maxScale - minScale);
+    }
+    
+    //#These two are used to scale the value appropriately for the bubble within the circle
+    function scaleCH(value) {
+      const min = -angleLimit;
+      const max = angleLimit;
+      const minScale = ChSlideLimit[0];
+      const maxScale = ChSlideLimit[1] - 36;	//#36 is the width of the bubble
+      return minScale + (value - min) / (max - min) * (maxScale - minScale);
+    }
+    
+    function scaleCV(value) {
+      const min = -angleLimit;
+      const max = angleLimit;
+      const minScale = CvSlideLimit[0];
+      const maxScale = CvSlideLimit[1] - 36;		//#36 is the width of the bubble
+      return minScale + (value - min) / (max - min) * (maxScale - minScale);
+    }
+    
+    function is_in_circle(circle_x, circle_y, r, x, y) {
+      const d = Math.sqrt((x - circle_x) ** 2 + (y - circle_y) ** 2);
+      
+      return d <= r;
+    }
+    
+    const hBposition = [parseInt(scaleH(CFangleX)), 115];
+    const vBposition = [250, parseInt(scaleV(CFangleY))];
+    const newcBposition = [parseInt(scaleCH(CFangleX)), parseInt(scaleCV(CFangleY))];
+    let cBposition;
+    
+    //#confirm that center bubble is within the circle;
+    if (is_in_circle(181, 117, 90, newcBposition[0], newcBposition[1])) {
+      cBposition = newcBposition
+    }
+
+    const newData = {
+      hBposition: hBposition,
+      vBposition: vBposition,
+      cBposition: cBposition
+    };
+    
+    if (JSON.stringify(newData) !== JSON.stringify(this.spiritLevelData)) {
+      let newImage = new Image();
+      
+      this.spiritLevelData = newData;
+      newImage.onload = () => {
+        cx.clearRect(0, 0, canvas.width, canvas.height);
+        cx.drawImage(newImage, newData['hBposition'][0], newData['hBposition'][1], 38, 38);
+        cx.drawImage(newImage, newData['vBposition'][0], newData['vBposition'][1], 38, 38);
+      };
+      newImage.src = "img/spirit-level/Vectorillustration_design_4_center_bubble.png";
     }
   };
   
@@ -307,7 +427,11 @@ class Dashboard extends PureComponent {
     return (
       <div className='animated fadeIn'>
         <div className='row'>
-          <div style={{maxHeight: '550px', position:'relative', border: 0}} className='col-sm-12 col-md-6 col-lg-6 card'>
+          <div style={{
+            maxHeight: '550px',
+            position: 'relative',
+            border: 0
+          }} className='col-sm-12 col-md-6 col-lg-6 card'>
             <div id="svg-container" className='card-block pb-0'>
               <ResizeObserver
                 onResize={() => this.plotCalculations(true)}
@@ -326,12 +450,24 @@ class Dashboard extends PureComponent {
               />
             </div>
           </div>
-        
-          <div style={{position:'relative'}} className='col-sm-12 col-md-6 col-lg-6 mb-4 background-white'>
+          
+          <div style={{ position: 'relative' }} className='col-sm-12 col-md-6 col-lg-6 mb-4 background-white'>
             <div className='row'>
               <div className="row col-sm-6 col-md-6 col-lg-6">
-                <div className="card-block">
-                  <img style={{maxHeight: '150px', position:'relative'}} className="spirit-level" src="img/spirit-level/Vectorillustration_design_4_no_bubble.png" alt=""/>
+                <div id="spirit-level-container" className="card-block">
+                  <canvas style={{
+                    height: '150px',
+                    width: '150px',
+                    position: 'absolute',
+                    top: '1.25rem',
+                    left: '2.25rem',
+                    zIndex: '2'
+                  }}>
+                  </canvas>
+                  <img style={{
+                    maxHeight: '150px',
+                    position: 'relative'
+                  }} className="spirit-level" src="img/spirit-level/Vectorillustration_design_4_no_bubble.png" alt=""/>
                 </div>
                 <div className="card-block">
                   <label>In built GPS Active</label>
@@ -389,7 +525,7 @@ class Dashboard extends PureComponent {
                     <td></td>
                     <td></td>
                     <td>
-                      34.17833267
+                      {this.state.tableData ? this.state.tableData.lat : ""}
                     </td>
                   </tr>
                   <tr>
@@ -398,7 +534,7 @@ class Dashboard extends PureComponent {
                     <td></td>
                     <td></td>
                     <td>
-                      -118.34633750
+                      {this.state.tableData ? this.state.tableData.lon : ""}
                     </td>
                   </tr>
                   <tr>
@@ -407,7 +543,7 @@ class Dashboard extends PureComponent {
                     <td></td>
                     <td></td>
                     <td>
-                      189.500
+                      {this.state.tableData ? this.state.tableData.alt : ""}
                     </td>
                   </tr>
                   <tr>
@@ -416,7 +552,7 @@ class Dashboard extends PureComponent {
                     <td></td>
                     <td></td>
                     <td>
-                      165258.000
+                      {this.state.tableData ? this.state.tableData.fixTime : ""}
                     </td>
                   </tr>
                   <tr>
@@ -425,7 +561,7 @@ class Dashboard extends PureComponent {
                     <td></td>
                     <td></td>
                     <td>
-                      -32.600
+                      {this.state.tableData ? this.state.tableData.geoid : ""}
                     </td>
                   </tr>
                   <tr>
@@ -434,16 +570,18 @@ class Dashboard extends PureComponent {
                     <td></td>
                     <td></td>
                     <td>
-                      DgpsFix
+                      {this.state.tableData ? this.state.tableData.quality : ""}
                     </td>
                   </tr>
                   <tr>
                     <th>Fix Type</th>
                     <td></td>
-                    <td>Fix3D</td>
+                    <td>
+                      {this.state.tableData ? this.state.tableData.fixType : ""}
+                    </td>
                     <td>VDOP</td>
                     <td>
-                      2.33
+                      {this.state.tableData ? this.state.tableData.vdop : ""}
                     </td>
                   </tr>
                   <tr>
@@ -452,7 +590,7 @@ class Dashboard extends PureComponent {
                     <td>1.25</td>
                     <td>PDOP</td>
                     <td>
-                      NaN
+                      {this.state.tableData ? this.state.tableData.pdop : ""}
                     </td>
                   </tr>
                 </tbody>
@@ -462,7 +600,7 @@ class Dashboard extends PureComponent {
         </div>
         <div className='row'>
           <div className='col-sm-12 card card-inverse'>
-            <div style={{maxHeight: '200px', position:'relative'}} className='chart-wrapper px-3'>
+            <div style={{ maxHeight: '200px', position: 'relative' }} className='chart-wrapper px-3'>
               <Bar data={this.state.graphData}
                    options={options}/>
             </div>

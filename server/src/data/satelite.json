@@ -97,5 +97,39 @@
         "used": false
       }
     ]
+  },
+  "data2": {
+    "class": "TPV",
+    "tag": "MID2",
+    "device": "/dev/ttyUSB0",
+    "mode": 3,
+    "time": "2017-09-25T11:10:10.000Z",
+    "ept": 0.005,
+    "lat": 34.178310877,
+    "lon": -118.346290638,
+    "alt": 183.249,
+    "epx": 16.368,
+    "epy": 10.567,
+    "epv": 44.451,
+    "track": 0,
+    "speed": 0,
+    "climb": 0,
+    "eps": 32.74,
+    "epc": 88.9
+  },
+  "IMU": {
+    "loopTime": 0.33,
+    "ACCX Angle": 177.38,
+    "ACCY Angle": 80.36,
+    "GRYX Angle": -727.78,
+    "GYRY Angle": 100.42,
+    "GYRZ Angle": 145.81,
+    "cfangleX": 177.31,
+    "cfangleY": -59.4,
+    "cfangleZ": -53.22,
+    "HEADING": 243.78,
+    "tiltCompensatedHeading": 244.63,
+    "kalmanX": 177.65,
+    "kalmanY": -18.08
   }
 }
