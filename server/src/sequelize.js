@@ -36,13 +36,13 @@ module.exports = (callback) => {
             {
               firstname: 'Ian',
               lastname: 'Peters',
-              email: 'ian@geozone.com',
+              email: 'ian@geozone.ch',
               password: 'geozone2017'
             },
             {
               firstname: 'Damon',
               lastname: 'Hermann',
-              email: 'damon@geozone.com',
+              email: 'damon@geozone.ch',
               password: 'geozone2017'
             }
           ])
