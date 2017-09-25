@@ -266,7 +266,7 @@ class Dashboard extends PureComponent {
       return;
     }
     
-    console.log('Changed');
+    // console.log('Changed');
     cx.canvas.height = svg.height.baseVal.value;
     cx.canvas.width = svg.width.baseVal.value;
     

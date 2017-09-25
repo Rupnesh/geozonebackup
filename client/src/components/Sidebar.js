@@ -24,7 +24,7 @@ class Sidebar extends Component {
         <nav className='sidebar-nav'>
           <ul className='nav'>
             <li className='nav-item'>
-              <NavLink to={'/dashboard'} className='nav-link' activeClassName='active'><i className='icon-speedometer'></i> Dashboard</NavLink>
+              <NavLink to={'/dashboard'} className='nav-link' activeClassName='active'><i className='icon-target'></i> Dashboard</NavLink>
             </li>
             <li className='nav-title'>
               Settings
