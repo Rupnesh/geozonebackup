@@ -1,6 +1,6 @@
 const appRoot = require('app-root-path');
 const mysql = require('mysql');
-const { Client } = require('pg');
+const pgtools = require('pgtools');
 const models = require('./models');
 const { User } = require(`${appRoot}/src/models`);
 const { db } = require('./config');
@@ -8,35 +8,15 @@ const { db } = require('./config');
 const { sequelize } = models;
 
 module.exports = (callback) => {
-  let connection = null;
-  if (db.dialect === 'mysql') {
-    connection = mysql.createConnection({
-      host: db.host,
-      port: db.port,
-      user: db.username,
-      password: db.password
-    });
-  } else if ( db.dialect === 'postgres' ) {
-    connection = new Client({
-      host: db.host,
-      port: db.port,
-      user: db.username,
-      password: db.password,
-      database: db.database
-    });
-  } else {
-    return ;
-  }
-
-  connection.connect();
-  connection.query(`CREATE DATABASE IF NOT EXISTS ${db.database};`, (err) => {
+  
+  function initSequelize(err) {
     if (err) {
       throw err;
     }
     if (db.wipe) {
       console.log('-- Wiping existing database.');
     }
-  
+    
     sequelize
       .sync({ force: db.wipe })
       .then(() => {
@@ -62,7 +42,7 @@ module.exports = (callback) => {
             {
               firstname: 'Damon',
               lastname: 'Hermann',
-              email: 'ian@geozone.com',
+              email: 'damon@geozone.com',
               password: 'geozone2017'
             }
           ])
@@ -71,5 +51,32 @@ module.exports = (callback) => {
             if (callback) callback();
           });
       });
-  });
+  }
+  
+  if (db.dialect === 'mysql') {
+    const connection = mysql.createConnection({
+      host: db.host,
+      port: db.port,
+      user: db.username,
+      password: db.password
+    });
+    connection.connect();
+    connection.query(`CREATE DATABASE IF NOT EXISTS ${db.database};`, initSequelize);
+  } else if ( db.dialect === 'postgres' ) {
+    // TODO: make a check if the db exists and create it only if doesn't
+    pgtools.dropdb({
+      user: db.username,
+      password: db.password,
+      port: db.port,
+      host: db.host
+    }, `${db.database}`, () => {
+      pgtools.createdb({
+        user: db.username,
+        password: db.password,
+        port: db.port,
+        host: db.host
+      }, `${db.database}`, initSequelize);
+    });
+  }
+  // add support for more dbs
 };
