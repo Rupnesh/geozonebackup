@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import ReactDOM from 'react-dom';
 import { Gmaps, Marker } from 'react-gmaps';
+import Geolocation from 'react-geolocation';
 
 const params = { v: '3.exp', key: 'AIzaSyA4g55XM4i-GYszYdIY0K8D8ya5pet12lI' };
 
@@ -16,6 +17,20 @@ class CollectionsView extends PureComponent {
       <div style={{
         height: '600px'
       }}>
+        <Geolocation
+          onSuccess={
+            (geoPos) => {
+              this.setState({
+                lat: geoPos.coords.latitude,
+                lon: geoPos.coords.longitude
+              });
+            }
+          }
+          render={({
+            getCurrentPosition,
+            position: { coords: { latitude, longitude } = {} } = {},
+            error,
+          }) =>
         <Gmaps
           width={'100%'}
           height={'100%'}
@@ -25,15 +40,17 @@ class CollectionsView extends PureComponent {
           loadingMessage={'Be happy'}
           params={params}
           onMapCreated={() => {
-            
+                setTimeout(getCurrentPosition, 0);
           }
           }>
           <Marker
-            lat={this.state.lat}
-            lng={this.state.lon}
+                lat={this.state.lat}
+                lng={this.state.lon}
             draggable={true}
           />
         </Gmaps>
+          }
+        />
       </div>
     );
   }
