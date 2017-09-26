@@ -1,5 +1,5 @@
 import ReactSVG from 'react-svg';
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import { Bar, Line } from 'react-chartjs-2';
 import { socketConnect } from 'socket.io-react';
 import { Dropdown, DropdownMenu, DropdownItem, Progress } from 'reactstrap';
@@ -39,7 +39,7 @@ const options = {
   }
 };
 
-class Dashboard extends PureComponent {
+class Dashboard extends Component {
   
   state = {
     GPS: true,
@@ -69,6 +69,8 @@ class Dashboard extends PureComponent {
     super(props);
     this.toggleGPS = this.toggleGPS.bind(this);
     this.toggleIMU = this.toggleIMU.bind(this);
+    this.handleIMU1Data = this.handleIMU1Data.bind(this);
+    this.handleGPSJSONData = this.handleGPSJSONData.bind(this);
   }
   
   componentDidMount() {
@@ -79,12 +81,8 @@ class Dashboard extends PureComponent {
     if (this.state.IMU === true) {
       socket && socket.emit('subscribe', 'IMU_1');
     }
-    socket.on('data-GPSJSON', (data) => {
-      this.handleGPSJSONData(data)
-    });
-    socket.on('data-IMU_1', (data) => {
-      this.handleIMU1Data(data)
-    })
+    socket.on('data-GPSJSON', this.handleGPSJSONData);
+    socket.on('data-IMU_1',  this.handleIMU1Data);
   }
   
   componentWillUnmount() {
