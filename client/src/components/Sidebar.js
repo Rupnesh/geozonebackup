@@ -26,6 +26,9 @@ class Sidebar extends Component {
             <li className='nav-item'>
               <NavLink to={'/dashboard'} className='nav-link' activeClassName='active'><i className='icon-target'></i> Dashboard</NavLink>
             </li>
+            <li className='nav-item'>
+              <NavLink to={'/collections'} className='nav-link' activeClassName='active'><i className="fa fa-map"></i> Collections</NavLink>
+            </li>
             <li className='nav-title'>
               Settings
             </li>

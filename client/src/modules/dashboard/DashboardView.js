@@ -94,9 +94,15 @@ class Dashboard extends PureComponent {
   }
   
   handleIMU1Data(data) {
-    // console.log('IMU = ', data);
-    if (data !== JSON.stringify(this.imuData)) {
-      this.imuData = JSON.parse(data);
+    const jsonData = JSON.parse(data);
+    const newData = {
+      cfangleX: jsonData['cfangleX'],
+      cfangleY: jsonData['cfangleY'],
+      cfangleZ: jsonData['cfangleZ']
+    };
+
+    if (JSON.stringify(newData) !== JSON.stringify(this.imuData)) {
+      this.imuData = newData;
       this.spiritLevelCalculations();
     }
   }
@@ -481,7 +487,7 @@ class Dashboard extends PureComponent {
                       type="checkbox"
                       className="switch-input"
                       checked={this.state.GPS}
-                      onClick={this.toggleGPS}/>
+                      onChange={this.toggleGPS}/>
                     <span className="switch-label"></span>
                     <span className="switch-handle"></span>
                   </label>
@@ -501,7 +507,7 @@ class Dashboard extends PureComponent {
                       type="checkbox"
                       className="switch-input"
                       checked={this.state.IMU}
-                      onClick={this.toggleIMU}/>
+                      onChange={this.toggleIMU}/>
                     <span className="switch-label"></span>
                     <span className="switch-handle"></span>
                   </label>

@@ -1,6 +1,7 @@
 const routes = {
   '/': 'Home',
   '/dashboard': 'Dashboard',
+  '/collections' : 'Collections',
   '/connection': 'Connection',
   '/gps': 'GPS',
   '/cloud': 'Cloud',

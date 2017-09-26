@@ -8,6 +8,7 @@ import Footer from '../../components/Footer';
 
 /*import Dashboard from '../../views/Dashboard';*/
 import Dashboard from '../../modules/dashboard';
+import Collections from '../../modules/collections';
 import Charts from '../../views/Charts/';
 import Widgets from '../../views/Widgets/';
 import Buttons from '../../views/Components/Buttons';
@@ -48,6 +49,7 @@ export default class MainView extends PureComponent {
             <div className='container-fluid'>
               <Switch>
                 <Route path='/dashboard' name='Dashboard' component={Dashboard}/>
+                <Route path='/collections' name='Collections' component={Collections}/>
                 <Route path='/components/buttons' name='Buttons' component={Buttons}/>
                 <Route path='/connection/wifi' name='WiFi' component={WiFi}/>
                 <Route path='/connection/bluetooth' name='BlueTooth' component={BlueTooth}/>
