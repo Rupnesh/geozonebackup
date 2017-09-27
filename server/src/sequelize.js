@@ -44,6 +44,18 @@ module.exports = (callback) => {
               lastname: 'Hermann',
               email: 'damon@geozone.ch',
               password: 'geozone2017'
+            },
+            {
+              firstname: 'Kuzo',
+              lastname: 'Kuzo',
+              email: 'kuzo@geozone.ch',
+              password: 'geozone2017'
+            },
+            {
+              firstname: 'Demo',
+              lastname: 'Demo',
+              email: 'demo@geozone.ch',
+              password: 'geozone2017'
             }
           ])
           .then(function() {
