@@ -62,21 +62,7 @@ class Dashboard extends Component {
   };
   satelliteData = null;
   spiritLevelData = null;
-  imuData = {
-    "loopTime": 0.25,
-    "ACCX Angle": -2.1,
-    "ACCY Angle": 0.2,
-    "GRYX Angle": -5.74,
-    "GYRY Angle": 2.13,
-    "GYRZ Angle": 12.12,
-    "cfangleX": -2.37,
-    "cfangleY": 0.19,
-    "cfangleZ": -94.02,
-    "HEADING": 247.47,
-    "tiltCompensatedHeading": 247.18,
-    "kalmanX": -2.17,
-    "kalmanY": 0.33
-  };
+  imuData = null;
   oldSatellites = [];
   
   constructor(props) {
@@ -509,23 +495,6 @@ class Dashboard extends Component {
             <div className='row'>
               <div className="row col-sm-6 col-md-6 col-lg-6">
                 <div id="spirit-level-container" className="card-block">
-                  {/*<div style={{
-                    position: 'absolute',
-                    height: '150px',
-                    width: '150px',
-                    top: '1.25rem',
-                    left: '2.25rem',
-                    zIndex: '2'
-                  }}>
-                    <div style={{
-                      height: '36px',
-                      width: '36px',
-                      position: 'absolute',
-                      background: 'black',
-                      borderRadius: '50%',
-                      border: '0px solid blue'
-                    }}></div>
-                  </div>*/}
                   <canvas style={{
                     position: 'absolute',
                     top: '1.25rem',
@@ -548,29 +517,10 @@ class Dashboard extends Component {
                     cx.lineTo(100, 53);
                     cx.stroke();
                     cx.closePath();
-                    this.spiritLevelCalculations();
                   }} style={{
                     maxHeight: '150px',
                     position: 'relative'
                   }} className="spirit-level" src="img/spirit-level/Vectorillustration_design_4_no_bubble.png" alt=""/>
-                  {/*<div>
-                    <div style={{
-                      height: '320px',
-                      width: '480px',
-                      position: 'absolute',
-                      zIndex: '5'
-                    }}>
-                      <div style={{
-                        height: '36px',
-                        width: '36px',
-                        position: 'absolute',
-                        background: 'white',
-                        borderRadius: '50%',
-                        border: '0px solid blue'
-                      }}></div>
-                    </div>
-                    <img src="img/spirit-level/spirit-level-background.jpg" alt="Ceva fail"/>
-                  </div>*/}
                 </div>
                 <div className="card-block">
                   <label>In built GPS Active</label>
