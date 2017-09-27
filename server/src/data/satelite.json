@@ -118,18 +118,18 @@
     "epc": 88.9
   },
   "IMU": {
-    "loopTime": 0.33,
-    "ACCX Angle": 177.38,
-    "ACCY Angle": 80.36,
-    "GRYX Angle": -727.78,
-    "GYRY Angle": 100.42,
-    "GYRZ Angle": 145.81,
-    "cfangleX": 177.31,
-    "cfangleY": -59.4,
-    "cfangleZ": -53.22,
-    "HEADING": 243.78,
-    "tiltCompensatedHeading": 244.63,
-    "kalmanX": 177.65,
-    "kalmanY": -18.08
+    "loopTime": 0.25,
+    "ACCX Angle": -2.1,
+    "ACCY Angle": 0.2,
+    "GRYX Angle": -5.74,
+    "GYRY Angle": 2.13,
+    "GYRZ Angle": 12.12,
+    "cfangleX": -2.37,
+    "cfangleY": 0.19,
+    "cfangleZ": -94.02,
+    "HEADING": 247.47,
+    "tiltCompensatedHeading": 247.18,
+    "kalmanX": -2.17,
+    "kalmanY": 0.33
   }
 }

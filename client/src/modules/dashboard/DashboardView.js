@@ -67,10 +67,14 @@ class Dashboard extends Component {
   
   constructor(props) {
     super(props);
+    const me = this;
     this.toggleGPS = this.toggleGPS.bind(this);
     this.toggleIMU = this.toggleIMU.bind(this);
     this.handleIMU1Data = this.handleIMU1Data.bind(this);
     this.handleGPSJSONData = this.handleGPSJSONData.bind(this);
+    window.getThis = () => {
+      return me;
+    };
   }
   
   componentDidMount() {
@@ -314,15 +318,16 @@ class Dashboard extends Component {
     const data = this.imuData;
     const canvas = document.querySelector('#spirit-level-container canvas');
     const cx = canvas.getContext("2d");
-    const hSlideLimit = [29,79];
-    const vSlideLimit = [18,72];
-    const ChSlideLimit = [44,83];
-    const CvSlideLimit = [14,63];
-    const angleLimit = 90;
+    const hSlideLimit = [1, 75];
+    const vSlideLimit = [0, 80];
+    const ChSlideLimit = [-2, 115];
+    const CvSlideLimit = [-10, 118];
+    const angleLimit = 42;
     const ACC_LPF_FACTOR = 0.3;
-    const CFangleX = data['cfangleX'];
-    const CFangleY = data['cfangleY'];
-    const CFangleZ = data['cfangleZ'];
+
+    let CFangleX = data['cfangleX'];
+    let CFangleY = data['cfangleY'];
+    let CFangleZ = data['cfangleZ'];
     
     function scaleH(value) {
       const min = -angleLimit;
@@ -345,7 +350,7 @@ class Dashboard extends Component {
       const min = -angleLimit;
       const max = angleLimit;
       const minScale = ChSlideLimit[0];
-      const maxScale = ChSlideLimit[1] - 36;	//#36 is the width of the bubble
+      const maxScale = ChSlideLimit[1];
       return minScale + (value - min) / (max - min) * (maxScale - minScale);
     }
     
@@ -353,7 +358,7 @@ class Dashboard extends Component {
       const min = -angleLimit;
       const max = angleLimit;
       const minScale = CvSlideLimit[0];
-      const maxScale = CvSlideLimit[1] - 36;		//#36 is the width of the bubble
+      const maxScale = CvSlideLimit[1];
       return minScale + (value - min) / (max - min) * (maxScale - minScale);
     }
     
@@ -363,13 +368,22 @@ class Dashboard extends Component {
       return d <= r;
     }
     
-    const hBposition = [parseInt(scaleH(CFangleX)), 115];
-    const vBposition = [250, parseInt(scaleV(CFangleY))];
+    if (CFangleX > angleLimit)
+      CFangleX = angleLimit;
+    if (CFangleX < -angleLimit)
+      CFangleX = -angleLimit;
+    if (CFangleY > angleLimit)
+      CFangleY = angleLimit;
+    if (CFangleY < -angleLimit)
+      CFangleY = -angleLimit;
+    
+    const hBposition = [parseInt(scaleH(CFangleX)), 118.5];
+    const vBposition = [117.5, parseInt(scaleV(CFangleY))];
     const newcBposition = [parseInt(scaleCH(CFangleX)), parseInt(scaleCV(CFangleY))];
     let cBposition;
     
     //#confirm that center bubble is within the circle;
-    if (is_in_circle(181, 117, 90, newcBposition[0], newcBposition[1])) {
+    if (is_in_circle(52, 52, 42, newcBposition[0], newcBposition[1])) {
       cBposition = newcBposition
     }
 
@@ -380,15 +394,37 @@ class Dashboard extends Component {
     };
     
     if (JSON.stringify(newData) !== JSON.stringify(this.spiritLevelData)) {
-      let newImage = new Image();
+      let cBubble = new Image();
+      let hbBubble = new Image();
+      let vbBubble = new Image();
+      let bubbleWidth = 28;
       
       this.spiritLevelData = newData;
-      newImage.onload = () => {
-        cx.clearRect(0, 0, canvas.width, canvas.height);
-        cx.drawImage(newImage, newData['hBposition'][0], newData['hBposition'][1], 38, 38);
-        cx.drawImage(newImage, newData['vBposition'][0], newData['vBposition'][1], 38, 38);
+      cx.clearRect(0, 0, canvas.width, canvas.height);
+      cx.beginPath();
+      cx.moveTo(52, 0);
+      cx.lineTo(52, 100);
+      cx.stroke();
+      cx.moveTo(0, 53);
+      cx.lineTo(100, 53);
+      cx.stroke();
+      cx.closePath();
+      hbBubble.onload = () => {
+        cx.drawImage(hbBubble, newData['hBposition'][0], newData['hBposition'][1], 35, 28);
       };
-      newImage.src = "img/spirit-level/Vectorillustration_design_4_center_bubble.png";
+      hbBubble.src = "img/spirit-level/Vectorillustration_design_4_bottom_bubble.png";
+  
+      vbBubble.onload = () => {
+        cx.drawImage(vbBubble, newData['vBposition'][0], newData['vBposition'][1], 28, 34);
+      };
+      vbBubble.src = "img/spirit-level/Vectorillustration_design_4_right_bubble.png";
+  
+      cBubble.onload = () => {
+        if (newData['cBposition']) {
+          cx.drawImage(cBubble, newData['cBposition'][0], newData['cBposition'][1], bubbleWidth, bubbleWidth);
+        }
+      };
+      cBubble.src = "img/spirit-level/Vectorillustration_design_4_center_bubble.png";
     }
   };
   
@@ -460,15 +496,28 @@ class Dashboard extends Component {
               <div className="row col-sm-6 col-md-6 col-lg-6">
                 <div id="spirit-level-container" className="card-block">
                   <canvas style={{
-                    height: '150px',
-                    width: '150px',
                     position: 'absolute',
                     top: '1.25rem',
                     left: '2.25rem',
                     zIndex: '2'
                   }}>
                   </canvas>
-                  <img style={{
+                  <img onLoad={() => {
+                    let canvas = document.querySelector('#spirit-level-container canvas');
+                    let cx = canvas.getContext('2d');
+  
+                    canvas.setAttribute('height', '150px');
+                    canvas.setAttribute('width', '150px');
+  
+                    cx.beginPath();
+                    cx.moveTo(52, 0);
+                    cx.lineTo(52, 100);
+                    cx.stroke();
+                    cx.moveTo(0, 53);
+                    cx.lineTo(100, 53);
+                    cx.stroke();
+                    cx.closePath();
+                  }} style={{
                     maxHeight: '150px',
                     position: 'relative'
                   }} className="spirit-level" src="img/spirit-level/Vectorillustration_design_4_no_bubble.png" alt=""/>
