@@ -6,12 +6,12 @@ api:
 CLOUDAMQP_URL: amqp://oynylrww:GgJXP1k3PYaAZ_8NXPmNbf8OZRyTnu3k@donkey.rmq.cloudamqp.com/oynylrww
 
 db:
-  username: root
-  password:
+  username: postgres
+  password: postgres
   database: falcon
-  dialect: mysql
+  dialect: postgres
   host: '127.0.0.1'
-  port: 3306
+  port: 5432
   wipe: true
   logging: false
 secret: 'falcon2018'
