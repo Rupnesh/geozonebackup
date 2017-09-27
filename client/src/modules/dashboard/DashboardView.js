@@ -64,17 +64,14 @@ class Dashboard extends Component {
   spiritLevelData = null;
   imuData = null;
   oldSatellites = [];
+  umMounted = false;
   
   constructor(props) {
     super(props);
-    const me = this;
     this.toggleGPS = this.toggleGPS.bind(this);
     this.toggleIMU = this.toggleIMU.bind(this);
     this.handleIMU1Data = this.handleIMU1Data.bind(this);
     this.handleGPSJSONData = this.handleGPSJSONData.bind(this);
-    window.getThis = () => {
-      return me;
-    };
   }
   
   componentDidMount() {
@@ -93,6 +90,7 @@ class Dashboard extends Component {
     const { socket } = this.props;
     socket && socket.emit('unsubscribe', 'GPSJSON');
     socket && socket.emit('unsubscribe', 'IMU_1');
+    this.umMounted = true;
   }
   
   handleIMU1Data(data) {
@@ -103,6 +101,10 @@ class Dashboard extends Component {
       cfangleZ: jsonData['cfangleZ']
     };
 
+    if (this.umMounted) {
+      return;
+    }
+    
     if (JSON.stringify(newData) !== JSON.stringify(this.imuData)) {
       this.imuData = newData;
       this.spiritLevelCalculations();
@@ -111,7 +113,11 @@ class Dashboard extends Component {
   
   handleGPSJSONData(data) {
     const parsedData = JSON.parse(data);
-    // console.log(parsedData);
+  
+    if (this.umMounted) {
+      return;
+    }
+    
     switch (parsedData.class) {
       case 'SKY':
         this.updateSatellites(parsedData);
@@ -267,6 +273,11 @@ class Dashboard extends Component {
     this.oldSatellites = data.satellites;
     
     const canvas = document.querySelector("#svg-container canvas");
+    
+    if (!canvas) {
+      return;
+    }
+    
     const cx = canvas.getContext("2d");
     const svg = document.querySelector('svg');
     
