@@ -1,11 +1,19 @@
 const http = require('http');
+const https = require('https');
 const socketIO = require('socket.io');
+const fs = require('fs');
+
 const PubSubService = require('./utils/PubSubService');
 const ampq = require('index.ampq');
 const { api } = require('./config');
 
+const httpsOptions = {
+  key: fs.readFileSync('./certs/key.pem'),
+  cert: fs.readFileSync('./certs/cert.pem')
+};
+
 module.exports = function listen(app) {
-  const server = http.Server(app);
+  const server = api.ssl === true ? https.Server(httpsOptions, app) : http.Server(app);
   const io = socketIO(server);
   server.listen(api.port, function started() {
     const address = this.address();

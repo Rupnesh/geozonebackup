@@ -64,9 +64,9 @@
     "dev": "better-npm-run start-dev",
     "dev-profiler": "better-npm-run start-dev-profiler",
     "prod": "better-npm-run start-prod",
-    "nprod": "better-npm-run node-start-prod",
     "rprod": "better-npm-run restart-prod",
-    "sprod": "better-npm-run stop-prod",
+    "sprod": "better-npm-run start-sprod",
+    "rsprod": "better-npm-run restart-sprod",
     "prod-profiler": "better-npm-run start-prod-profiler",
     "lint": "eslint -c .eslintrc src",
     "jsinspect": "jsinspect -t 30 -i ./src/endpoints ./src/models",
@@ -116,11 +116,11 @@
         "NODE_ENV": "prod"
       }
     },
-    "stop-prod": {
-      "command": "forever stop ./src/index.js",
+    "start-sprod": {
+      "command": "forever ./src/index.js",
       "env": {
         "NODE_PATH": "./src",
-        "NODE_ENV": "prod"
+        "NODE_ENV": "sprod"
       }
     },
     "restart-prod": {
@@ -128,6 +128,13 @@
       "env": {
         "NODE_PATH": "./src",
         "NODE_ENV": "prod"
+      }
+    },
+    "restart-sprod": {
+      "command": "forever restart ./src/index.js",
+      "env": {
+        "NODE_PATH": "./src",
+        "NODE_ENV": "sprod"
       }
     }
   }
