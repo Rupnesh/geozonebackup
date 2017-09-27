@@ -3,7 +3,7 @@ api:
   port: 8081
   ssl: true
 
-CLOUDAMQP_URL: amqp://oynylrww:GgJXP1k3PYaAZ_8NXPmNbf8OZRyTnu3k@donkey.rmq.cloudamqp.com/oynylrww
+CLOUDAMQP_URL: amqp://guest:guest@localhost/
 
 db:
   username: postgres
