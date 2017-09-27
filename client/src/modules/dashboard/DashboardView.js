@@ -504,19 +504,9 @@ class Dashboard extends Component {
                   </canvas>
                   <img onLoad={() => {
                     let canvas = document.querySelector('#spirit-level-container canvas');
-                    let cx = canvas.getContext('2d');
   
                     canvas.setAttribute('height', '150px');
                     canvas.setAttribute('width', '150px');
-  
-                    cx.beginPath();
-                    cx.moveTo(52, 0);
-                    cx.lineTo(52, 100);
-                    cx.stroke();
-                    cx.moveTo(0, 53);
-                    cx.lineTo(100, 53);
-                    cx.stroke();
-                    cx.closePath();
                   }} style={{
                     maxHeight: '150px',
                     position: 'relative'
