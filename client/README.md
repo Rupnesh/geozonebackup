@@ -1,4 +1,11 @@
 # Falcon Client
+
+## Install dependencies:
+
+###``npm install``
+
+You should run this on every clean deploy and delete node_modules/ folder before
+
 ## Available Scripts
 
 In the project directory, you can run:
