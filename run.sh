@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 cd client/
 rm -rf node_modules/
 npm install
@@ -6,4 +7,4 @@ cd ..
 cd server/
 rm -rf node_modules/
 npm install
-npm run prod
+npm run sprod

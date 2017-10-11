@@ -1,6 +1,6 @@
 # Falcon Server
 
-###Installation steps:
+### Installation Development Steps:
 
 1. Make sure you have NPM, Node > 6 | MySQL > 5 or Postgresql installed on your machine. If you need to support more versions of node we highly recommend you to use NVM to track them.
 2. `cd server`
@@ -32,8 +32,18 @@ You can find all the server configuration specified under:
 You can find them under `./src/models`. Here you can find the User model and you can create other models to be used in the app
 
 
-### Running production
-In order to run production with HTTPS you need to run the following script described in package.json
+### Running/Deploying in production
+In order to run production with HTTPS you need to run the following script described in package.json (local, prod, sprod)
+But is very recommended to delete node_modules and have a clean install of all dependencies every time you do a deploy:
+
+- clean node_modules/
+
+```rm -rf node_modules```
+
+- install modules
+
+```npm install```
+- run server
 
 ```npm run sprod```
 
