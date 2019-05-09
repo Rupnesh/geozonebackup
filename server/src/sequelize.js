@@ -74,21 +74,22 @@ module.exports = (callback) => {
     });
     connection.connect();
     connection.query(`CREATE DATABASE IF NOT EXISTS ${db.database};`, initSequelize);
-  } else if ( db.dialect === 'postgres' ) {
-    // TODO: make a check if the db exists and create it only if doesn't
-    pgtools.dropdb({
-      user: db.username,
-      password: db.password,
-      port: db.port,
-      host: db.host
-    }, `${db.database}`, () => {
-      pgtools.createdb({
-        user: db.username,
-        password: db.password,
-        port: db.port,
-        host: db.host
-      }, `${db.database}`, initSequelize);
-    });
-  }
+  // } else if ( db.dialect === 'postgres' ) {
+  //   // TODO: make a check if the db exists and create it only if doesn't
+  //   pgtools.dropdb({
+  //     user: db.username,
+  //     password: db.password,
+  //     port: db.port,
+  //     host: db.host
+  //   }, `${db.database}`, () => {
+  //     pgtools.createdb({
+  //       user: db.username,
+  //       password: db.password,
+  //       port: db.port,
+  //       host: db.host
+  //     }, `${db.database}`, initSequelize);
+  //   });
+  // }
   // add support for more dbs
+  }
 };

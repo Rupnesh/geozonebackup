@@ -5,12 +5,17 @@ import { socketConnect } from 'socket.io-react';
 import { Dropdown, DropdownMenu, DropdownItem, Progress } from 'reactstrap';
 import ResizeObserver from 'react-resize-observer';
 
+import HorizontalProgress from "./HorizontalProgress";
+import Moment from 'react-moment';
+import moment from 'moment-timezone';
+
 function getImageSrc(nr) {
+  //console.log(nr)
   if (nr >= 1 && nr <= 32) {
     return 'us' + (nr < 10 ? ('0' + nr) : nr) + 'v3.fw.png';
   }
   
-  if (nr >= 33 && nr <= 64) {
+  if (nr >= 33 && nr <= 64) { 
     return 'w' + nr + 'v3.fw.png';
   }
   
@@ -36,6 +41,15 @@ const options = {
   responsive: true,
   tooltips: {
     mode: 'label'
+  },
+  minBarLength: 5,
+  scales: {
+    yAxes: [{
+      ticks: {
+        beginAtZero: true,
+        maxTicksLimit: 5
+      }
+    }]
   }
 };
 
@@ -43,7 +57,7 @@ class Dashboard extends Component {
   
   state = {
     GPS: true,
-    IMU: false,
+    IMU: true,
     graphData: {
       labels: [],
       datasets: [
@@ -58,13 +72,17 @@ class Dashboard extends Component {
         }
       ]
     },
-    tpvData: null
+    tpvData: null,
+    progress: 10,
+    imuDataArray: {},
+    todaysDate:''
   };
   satelliteData = null;
   spiritLevelData = null;
   imuData = null;
   oldSatellites = [];
   umMounted = false;
+
   
   constructor(props) {
     super(props);
@@ -72,38 +90,114 @@ class Dashboard extends Component {
     this.toggleIMU = this.toggleIMU.bind(this);
     this.handleIMU1Data = this.handleIMU1Data.bind(this);
     this.handleGPSJSONData = this.handleGPSJSONData.bind(this);
+
+
+    
+
   }
   
   componentDidMount() {
+    console.log(this.props)
+
+    var tzstring = moment.tz.guess();
+    
+    var date = moment(new Date().toString());
+    const formattedDT = date.tz(tzstring).format('DD/MM/YYYY');
+    // const formattedDT = date.tz(tzstring).format('DD-MM-YYYY HH:mm ZZ');
+    this.setState({ todaysDate:formattedDT });
+
+    // let labels = [20,10,30,40,50,60,50,60,40,50]
+    // let values = [50,40,30,20,30,40,40,50,35,45]
+    
+    // this.setState({
+    //   graphData: {
+    //     labels: labels,
+    //     datasets: [
+    //       {
+    //         label: 'Signal to Noise Ratio',
+    //         backgroundColor: 'rgba(0,255,0,0.2)',
+    //         borderColor: 'rgba(0,255,0,1)',
+    //         borderWidth: 1,
+    //         hoverBackgroundColor: 'rgba(0,255,0,0.4)',
+    //         hoverBorderColor: 'rgba(0,255,0,1)',
+    //         data: values
+    //       }
+    //     ]
+    //   }
+    // });
+
     const { socket } = this.props;
+    socket.socketConnect
+    
     if (this.state.GPS === true) {
-      socket && socket.emit('subscribe', 'GPSJSON');
+      
+      socket && socket.emit('subscribe', 'onyxCmdOut');
+      // socket && socket.emit('subscribe', 'GPSJSON');
     }
-    if (this.state.IMU === true) {
-      socket && socket.emit('subscribe', 'IMU_1');
-    }
-    socket.on('data-GPSJSON', this.handleGPSJSONData);
-    socket.on('data-IMU_1',  this.handleIMU1Data);
+    
+    // socket && socket.emit('subscribe', 'imuOut');
+
+      // socket && socket.emit('subscribe', 'IMU_1');
+    
+    socket.on('data-onyxCmdOut', this.handleGPSJSONData);
+    
+    // socket.on('data-GPSJSON', this.handleGPSJSONData);
+
+    // socket.on('data-imuOut',  this.handleIMU1Data);
+
+    // socket.on('data-IMU_1',  this.handleIMU1Data);
+
+    setInterval(() => {
+      this.setState(prevState => ({
+        progress: 60
+          //(prevState.progress + Math.floor(Math.random() * 20) + 1) % 100
+      }));
+    }, 5000);
+
   }
   
   componentWillUnmount() {
+
     const { socket } = this.props;
-    socket && socket.emit('unsubscribe', 'GPSJSON');
-    socket && socket.emit('unsubscribe', 'IMU_1');
+    socket && socket.emit('unsubscribe', 'onyxCmdOut');
+    // socket && socket.emit('unsubscribe', 'GPSJSON');
+
+    socket && socket.emit('unsubscribe', 'imuOut');
+
+    // socket && socket.emit('unsubscribe', 'IMU_1');
     this.umMounted = true;
   }
   
   handleIMU1Data(data) {
-    const jsonData = JSON.parse(data);
+    // const jsonData = JSON.parse(data);
+    //debugger;
+    let jsonData
+    jsonData = JSON.parse(data);
+
+    // console.log(data)
+    // const jsonData = data;
+
+    // let imuDataArray = {
+    //   cfangleX: jsonData['cfangleX'],
+    //   cfangleY: jsonData['cfangleY'],
+    //   cfangleZ: jsonData['cfangleZ']
+    // } 
+
+    // this.setState({imuDataArray: imuDataArray})
+
+    // const newData = this.state.imuDataArray
+
     const newData = {
       cfangleX: jsonData['cfangleX'],
       cfangleY: jsonData['cfangleY'],
       cfangleZ: jsonData['cfangleZ']
     };
+    //console.log(newData)
 
     if (this.umMounted) {
       return;
     }
+    // console.log(JSON.stringify(this.state.imuDataArray))
     
     if (JSON.stringify(newData) !== JSON.stringify(this.imuData)) {
       this.imuData = newData;
@@ -112,27 +206,69 @@ class Dashboard extends Component {
   }
   
   handleGPSJSONData(data) {
-    const parsedData = JSON.parse(data);
+    console.log("callleddddd gps...",data)
+
+
+
+    // const parsedData = JSON.parse(data);
+    // const parsedData = JSON.parse(JSON.stringify(data.data));
+    const parsedData = data;
+    //console.log(parsedData)
+
+
   
     if (this.umMounted) {
       return;
     }
+
+    // if(parsedData != null) {
+    //   console.log(parsedData)
+    //   this.updateSatellites(parsedData);
+    // }
+
     
-    switch (parsedData.class) {
-      case 'SKY':
+    switch (parsedData.type) {
+      case 'GSV':
         this.updateSatellites(parsedData);
         break;
-      case 'TPV':
-        this.updateTPV(parsedData);
+      case 'GGA':
+        this.updateTPV(parsedData); 
+        break;
+      case 'GSA':
+        this.updateTPVGSA(parsedData); 
         break;
     }
+
+    // switch (parsedData.class) {
+    //   case 'SKY':
+    //     this.updateSatellites(parsedData);
+    //     break;
+    //   case 'TPV':
+    //     this.updateTPV(parsedData); 
+    //     break;
+    // }
+  }
+  updateTPVGSA(data) {
+    const tableData = {
+      'hdop': data['hdop'],
+      'pdop': data['pdop'],
+      'vdop': data['vdop']
+    }
+    if (JSON.stringify(tableData) !== JSON.stringify(this.state.tableData)) {
+      this.setState({
+        tableData: tableData
+      });
+    }
+      
   }
   
   updateSatellites(data) {
-    //console.log('SATELITE = ', data.satellites);
+    // console.log('SATELITE = ', data);
     this.satelliteData = data;
-    this.plotCalculations();
-    this.populateGraphData();
+    if(this.satelliteData.satellites.length > 0) {
+      this.plotCalculations();
+      this.populateGraphData();
+    }
   }
   
   updateTPV(data) {
@@ -141,6 +277,7 @@ class Dashboard extends Component {
   }
   
   updateTableData(data) {
+    // console.log(data)
     if (!this.satelliteData) {
       return;
     }
@@ -157,13 +294,12 @@ class Dashboard extends Component {
         'alt': data['alt'],
         'lon': data['lon'],
         'lat': data['lat'],
-        'vdop': this.satelliteData['vdop'],
-        'hdop': this.satelliteData['hdop'],
-        'pdop': this.satelliteData['pdop'],
-        'geoid': (-32.6).toFixed(4),
+        'geoid': data['geoidal'],
+        'fixDate': data['time'] ? new Date(data['time']) : "",
         'fixTime': data['time'] ? new Date(data['time']).getTime() : "",
-        'fixType': fixType[data['mode']],
-        'quality': data['status'] === 2 ? 'DGPS fix' : 'Not Present'
+        'quality': data['quality'],
+        'totalsatellite': data['satellites']
+        // 'quality': data['status'] === 2 ? 'DGPS fix' : 'Not Present'
       };
     
     if (JSON.stringify(tableData) !== JSON.stringify(this.state.tableData)) {
@@ -177,8 +313,10 @@ class Dashboard extends Component {
     const { socket } = this.props;
     const state = !this.state.GPS ? 'subscribe' : 'unsubscribe';
     socket && socket.emit(state, 'GPSJSON');
+    console.log(socket)
+
     this.setState({
-      GPS: !this.state.GPS
+      GPS: !this.state.GPS 
     });
   }
   
@@ -186,6 +324,7 @@ class Dashboard extends Component {
     const { socket } = this.props;
     const state = !this.state.IMU ? 'subscribe' : 'unsubscribe';
     socket && socket.emit(state, 'IMU_1');
+    console.log(socket)
     this.setState({
       IMU: !this.state.IMU
     });
@@ -206,6 +345,8 @@ class Dashboard extends Component {
   }
   
   plotCalculations = (onResize) => {
+    console.log()
+    
     const data = this.satelliteData;
     
     if (!data) {
@@ -223,10 +364,15 @@ class Dashboard extends Component {
     const el = [];             //Elevation ang
     
     data.satellites.forEach((satellite) => {
-      prn.push(satellite['PRN']);
-      azi.push(satellite['az']);
-      el.push(satellite['el']);
+      // console.log(satellite)
+      prn.push(satellite['prn']);
+      azi.push(satellite['azimuth']);
+      el.push(satellite['elevation']);
+      // prn.push(satellite['PRN']);
+      // azi.push(satellite['az']);
+      // el.push(satellite['el']);
     });
+    
     /*const prn = [14, 18, 1, 9, 12, 30, 22, 32, 5, 31];               //Satellite PRN
      
      const azi = [55, 135.2, -83, 49, 95, 135, 159, -56, 116, -145];  //Azimuth in degrees
@@ -254,16 +400,18 @@ class Dashboard extends Component {
     let index = 0;
     
     for (let i = 0; i < azi.length; i++) {
-      if (data.satellites[i].used) {
+      // if (data.satellites[i].used) {
         svx[index] = r[i] * Math.sin(a[i]);
         svy[index] = r[i] * Math.cos(a[i]);
         index++;
-      }
+      // }
     }
     
     const sameData = this.arraysEqual(data.satellites, this.oldSatellites, (a, b) => {
       //PRN: 7, el: 57, az: 67, ss: 42, used: true}
-      return !(a['PRN'] == b['PRN'] && a['az'] == b['az'] && a['el'] == b['el']);
+
+      return !(a['prn'] == b['prn'] && a['azimuth'] == b['azimuth'] && a['elevation'] == b['elevation']);
+      // return !(a['PRN'] == b['PRN'] && a['az'] == b['az'] && a['el'] == b['el']);
     });
     
     if (sameData && !onResize) {
@@ -310,7 +458,7 @@ class Dashboard extends Component {
       })();
       
     }
-    
+
     for (let i = 0; i < svx.length; i++) {
       let newImage = new Image();
       
@@ -321,6 +469,7 @@ class Dashboard extends Component {
           drawImage(cx, newImage, (svx[i] - 10) * sizeOffest, -(svy[i] + 15) * sizeOffest, newImage.width * imageSizeOffset, newImage.height * imageSizeOffset);
         }
       };
+
       newImage.src = 'img/icons/' + getImageSrc(prn[i]);
     }
   };
@@ -329,11 +478,14 @@ class Dashboard extends Component {
     const data = this.imuData;
     const canvas = document.querySelector('#spirit-level-container canvas');
     const cx = canvas.getContext("2d");
+
     const hSlideLimit = [1, 75];
     const vSlideLimit = [0, 80];
     const ChSlideLimit = [-2, 115];
     const CvSlideLimit = [-10, 118];
+
     const angleLimit = 42;
+    // const angleLimit = 42;
     const ACC_LPF_FACTOR = 0.3;
 
     let CFangleX = data['cfangleX'];
@@ -388,11 +540,23 @@ class Dashboard extends Component {
     if (CFangleY < -angleLimit)
       CFangleY = -angleLimit;
     
-    const hBposition = [parseInt(scaleH(CFangleX)), 118.5];
-    const vBposition = [117.5, parseInt(scaleV(CFangleY))];
-    const newcBposition = [parseInt(scaleCH(CFangleX)), parseInt(scaleCV(CFangleY))];
-    let cBposition;
-    
+    const hBposition = [parseInt(scaleH(CFangleX)), 121];    
+    const vBposition = [120.5, parseInt(scaleV(CFangleY))];
+    // const hBposition = [parseInt(scaleH(CFangleX)), 118.5];
+    // const vBposition = [117.5, parseInt(scaleV(CFangleY))];    
+    // const newcBposition = [parseInt(scaleCH(CFangleX)), parseInt(scaleCV(CFangleY))];
+
+    let newcBposition;
+
+    if( (parseInt(scaleCH(CFangleX)) >= 1 && parseInt(scaleCH(CFangleX)) <= 73) && (parseInt(scaleCV(CFangleY)) >= 1 && parseInt(scaleCV(CFangleY)) <= 52) ) {
+      newcBposition = [parseInt(scaleCH(CFangleX)), parseInt(scaleCV(CFangleY))];
+    }
+    else {
+      newcBposition = [73, 52];
+    }
+    // const newcBposition = [73, 52];
+
+    let cBposition;    
     //#confirm that center bubble is within the circle;
     if (is_in_circle(52, 52, 42, newcBposition[0], newcBposition[1])) {
       cBposition = newcBposition
@@ -408,7 +572,8 @@ class Dashboard extends Component {
       let cBubble = new Image();
       let hbBubble = new Image();
       let vbBubble = new Image();
-      let bubbleWidth = 28;
+      let bubbleWidth = 22;
+      // let bubbleWidth = 28;
       
       this.spiritLevelData = newData;
       cx.clearRect(0, 0, canvas.width, canvas.height);
@@ -421,12 +586,14 @@ class Dashboard extends Component {
       cx.stroke();
       cx.closePath();
       hbBubble.onload = () => {
-        cx.drawImage(hbBubble, newData['hBposition'][0], newData['hBposition'][1], 35, 28);
+        cx.drawImage(hbBubble, newData['hBposition'][0], newData['hBposition'][1], 22, 22);
+        // cx.drawImage(hbBubble, newData['hBposition'][0], newData['hBposition'][1], 35, 28);
       };
       hbBubble.src = "img/spirit-level/Vectorillustration_design_4_bottom_bubble.png";
   
       vbBubble.onload = () => {
-        cx.drawImage(vbBubble, newData['vBposition'][0], newData['vBposition'][1], 28, 34);
+        cx.drawImage(vbBubble, newData['vBposition'][0], newData['vBposition'][1], 22, 22);
+        // cx.drawImage(vbBubble, newData['vBposition'][0], newData['vBposition'][1], 28, 34);
       };
       vbBubble.src = "img/spirit-level/Vectorillustration_design_4_right_bubble.png";
   
@@ -447,13 +614,32 @@ class Dashboard extends Component {
     if (data) {
       const satellites = [...data.satellites];
       satellites.sort((a, b) => {
-        return a['PRN'] - b['PRN'];
+        return a['prn'] - b['prn'];
+        // return a['PRN'] - b['PRN'];
       });
       satellites.forEach((satellite) => {
-        labels.push(satellite['PRN']);
-        values.push(satellite['ss']);
+        if(satellite['prn']!=null)
+          labels.push(satellite['prn']);
+        else {
+          // labels = [];
+          // labels = [30,30,30,30];
+        }
+        
+        if(satellite['snr']!=null)
+          values.push(satellite['snr']);
+        else{
+          // values = []
+          // values = [30,30,30,30];
+        }
+        // labels.push(satellite['PRN']);
+        // values.push(satellite['ss']);
       });
     }
+    // labels = [20,10,30,40]
+    // values = [50,40,30,20]
+
+    // console.log(labels)
+    // console.log(values)
     
     this.setState({
       graphData: {
@@ -524,10 +710,24 @@ class Dashboard extends Component {
                   }} className="spirit-level" src="img/spirit-level/Vectorillustration_design_4_no_bubble.png" alt=""/>
                 </div>
                 <div className="card-block">
-                  <label>In built GPS Active</label>
+                  <h5 style = {{marginBottom:'15px'}}>In built GPS Active</h5>
                 </div>
               </div>
-              <div className='card-block col-sm-6 col-md-6 col-lg-6'>
+
+
+
+              <div className='row col-sm-6 col-md-6 col-lg-6 card' style={{border:"none",position:'relative'}}>
+                <div style={{position:"absolute",bottom:'0',width:'100%'}}>
+                  <HorizontalProgress progress={this.state.progress} />
+                </div>                
+
+                
+              </div>
+
+
+
+
+              {/* <div className='card-block col-sm-6 col-md-6 col-lg-6'>
                 <div className="form-group row">
                   <label className="col-md-5 form-control-label mw-75" htmlFor="recordata">GPS Enabled</label>
                   <label className="switch switch-3d switch-primary">
@@ -568,8 +768,19 @@ class Dashboard extends Component {
                     <span className="switch-handle"></span>
                   </label>
                 </div>
-              </div>
+              </div> */}
+
+
+
+
             </div>
+
+            {/* <div className='row'>
+              <div className='col-sm-12 col-md-12 col-lg-12 card' style={{border:"none"}}>
+                <HorizontalProgress progress={this.state.progress} />
+              </div>
+            </div> */}
+
             <div className="card dashboard-table">
               <table className="table table-striped">
                 <tbody>
@@ -601,25 +812,8 @@ class Dashboard extends Component {
                     </td>
                   </tr>
                   <tr>
-                    <th>Fix Time</th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                      {this.state.tableData ? this.state.tableData.fixTime : ""}
-                    </td>
-                  </tr>
-                  <tr>
-                    <th>Geoid Hit</th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                      {this.state.tableData ? this.state.tableData.geoid : ""}
-                    </td>
-                  </tr>
-                  <tr>
-                    <th>Quality</th>
+                    <th>Solution</th>
+                    {/* <th>Fix Time</th> */}
                     <td></td>
                     <td></td>
                     <td></td>
@@ -627,31 +821,80 @@ class Dashboard extends Component {
                       {this.state.tableData ? this.state.tableData.quality : ""}
                     </td>
                   </tr>
+
                   <tr>
-                    <th>Fix Type</th>
+                    <th>PDOP</th>
+                    <td></td>
+                    <td></td>
                     <td></td>
                     <td>
-                      {this.state.tableData ? this.state.tableData.fixType : ""}
-                    </td>
-                    <td>VDOP</td>
-                    <td>
-                      {this.state.tableData ? this.state.tableData.vdop : ""}
+                      {this.state.tableData ? this.state.tableData.pdop : ""}
                     </td>
                   </tr>
                   <tr>
                     <th>HDOP</th>
                     <td></td>
-                    <td>1.25</td>
-                    <td>PDOP</td>
+                    <td></td>
+                    <td></td>
+                    <td>
+                      {this.state.tableData ? this.state.tableData.hdop : ""}
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>VDOP</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
                     <td>
                       {this.state.tableData ? this.state.tableData.pdop : ""}
                     </td>
                   </tr>
+
+                  <tr>
+                    <th>Satellites Used</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>
+                      {this.state.tableData ? this.state.tableData.totalsatellite : ""}
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>Date</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>    
+                      {this.state.todaysDate }        
+                      {/* <Moment format="DD-MM-YYYY">
+                        {new Date()}
+                      </Moment> */}
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>Time UTC</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>
+                      {this.state.tableData ? 
+                        <Moment format="HH:mm:ss A">
+                          {this.state.tableData.fixTime}
+                        </Moment>
+                        : ""}
+                      
+                    </td>
+                  </tr>
+                  
                 </tbody>
               </table>
             </div>
           </div>
         </div>
+
+
+        
+
         <div className='row'>
           <div className='col-sm-12 card card-inverse'>
             <div style={{ maxHeight: '200px', position: 'relative' }} className='chart-wrapper px-3'>
@@ -666,3 +909,19 @@ class Dashboard extends Component {
 }
 
 export default socketConnect(Dashboard);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

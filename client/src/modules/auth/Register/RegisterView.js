@@ -102,8 +102,8 @@ class RegisterView extends Component {
                   </form>
                 </div>
                 <div className='card-footer text-center'>
-                  <div className='row'>
-                    <div className='col-6 align-content-center'>
+                  <div className='row align-items-center '>
+                    <div className='col-12 align-items-center'>
                       <p className='text-muted'>Already have an account?</p>
                       <button onClick={this.goBack} className='btn btn-block btn-primary' type='button'>Go back to Login</button>
                     </div>

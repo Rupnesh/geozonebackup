@@ -64,6 +64,12 @@ class HeaderView extends Component {
           <li className='nav-item px-3'>
             <a href='/#/survey' className='nav-link' onClick={() => {document.body.classList.remove('sidebar-hidden');}}>Survey</a>
           </li>
+          <li className='nav-item px-3'>
+            <a href='/#/licenses' className='nav-link' onClick={() => {document.body.classList.remove('sidebar-hidden');}}>Licenses</a>
+          </li>
+          <li className='nav-item px-3'>
+            <a href='/#/about' className='nav-link' onClick={() => {document.body.classList.remove('sidebar-hidden');}}>About</a>
+          </li>
         </ul>
         <ul className='nav navbar-nav ml-auto'>
           <li className='nav-item'>

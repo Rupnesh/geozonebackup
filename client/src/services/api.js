@@ -2,12 +2,16 @@ import axios from 'axios';
 
 import auth from '../utils/authentication';
 
+import {api} from '../config/api'
+import {constants} from '../config/constants'
+
 // Fetches an API response and normalizes the result JSON according to schema.
 // This makes every API response have the same shape, regardless of how nested it was.
 function callApi(config) {
   return new Promise((resolve, reject) => {
     axios(config)
       .then((response) => {
+        //console.log("response...",response)
         resolve(response);
       })
       .catch((e) => {
@@ -23,12 +27,38 @@ export const loginUserRequest = (email, password) => {
     email,
     password
   };
+  console.log("Object...",object)
 
    return callApi({
     url: '/login',
     method: 'post',
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8',
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "*",
+    },
     data: JSON.stringify(object)
   });
+  /*return new Promise((resolve, reject) => {
+    resolve({ status: 200, user: { name: 'Alexandru Lazar', email: 'alex@mcro-e.com' } });
+    if (object === null) {
+      reject({ message: 'nothing' });
+    }
+  });*/
+};
+
+export const getApiCall = (url) => {
+ 
+  return new Promise ((resolve, reject ) => {
+  fetch(constants.hostflask + url)
+  .then(res =>  res.json() )
+  .then(data => {
+    resolve(data)
+  })
+  .catch((error) => {
+    //console.log(error)
+    reject(error)
+  })})
   /*return new Promise((resolve, reject) => {
     resolve({ status: 200, user: { name: 'Alexandru Lazar', email: 'alex@mcro-e.com' } });
     if (object === null) {
@@ -80,7 +110,7 @@ export const logoutUserRequest = () => {
 export const registerCreateAccountRequest = (userData => callApi({
   url: '/team/register',
   method: 'post',
-  data: JSON.stringify(userData)
+  data: JSON.stringify(userData) 
 }));
 
 export const verifyRegisterCodeRequest = ({ email, code }) => callApi({
@@ -147,6 +177,15 @@ export const loginToWifiRequest = (username, password) => {
         }
     });
 };
+
+
+export const getWIFIList = () => callApi({
+  url: constants.host + api.GET_WIFI_LIST,
+  method: 'get'
+});
+
+
+
 
 export const configureDefaults = async () => {
   let URL = `${window.location.protocol}//${window.location.hostname}:8080`;

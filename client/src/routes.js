@@ -6,6 +6,12 @@ const routes = {
   '/gps': 'GPS',
   '/cloud': 'Cloud',
   '/survey': 'Survey',
+  '/licenses':'Licenses',
+  './about':'About',
+
+  '/logging': 'Logging',
+  '/firmware': 'Firmware',
+
   '/components': 'Components',
   '/charts': 'Charts',
   '/connection/wifi': 'WiFi',

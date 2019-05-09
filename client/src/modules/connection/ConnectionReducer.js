@@ -2,7 +2,7 @@ import { reset } from 'redux-form';
 
 import { createAction, createRequestTypes } from '../../actions';
 import {
-    loginToWifiRequest
+    loginToWifiRequest, getWIFIList
 } from '../../services/api';
 
 // Actions
@@ -18,10 +18,10 @@ export const login = {
     failure: (dispatch, error) => {
         dispatch(createAction(WIFI.FAILURE, { error }));
     }
-};
+}; 
 
 // Action creators
-export const loginToWifi = (username, password) => (
+export const loginToWifi = (username, password) => ( 
     (dispatch) => {
         login.request(dispatch);
         loginToWifiRequest(username, password)
@@ -32,6 +32,22 @@ export const loginToWifi = (username, password) => (
             });
     }
 );
+
+// Get WIFI list
+export const getWiFiList = () => ( 
+    
+    (dispatch) => {
+        console.log("Callllllllll")
+        getWIFIList()
+            .then(response => login.success(dispatch, response))
+            .catch((error) => {
+                console.log(error);
+                login.failure(dispatch, 'Error while fetching data.');
+            });
+    }
+);
+
+
 
 // Reducer
 

@@ -84,8 +84,22 @@ class Sidebar extends Component {
             <li className='nav-item'>
               <NavLink to={'/cloud'} className='nav-link' activeClassName='active'><i className="fa fa-cloud"></i> Cloud</NavLink>
             </li>
+
+            <li className='nav-item'>
+              <NavLink to={'/logging'} className='nav-link' activeClassName='active'><i className="fa fa-sign-in"></i> Logging</NavLink>
+            </li>
+            <li className='nav-item'>
+              <NavLink to={'/firmware'} className='nav-link' activeClassName='active'><i className="fa fa-refresh"></i> Firmware</NavLink>
+            </li>
+
             <li className='nav-item'>
               <NavLink to={'/survey'} className='nav-link' activeClassName='active'><i className='fa fa-question'></i> Survey</NavLink>
+            </li>
+            <li className='nav-item'>
+              <NavLink to={'/licenses'} className='nav-link' activeClassName='active'><i className='fa fa-id-card-o'></i> licenses</NavLink>
+            </li>
+            <li className='nav-item'>
+              <NavLink to={'/about'} className='nav-link' activeClassName='active'><i className='fa fa-address-card'></i> About</NavLink>
             </li>
             <li className='divider'></li>
           </ul>

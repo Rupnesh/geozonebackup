@@ -1558,7 +1558,8 @@ pre {
   background-clip: padding-box;
   border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 0;
-  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s; }
+  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+ }
   .form-control::-ms-expand {
     background-color: transparent;
     border: 0; }
@@ -1584,6 +1585,18 @@ select.form-control:focus::-ms-value {
 .form-control-file,
 .form-control-range {
   display: block; }
+
+  .opt {
+    background: #ffffff;
+    color: 'black';
+  }
+  
+  .form-control .opt:checked,
+  .form-control .opt:focus {
+    background: linear-gradient(rgb(196, 199, 209), rgb(197, 199, 206));
+    -webkit-text-fill-color: #000;
+    color: #000;
+  }  
 
 .col-form-label {
   padding-top: calc(0.5rem - 1px * 2);

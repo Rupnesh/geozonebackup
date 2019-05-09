@@ -24,7 +24,7 @@ class LoginView extends Component {
         <input className='form-control' {...fields.password.input} type='password'/>
       </div>
       {fields.password.meta.touched && fields.password.meta.error &&
-      <div className='field-error'>{fields.password.meta.error}</div>}
+      <div className='field-error'>{fields.password.meta.error}</div>} 
     </div>
   );
   
@@ -34,11 +34,14 @@ class LoginView extends Component {
   }
   
   forgottenPassword = () => {
-    history.push('/forgotten-password');
+    history.push('/forgotten-password'); 
   };
   register = () => {
     history.push('/register');
   };
+
+
+ 
   
   render() {
     const { handleSubmit, isPending, loginError } = this.props;
@@ -60,14 +63,15 @@ class LoginView extends Component {
                         <div className='col-6'>
                           <button type='submit' className='btn btn-primary px-4' disabled={isPending}>Login</button>
                         </div>
-                        <div className='col-6 text-right d-none'>
+                        <div className='col-6 text-right'>
                           <button onClick={this.forgottenPassword} type='button' className='btn btn-link px-0'>Forgot password?</button>
                         </div>
                       </div>
+                     
                     </form>
                   </div>
                 </div>
-                <div className='card card-inverse card-primary py-5 d-none' style={{ width: '40%' }}>
+                <div className='card card-inverse card-primary py-5' style={{ width: '40%' }}>
                   <div className='card-block text-center'>
                     <div>
                       <h2>Sign up</h2>

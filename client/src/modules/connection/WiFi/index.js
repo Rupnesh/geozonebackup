@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 
 import WifiView from './WifiView';
-import { loginToWifi } from '../ConnectionReducer';
+import { loginToWifi, getWiFiList } from '../ConnectionReducer';
 
 const mapStateToProps = (state) => {
     const { credentialsError } = state.connection;
@@ -10,5 +10,5 @@ const mapStateToProps = (state) => {
 };
 
 export default connect(mapStateToProps, {
-    loginToWifi
+    loginToWifi, getWiFiList
 })(WifiView);

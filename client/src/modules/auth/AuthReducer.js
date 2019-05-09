@@ -16,7 +16,7 @@ import auth from '../../utils/authentication';
 
 // Helpers
 
-const authenticationSuccess = (data) => {
+const authenticationSuccess = (data) => { 
   auth.set({
     userId: data.user.id,
     token: data.token
@@ -109,7 +109,9 @@ export const resendCode = {
 
 // Action creators
 export const loginUser = (email, password) => (
+  
   (dispatch) => {
+    console.log(email, " ",password)
     loginUserRequest(email, password)
       .then(response => login.success(dispatch, response))
       .catch((error) => {

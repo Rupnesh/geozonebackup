@@ -9,8 +9,8 @@ import Footer from '../../components/Footer';
 /*import Dashboard from '../../views/Dashboard';*/
 import Dashboard from '../../modules/dashboard';
 import Collections from '../../modules/collections';
-import Charts from '../../views/Charts/';
-import Widgets from '../../views/Widgets/';
+import Charts from '../../views/Charts';
+import Widgets from '../../views/Widgets';
 import Buttons from '../../views/Components/Buttons';
 import WiFi from '../../modules/connection/WiFi';
 import BlueTooth from '../../modules/connection/BlueTooth';
@@ -27,6 +27,13 @@ import BaseCord from '../../modules/gps/BaseCord';
 import LogData from '../../modules/gps/LogData';
 import Cloud from '../../modules/cloud';
 import Survey from '../../modules/survey';
+import Licenses from '../../modules/licenses';
+import About from '../../modules/about'
+
+import Logging from '../../modules/logging';
+import FirmwareMain from '../../modules/firmware';
+
+
 import Cards from '../../views/Components/Cards';
 import Forms from '../../views/Components/Forms';
 import Modals from '../../views/Components/Modals';
@@ -68,6 +75,14 @@ export default class MainView extends PureComponent {
                 <Redirect from='/gps' to='/gps/main'/>
                 <Route path='/cloud' name='Cloud' component={Cloud}/>
                 <Route path='/survey' name='Survey' component={Survey}/>
+                <Route path='/licenses' name='Licenses' component={Licenses}/>
+                <Route path='/about' name='About' component={About}/>
+
+                <Route path='/logging' name='Logging' component={Logging}/>
+                <Route path='/firmware' name='Firmware' component={FirmwareMain}/>
+
+
+
                 <Route path='/components/cards' name='Cards' component={Cards}/>
                 <Route path='/components/forms' name='Forms' component={Forms}/>
                 <Route path='/components/modals' name='Modals' component={Modals}/>
