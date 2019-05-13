@@ -440,15 +440,14 @@ class LoggingView extends Component {
                         name="select"
                         className="form-control"
                         style={{ padding: "5px" }}
-                       //value={this.state.selectedValue} 
 						            onChange={this.handleOptionsChange}>
                        
                         {this.props.getList &&
                           this.props.getList.map((data, index) => {
                             return (
                               <option 
+                              key = {data}
                               className="opt" 
-                              key = {index}
                               value={data}>
                               <h6>{data}</h6>
                               </option>

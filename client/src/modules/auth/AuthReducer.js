@@ -115,6 +115,7 @@ export const loginUser = (email, password) => (
     loginUserRequest(email, password)
       .then(response => login.success(dispatch, response))
       .catch((error) => {
+        if(error){
         switch (error.status) {
           case 403: {
             login.failure(dispatch, error.data.message);
@@ -125,6 +126,9 @@ export const loginUser = (email, password) => (
             break;
           }
         }
+      }else{
+        login.failure(dispatch, 'Login failed with unknown reason.');
+      }
       });
   }
 );
