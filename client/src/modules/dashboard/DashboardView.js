@@ -108,6 +108,9 @@ class Dashboard extends Component {
 
     // let labels = [20,10,30,40,50,60,50,60,40,50]
     // let values = [50,40,30,20,30,40,40,50,35,45]
+
+    // let labels = [13,18,5,30, 20,10,30,40,50,60,50,60,40,50]
+    // let values = [52,51,51,51,50,40,30,20,30,40,40,50,35,4]
     
     // this.setState({
     //   graphData: {
@@ -135,7 +138,7 @@ class Dashboard extends Component {
       // socket && socket.emit('subscribe', 'GPSJSON');
     }
     
-    // socket && socket.emit('subscribe', 'imuOut');
+    socket && socket.emit('subscribe', 'imuOut');
 
       // socket && socket.emit('subscribe', 'IMU_1');
     
@@ -143,7 +146,7 @@ class Dashboard extends Component {
     
     // socket.on('data-GPSJSON', this.handleGPSJSONData);
 
-    // socket.on('data-imuOut',  this.handleIMU1Data);
+    socket.on('data-imuOut',  this.handleIMU1Data);
 
     // socket.on('data-IMU_1',  this.handleIMU1Data);
 
@@ -206,7 +209,7 @@ class Dashboard extends Component {
   }
   
   handleGPSJSONData(data) {
-    console.log("callleddddd gps...",data)
+    //console.log("callleddddd gps...",data)
 
 
 
@@ -254,9 +257,9 @@ class Dashboard extends Component {
       'pdop': data['pdop'],
       'vdop': data['vdop']
     }
-    if (JSON.stringify(tableData) !== JSON.stringify(this.state.tableData)) {
+    if (JSON.stringify(tableData) !== JSON.stringify(this.state.tableData1)) {
       this.setState({
-        tableData: tableData
+        tableData1: tableData
       });
     }
       
@@ -298,7 +301,8 @@ class Dashboard extends Component {
         'fixDate': data['time'] ? new Date(data['time']) : "",
         'fixTime': data['time'] ? new Date(data['time']).getTime() : "",
         'quality': data['quality'],
-        'totalsatellite': data['satellites']
+        'totalsatellite': data['satellites'],
+        'hdop': data['hdop']
         // 'quality': data['status'] === 2 ? 'DGPS fix' : 'Not Present'
       };
     
@@ -481,8 +485,8 @@ class Dashboard extends Component {
 
     const hSlideLimit = [1, 75];
     const vSlideLimit = [0, 80];
-    const ChSlideLimit = [-2, 115];
-    const CvSlideLimit = [-10, 118];
+    const ChSlideLimit = [13, 70];
+    const CvSlideLimit = [11, 75];
 
     const angleLimit = 42;
     // const angleLimit = 42;
@@ -540,28 +544,27 @@ class Dashboard extends Component {
     if (CFangleY < -angleLimit)
       CFangleY = -angleLimit;
     
-    const hBposition = [parseInt(scaleH(CFangleX)), 121];    
-    const vBposition = [120.5, parseInt(scaleV(CFangleY))];
-    // const hBposition = [parseInt(scaleH(CFangleX)), 118.5];
-    // const vBposition = [117.5, parseInt(scaleV(CFangleY))];    
-    // const newcBposition = [parseInt(scaleCH(CFangleX)), parseInt(scaleCV(CFangleY))];
-
-    let newcBposition;
-
-    if( (parseInt(scaleCH(CFangleX)) >= 1 && parseInt(scaleCH(CFangleX)) <= 73) && (parseInt(scaleCV(CFangleY)) >= 1 && parseInt(scaleCV(CFangleY)) <= 52) ) {
-      newcBposition = [parseInt(scaleCH(CFangleX)), parseInt(scaleCV(CFangleY))];
-    }
-    else {
-      newcBposition = [73, 52];
-    }
-    // const newcBposition = [73, 52];
-
-    let cBposition;    
-    //#confirm that center bubble is within the circle;
-    if (is_in_circle(52, 52, 42, newcBposition[0], newcBposition[1])) {
-      cBposition = newcBposition
-    }
-
+      const hBposition = [parseInt(scaleH(CFangleX)), 121];    
+      const vBposition = [120.5, parseInt(scaleV(CFangleY))];
+      // const hBposition = [parseInt(scaleH(CFangleX)), 118.5];
+      // const vBposition = [117.5, parseInt(scaleV(CFangleY))];    
+      // const newcBposition = [parseInt(scaleCH(CFangleX)), parseInt(scaleCV(CFangleY))];
+  
+      let newcBposition;
+  
+     // if( (parseInt(scaleCH(CFangleX)) >= 1 && parseInt(scaleCH(CFangleX)) <= 73) && (parseInt(scaleCV(CFangleY)) >= 1 && parseInt(scaleCV(CFangleY)) <= 62) ) {
+        newcBposition = [parseInt(scaleCH(CFangleX)), parseInt(scaleCV(CFangleY))];
+      //}
+      //else {
+        //newcBposition = [73, 52];
+      //}
+      // const newcBposition = [73, 52];
+  
+      let cBposition;    
+      //#confirm that center bubble is within the circle;
+      if (is_in_circle(52, 52, 42, newcBposition[0], newcBposition[1])) {
+        cBposition = newcBposition
+      }
     const newData = {
       hBposition: hBposition,
       vBposition: vBposition,
@@ -638,8 +641,8 @@ class Dashboard extends Component {
     // labels = [20,10,30,40]
     // values = [50,40,30,20]
 
-    // console.log(labels)
-    // console.log(values)
+    //console.log(labels)
+    //console.log(values)
     
     this.setState({
       graphData: {
@@ -781,89 +784,62 @@ class Dashboard extends Component {
               </div>
             </div> */}
 
-            <div className="card dashboard-table">
-              <table className="table table-striped">
+            <div className=" card dashboard-table">
+              <table className=" table-striped">
                 <tbody>
                   <tr>
-                    <th>Latitude</th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <th style = {{width:'50%'}}> Latitude</th>
                     <td>
-                      {this.state.tableData ? this.state.tableData.lat : ""}
+                      {this.state.tableData && this.state.tableData.lat }
                     </td>
                   </tr>
                   <tr>
-                    <th>Longitude</th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <th style = {{width:'50%'}}> Longitude</th>
                     <td>
-                      {this.state.tableData ? this.state.tableData.lon : ""}
+                      {this.state.tableData && this.state.tableData.lon }
                     </td>
                   </tr>
                   <tr>
-                    <th>Altitude</th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <th style = {{width:'50%'}}> Altitude</th>
                     <td>
-                      {this.state.tableData ? this.state.tableData.alt : ""}
+                      {this.state.tableData && this.state.tableData.alt }
                     </td>
                   </tr>
                   <tr>
-                    <th>Solution</th>
+                    <th style = {{width:'50%'}}> Solution</th>
                     {/* <th>Fix Time</th> */}
-                    <td></td>
-                    <td></td>
-                    <td></td>
                     <td>
-                      {this.state.tableData ? this.state.tableData.quality : ""}
+                      {this.state.tableData && this.state.tableData.quality }
                     </td>
                   </tr>
 
                   <tr>
-                    <th>PDOP</th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <th style = {{width:'50%'}}> PDOP</th>
                     <td>
-                      {this.state.tableData ? this.state.tableData.pdop : ""}
+                      {this.state.tableData1 && this.state.tableData1.pdop }
                     </td>
                   </tr>
                   <tr>
-                    <th>HDOP</th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <th style = {{width:'50%'}}> HDOP</th>
                     <td>
-                      {this.state.tableData ? this.state.tableData.hdop : ""}
+                      {this.state.tableData1 && this.state.tableData1.hdop }
                     </td>
                   </tr>
                   <tr>
-                    <th>VDOP</th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <th style = {{width:'50%'}}> VDOP</th>
                     <td>
-                      {this.state.tableData ? this.state.tableData.pdop : ""}
+                      {this.state.tableData1 && this.state.tableData1.pdop }
                     </td>
                   </tr>
 
                   <tr>
-                    <th>Satellites Used</th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <th style = {{width:'50%'}}> Satellites Used</th>
                     <td>
-                      {this.state.tableData ? this.state.tableData.totalsatellite : ""}
+                      {this.state.tableData && this.state.tableData.totalsatellite }
                     </td>
                   </tr>
                   <tr>
-                    <th>Date</th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <th style = {{width:'50%'}}>Date</th>
                     <td>    
                       {this.state.todaysDate }        
                       {/* <Moment format="DD-MM-YYYY">
@@ -872,16 +848,13 @@ class Dashboard extends Component {
                     </td>
                   </tr>
                   <tr>
-                    <th>Time UTC</th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <th style = {{width:'50%'}}> Time UTC</th>
                     <td>
-                      {this.state.tableData ? 
+                      {this.state.tableData && 
                         <Moment format="HH:mm:ss A">
                           {this.state.tableData.fixTime}
                         </Moment>
-                        : ""}
+                        }
                       
                     </td>
                   </tr>

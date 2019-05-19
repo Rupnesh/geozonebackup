@@ -94,7 +94,7 @@ class AboutView extends Component {
            this.setState({aboutList: data.data, isLoading: true})
         }
       })
-      .then(error => {
+      .catch(error => {
         console.log("error", error);
         this.setState({isLoading:true})
       });
@@ -131,25 +131,25 @@ class AboutView extends Component {
                             <div className="card-block">
                                 <form action="" method="post">
                                 <div className="form-group row">
-                                        <strong className="col-md-3 form-control-label" htmlFor="select">{Object.keys(this.state.aboutList[Object.keys(this.state.aboutList)[0]])[0]}</strong>
+                               {this.state.aboutList && <strong className="col-md-3 form-control-label" htmlFor="select">{Object.keys(this.state.aboutList[Object.keys(this.state.aboutList)[0]])[0]}</strong> }
                                     </div>    
                                                   
-                                { this.renderList('UHF',0)}
+                                { this.renderList('GNSS',0)}
                                 <div className="form-group row">
-                                        <strong className="col-md-3 form-control-label" htmlFor="select">{Object.keys(this.state.aboutList[Object.keys(this.state.aboutList)[1]])[0]}</strong>
+                                {this.state.aboutList && <strong className="col-md-3 form-control-label" htmlFor="select">{Object.keys(this.state.aboutList[Object.keys(this.state.aboutList)[1]])[0]}</strong>}
                                     </div>    
                           
-                                { this.renderList('GNSS',1)}
+                                { this.renderList('GSM',1)}
                                 <div className="form-group row">
-                                        <strong className="col-md-3 form-control-label" htmlFor="select">{Object.keys(this.state.aboutList[Object.keys(this.state.aboutList)[2]])[0]}</strong>
+                                {this.state.aboutList && <strong className="col-md-3 form-control-label" htmlFor="select">{Object.keys(this.state.aboutList[Object.keys(this.state.aboutList)[2]])[0]}</strong>}
                                     </div>    
-                                { this.renderList('GSM',2)}
+                                { this.renderList('SD-card',2)}
                                 <div className="form-group row">
-                                        <strong className="col-md-3 form-control-label" htmlFor="select">{Object.keys(this.state.aboutList[Object.keys(this.state.aboutList)[3]])[0]}</strong>
+                                {this.state.aboutList &&  <strong className="col-md-3 form-control-label" htmlFor="select">{Object.keys(this.state.aboutList[Object.keys(this.state.aboutList)[3]])[0]}</strong>}
                                     </div>    
-                                { this.renderList('SD-card',3)}
+                                { this.renderList('UHF',3)}
                                 <div className="form-group row">
-                                        <strong className="col-md-3 form-control-label" htmlFor="select">{Object.keys(this.state.aboutList[Object.keys(this.state.aboutList)[4]])[0]}</strong>
+                                {this.state.aboutList && <strong className="col-md-3 form-control-label" htmlFor="select">{Object.keys(this.state.aboutList[Object.keys(this.state.aboutList)[4]])[0]}</strong>}
                                     </div>    
                                 { this.renderList('falcon-version',4)}
                                    

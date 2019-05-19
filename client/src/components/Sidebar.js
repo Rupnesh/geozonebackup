@@ -96,7 +96,7 @@ class Sidebar extends Component {
               <NavLink to={'/survey'} className='nav-link' activeClassName='active'><i className='fa fa-question'></i> Survey</NavLink>
             </li>
             <li className='nav-item'>
-              <NavLink to={'/licenses'} className='nav-link' activeClassName='active'><i className='fa fa-id-card-o'></i> licenses</NavLink>
+              <NavLink to={'/licenses'} className='nav-link' activeClassName='active'><i className='fa fa-id-card-o'></i> Licenses</NavLink>
             </li>
             <li className='nav-item'>
               <NavLink to={'/about'} className='nav-link' activeClassName='active'><i className='fa fa-address-card'></i> About</NavLink>

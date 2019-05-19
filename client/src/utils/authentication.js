@@ -13,7 +13,7 @@ export default {
   },
   set(data) {
     Storage.setItem(AUTHENTICATION_STORAGE_KEY, data.token);
-    Storage.setItem(AUTHENTICATION_USER_DATA, JSON.stringify(data.userId));
+    Storage.setItem(AUTHENTICATION_USER_DATA, data.userId);
   },
   clear() {
     Storage.removeItem(AUTHENTICATION_STORAGE_KEY);

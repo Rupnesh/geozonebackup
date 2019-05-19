@@ -1,8 +1,8 @@
 export var api = {   
     // node wifi api 
-    GET_WIFI_LIST: 'v1/wifi/on',
-    OFF_WIFI: 'v1/wifi/off',
-    LOGIN_WITH_WIFI: 'v1/wifi/connect',
+    GET_WIFI_LIST: 'wifi/on',
+    OFF_WIFI: 'wifi/off',
+    LOGIN_WITH_WIFI: 'wifi/cred',
 
     //flask api's
     logging_status: 'logging',

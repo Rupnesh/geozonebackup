@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './Wifi.css';
-import {GETAPI, POSTAPI, postAPI1} from '../../../services/fetchAPI'
+import {GETAPI, POSTAPI, postAPI1, AxiosPromise} from '../../../services/fetchAPI'
 
 import {api} from '../../../../src/config/api'
 import LoadingSpinner from '../../../views/Components/LoadingSpinner';
@@ -45,41 +45,50 @@ class WifiView extends Component {
   componentDidMount() {
     // this.state.WIFIList.sort((a, b) => a.strength - b.strength);
 
-    GETAPI(api.GET_WIFI_LIST,"")
-    .then(response => {
-      if(response.success) {
-        this.setState({loading : false})
+   this.wifiListApiCall()
+  }
 
-        this.setState({  WIFIList1: response.data })
+  wifiListApiCall = () => {
+    AxiosPromise.get(api.GET_WIFI_LIST)
+    .then(response => {
+      if(response.data) {
+       let output = Object.keys(response.data).map(function(key) {
+          return {type: key, name: response.data[key]};
+       });
+        this.setState({  WIFIList1: output, loading: false })
         // this.setState({  WIFIList1: response.data }, function () {
         //   console.log(this.state.WIFIList1);
         // })
       }
     
     })
-    .then(error => console.log("error"));
-
+    .catch(error => {
+      console.log("error", error);
+    //  this.setState({ loading: false });
+    });
   }
+
 
   scanWIFI() {
     this.setState({loading : true, WIFIList1:[] })
+    this.wifiListApiCall()
 
     // this.setState({  loading : true, WIFIList1:[] }, function () {
     //   console.log(this.state.WIFIList1);
       
     // })
 
-    const users = GETAPI(api.GET_WIFI_LIST,"")
-    .then(response => {
-      if(response.success) {
+    // const users = GETAPI(api.GET_WIFI_LIST,"")
+    // .then(response => {
+    //   if(response.success) {
         
-        this.setState({loading : false})
-        this.setState({
-          WIFIList1: response.data
-        });
-      }
+    //     this.setState({loading : false})
+    //     this.setState({
+    //       WIFIList1: response.data
+    //     });
+    //   }
 
-    });
+    // });
   }
 
 
@@ -94,60 +103,39 @@ class WifiView extends Component {
     });
 
     if(this.state.WIFI === true) {
-      // console.log(this.state.WIFI)
-      GETAPI(api.OFF_WIFI,"")
+
+      AxiosPromise.get(api.OFF_WIFI)
       .then(response => {
-        if(response.success) {
+      if(response) {
 
-        }
+      }
+    
+    })
+    .catch(error => {
+      console.log("error", error);
+    //  this.setState({ loading: false });
+    });
+      // console.log(this.state.WIFI)
+      // GETAPI(api.OFF_WIFI,"")
+      // .then(response => {
+      //   if(response.success) {
 
-      });
+      //   }
+
+      // });
     }
     else {
       // console.log(this.state.WIFI)
       this.setState({loading : true})
       this.setState({ WIFIList1: []});
 
-      GETAPI(api.GET_WIFI_LIST,"")
-      .then(response => {
-        if(response.success) {
-          
-          this.setState({loading : false})
-          this.setState({
-            WIFIList1: response.data
-          });
+     this.wifiListApiCall()
 
-        }
-
-      });
       
     }
     
   }
 
-  // toggleWIFI() {
-  //   if(this.state.WIFI === true) {
-  //     this.setState({loading : true})
-  //     getAPI(api.GET_WIFI_LIST,"")
-  //     .then(response => {
-  //       if(response.success) {
-          
-  //         this.setState({loading : false})
-  //         this.setState(prevState => ({
-  //           WIFIList1: prevState.WIFIList1
-  //         }));
-
-  //       }
-
-  //     });
-  //   }
-  //   else {
-  //     this.setState({
-  //       WIFI: !this.state.WIFI,
-  //       loading: false
-  //     });
-  //   }
-  // }
 
   loginToWIFI = () => {
     console.log("WIFI>>>",this.state.selectedWIFI)
@@ -155,19 +143,14 @@ class WifiView extends Component {
     // let data = {"ssid":"Arcogast1","pass":"Arcogast@17" }
     let data = {"ssid":this.state.selectedWIFI,"pass":this.state.nf_password +'\r\n' }
 
-    POSTAPI(api.LOGIN_WITH_WIFI,data)
+    AxiosPromise.post(api.LOGIN_WITH_WIFI, data)
     .then(response => {
-      if(response.success) {
-        this.setState({ConnectedStatus: response.data.status, statusMSG1:response.data.message1, statusMSG2:response.data.message2 });
-        // this.setState({  WIFIList1: response.data }, function () {
-        //   console.log(this.state.WIFIList1);
-        // })
+      if(response.data) {
+        this.setState({ConnectedStatus: response.data.status, statusMSG1:response.data.message1, statusMSG2:response.data.message2, statusMSG3: response.data.message3 });
       }
-    
     })
-    .then(error => console.log("error",error));
-
-    
+    .catch(error =>
+      console.log("error", error));
 
     this.setState({ connectedWIFI: this.state.selectedWIFI })
   }
@@ -219,8 +202,8 @@ class WifiView extends Component {
 
         <div className='card-block col-sm-6 col-md-6 col-lg-6'>
           {/* { this.state.WIFI ? "Connected to "+this.state.connectedWIFI : "Not Connected"} */}
-          { (this.state.WIFI && this.state.ConnectedStatus == 1) ?   this.state.statusMSG1 + '/' + this.state.statusMSG2 : this.state.statusMSG1 }
-          { (this.state.WIFI && this.state.ConnectedStatus == 0) ?   this.state.statusMSG1 + '/' + this.state.statusMSG2 : this.state.statusMSG1 }
+          { (this.state.WIFI && this.state.ConnectedStatus == 1) ?   this.state.statusMSG1 + ', ' + this.state.statusMSG2 + ', ' + this.state.statusMSG3: this.state.statusMSG1 }
+          {/* { (this.state.WIFI && this.state.ConnectedStatus == 0) ?   this.state.statusMSG1 + '/' + this.state.statusMSG2 : this.state.statusMSG1 } */}
         </div>
         </div>
 
@@ -241,9 +224,9 @@ class WifiView extends Component {
                     
                     <select onChange={(e)=>this.setState({selectedWIFI:e.target.value}) } id="multiple-select" name="multiple-select" style={cursorStyle} className="form-control" size="5">
                     
-                      { this.state.WIFI && this.state.WIFIList1.length > 0 &&
-                        this.state.WIFIList1.sort((a, b) => b.signalleveldb - a.signalleveldb).map(
-                          (i, index) => { return (<option disabled={!this.state.WIFI} value={i.essid} key={index}>{i.essid}</option>) }
+                      { this.state.WIFIList1 && this.state.WIFIList1.length > 0 &&
+                        this.state.WIFIList1.sort((a, b) => b.name - a.name).map(
+                          (i, index) => { return (<option disabled={!this.state.WIFI} value={i.type} key={index}>{i.type}</option>) }
                         )
                       }
 
@@ -276,7 +259,15 @@ class WifiView extends Component {
                           <input type="email" value={this.state.selectedWIFI} id="nf-email" style={cursorStyle} name="nf_email" disabled={!this.state.WIFI} className="form-control" placeholder="User Name"/>
                       </div>
                       <div className="form-group">
-                          <input type="password" value={this.state.nf_password} onChange={this.handleChange} id="nf-password" style={cursorStyle} name="nf_password" disabled={!this.state.WIFI} className="form-control" placeholder="Password"/>
+                          <input 
+                          type="password" 
+                          //value={this.state.nf_password} 
+                          onChange={this.handleChange} id="nf-password" 
+                          style={cursorStyle} 
+                          name="nf_password" 
+                          //disabled={!this.state.WIFI} 
+                          className="form-control" 
+                          placeholder="Password"/>
                       </div>
                   </form> 
               </div>

@@ -239,6 +239,7 @@ export const getUserData = () => (
         dispatch(createAction(LOGIN.SUCCESS, { response }));
       })
       .catch((error) => {
+        if (error){
         switch (error.status) {
           case 403: {
             login.failure(dispatch, error.data.message);
@@ -249,7 +250,10 @@ export const getUserData = () => (
             break;
           }
         }
-      });
+      }else{
+        login.failure(dispatch, 'Login failed with unknown reason.');
+      }}
+      );
   }
 );
 

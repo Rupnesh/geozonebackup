@@ -23,13 +23,13 @@ class App extends Component {
     configureDefaults();
 
     if (authData.token) {
-      verifyTokenAvailability(authData.token)
-        .then(() => {
+     // verifyTokenAvailability(authData.token)
+       // .then(() => {
           history.push('/dashboard')
-        })
-        .catch(() => {
-          history.push('/login')
-        });
+       // })
+        //.catch(() => {
+          //history.push('/login')
+        //});
     } else {
       history.push('/login')
     }

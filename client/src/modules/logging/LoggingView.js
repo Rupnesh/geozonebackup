@@ -46,7 +46,7 @@ class LoggingView extends Component {
 
         }
       })
-      .then(error => {
+      .catch(error => {
         console.log("error", error);
       //  this.setState({ loading: false });
       });
@@ -58,7 +58,7 @@ class LoggingView extends Component {
       if (response && response.data && response.data.status === 1) {
         this.setState({ memoryStatus: response.data.data, loading: false, displayMessage: false });
       }
-    }).then(error => {
+    }).catch(error => {
       console.log("error", error);
       //this.setState({ loading: false });
     });
@@ -105,7 +105,7 @@ class LoggingView extends Component {
           this.setState({logFileStatus: 'That Log name is taken, Try another'})
         }
       })
-      .then(error => 
+      .catch(error => 
         console.log("error", error));
   }
 
@@ -157,7 +157,7 @@ class LoggingView extends Component {
        this.getListData(response)
        alert(response.data.message)
       })
-      .then(error =>
+      .catch(error =>
         console.log("error", error));
       }
 
@@ -186,7 +186,7 @@ class LoggingView extends Component {
          // this.getListData()
           console.log("response", response)
         })
-        .then(error => console.log("error", error));
+        .catch(error => console.log("error", error));
       }else{
         alert('Something is missing. Please check it again you have entered all require data')
       }
@@ -201,7 +201,7 @@ class LoggingView extends Component {
            this.callApi()
           }
         })
-        .then(error => 
+        .catch(error => 
           console.log("error", error));
       }
 

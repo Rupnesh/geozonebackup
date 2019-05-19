@@ -4,11 +4,59 @@ import { Fields, reduxForm } from 'redux-form';
 
 import { history } from '../../../utils/history';
 import { regexEmail } from '../../../config';
+import auth from '../../../utils/authentication';
+const UserCredential = [
+  {
+    firstname: 'Dominic',
+    lastname: 'Staufer',
+    email: 'dominic@geozone.ch',
+    password: 'geozone2017'
+  },
+  {
+    firstname: 'Andrei',
+    lastname: 'Lakatos',
+    email: 'andrei@mcro-e.com',
+    password: 'geozone2017'
+    },
+    {
+    firstname: 'Alex',
+    lastname: 'Lazar',
+    email: 'alex@mcro-e.com',
+    password: 'geozone2017'
+    },
+    {
+    firstname: 'Ian',
+    lastname: 'Peters',
+    email: 'ian@geozone.ch',
+    password: 'geozone2017'
+    },
+    {
+    firstname: 'Damon',
+    lastname: 'Hermann',
+    email: 'damon@geozone.ch',
+    password: 'geozone2017'
+    },
+    {
+    firstname: 'Kuzo',
+    lastname: 'Kuzo',
+    email: 'kuzo@geozone.ch',
+    password: 'geozone2017'
+    },
+    {
+    firstname: 'Demo',
+    lastname: 'Demo',
+    email: 'demo@geozone.ch',
+    password: 'geozone2017'
+    }
+]
 
 class LoginView extends Component {
   constructor(props) {
     super(props);
     this.handleFormSubmit = this.handleFormSubmit.bind(this);
+    this.state = {
+      loginError:''
+    }
   }
   
   renderFields = fields => (
@@ -24,27 +72,39 @@ class LoginView extends Component {
         <input className='form-control' {...fields.password.input} type='password'/>
       </div>
       {fields.password.meta.touched && fields.password.meta.error &&
-      <div className='field-error'>{fields.password.meta.error}</div>} 
+      <div className='field-error'>{fields.password.meta.error}</div>}
     </div>
   );
   
   handleFormSubmit(props) {
     const { email, password } = props;
-    this.props.loginUser(email, password);
+    this.loginUser(email, password);
   }
+
+  loginUser = (email, password) =>{
+    UserCredential.map((val, index) =>{
+      if(val.email === email && val.password === password){
+        auth.set({
+          userId: val.firstname,
+          token: val.email
+        });
+        history.push('/dashboard');
+      }else{
+        return this.setState({loginError: "Login failed with unknown reason."})
+      }
+    })
+  }
+
   
   forgottenPassword = () => {
-    history.push('/forgotten-password'); 
+    history.push('/forgotten-password');
   };
   register = () => {
     history.push('/register');
   };
-
-
- 
   
   render() {
-    const { handleSubmit, isPending, loginError } = this.props;
+    const { handleSubmit, isPending } = this.props;
     return (
       <div className='app flex-row align-items-center'>
         <div className='container'>
@@ -56,22 +116,21 @@ class LoginView extends Component {
                     <form onSubmit={handleSubmit(this.handleFormSubmit)}>
                       <h1>Login</h1>
                       <p className='text-muted'>
-                        {loginError ? <span className='error'>{loginError}</span> : 'Sign In to your account'}
+                        {this.state.loginError ? <span className='error'>{this.state.loginError}</span> : 'Sign In to your account'}
                       </p>
                       <Fields names={['email', 'password']} component={this.renderFields}/>
                       <div className='row'>
                         <div className='col-6'>
                           <button type='submit' className='btn btn-primary px-4' disabled={isPending}>Login</button>
                         </div>
-                        <div className='col-6 text-right'>
+                        <div className='col-6 text-right d-none'>
                           <button onClick={this.forgottenPassword} type='button' className='btn btn-link px-0'>Forgot password?</button>
                         </div>
                       </div>
-                     
                     </form>
                   </div>
                 </div>
-                <div className='card card-inverse card-primary py-5' style={{ width: '40%' }}>
+                <div className='card card-inverse card-primary py-5 d-none' style={{ width: '40%' }}>
                   <div className='card-block text-center'>
                     <div>
                       <h2>Sign up</h2>
