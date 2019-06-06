@@ -1,6 +1,6 @@
 const { Register } = require('./controller');
 const { validator } = require('validator');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 
 /**

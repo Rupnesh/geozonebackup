@@ -4,7 +4,7 @@ import { Bar, Line } from 'react-chartjs-2';
 import { socketConnect } from 'socket.io-react';
 import { Dropdown, DropdownMenu, DropdownItem, Progress } from 'reactstrap';
 import ResizeObserver from 'react-resize-observer';
-
+import LoadingSpinner from "../../views/Components/LoadingSpinner";
 import HorizontalProgress from "./HorizontalProgress";
 import Moment from 'react-moment';
 import moment from 'moment-timezone';
@@ -58,6 +58,7 @@ class Dashboard extends Component {
   state = {
     GPS: true,
     IMU: true,
+    newIMUData:null,
     graphData: {
       labels: [],
       datasets: [
@@ -75,7 +76,9 @@ class Dashboard extends Component {
     tpvData: null,
     progress: 10,
     imuDataArray: {},
-    todaysDate:''
+    todaysDate:'',
+    isIMUDataAvailable:true,
+    isSkyPlotDataAvailable:true
   };
   satelliteData = null;
   spiritLevelData = null;
@@ -97,7 +100,7 @@ class Dashboard extends Component {
   }
   
   componentDidMount() {
-    console.log(this.props)
+   // console.log(this.props)
 
     var tzstring = moment.tz.guess();
     
@@ -172,85 +175,96 @@ class Dashboard extends Component {
   }
   
   handleIMU1Data(data) {
-    // const jsonData = JSON.parse(data);
-    //debugger;
-    let jsonData
-    jsonData = JSON.parse(data);
 
-    // console.log(data)
-    // const jsonData = data;
+   
 
-    // let imuDataArray = {
-    //   cfangleX: jsonData['cfangleX'],
-    //   cfangleY: jsonData['cfangleY'],
-    //   cfangleZ: jsonData['cfangleZ']
-    // } 
-
-    // this.setState({imuDataArray: imuDataArray})
-
-    // const newData = this.state.imuDataArray
-
-    const newData = {
-      cfangleX: jsonData['cfangleX'],
-      cfangleY: jsonData['cfangleY'],
-      cfangleZ: jsonData['cfangleZ']
-    };
-    //console.log(newData)
-
-    if (this.umMounted) {
-      return;
+    try {
+      let jsonData
+      if(data && data.noDataAvailable){
+        return this.setState({isIMUDataAvailable: true })
+    }else{
+      jsonData = JSON.parse(data);
+      this.state.isIMUDataAvailable =  false
+     }
+         
+        
+  
+      // console.log(data)
+      // const jsonData = data;
+  
+      // let imuDataArray = {
+      //   cfangleX: jsonData['cfangleX'],
+      //   cfangleY: jsonData['cfangleY'],
+      //   cfangleZ: jsonData['cfangleZ']
+      // } 
+  
+      // this.setState({imuDataArray: imuDataArray})
+  
+      // const newData = this.state.imuDataArray
+  
+      const newData = {
+        cfangleX: jsonData && jsonData['cfangleX'],
+        cfangleY: jsonData && jsonData['cfangleY'],
+        cfangleZ: jsonData && jsonData['cfangleZ']
+      };
+      //console.log(newData)
+  
+      if (this.umMounted) {
+        return;
+      }
+      // console.log(JSON.stringify(this.state.imuDataArray))
+      
+      if ((JSON.stringify(newData) !== JSON.stringify(this.state.newIMUData))) {
+        this.state.newIMUData =  newData
+        this.spiritLevelCalculations(newData)
+      }
+    } catch (error) {
+      console.log('ErrorInIMUData', error)
     }
-    // console.log(JSON.stringify(this.state.imuDataArray))
-    
-    if (JSON.stringify(newData) !== JSON.stringify(this.imuData)) {
-      this.imuData = newData;
-      this.spiritLevelCalculations();
-    }
+   
   }
   
   handleGPSJSONData(data) {
-    //console.log("callleddddd gps...",data)
-
-
-
-    // const parsedData = JSON.parse(data);
-    // const parsedData = JSON.parse(JSON.stringify(data.data));
+   
     const parsedData = data;
-    //console.log(parsedData)
-
-
+    try {
+      if (this.umMounted) {
+        return;
+      }
   
-    if (this.umMounted) {
-      return;
+      // if(parsedData != null) {
+      //   console.log(parsedData)
+      //   this.updateSatellites(parsedData);
+      // }
+  
+      
+      switch (parsedData.type) {
+        case 'GSV':
+          this.updateSatellites(parsedData);
+          break;
+        case 'GGA':
+          this.updateTPV(parsedData); 
+          break;
+        case 'GSA':
+          this.updateTPVGSA(parsedData); 
+          break;
+      }
+  
+      // switch (parsedData.class) {
+      //   case 'SKY':
+      //     this.updateSatellites(parsedData);
+      //     break;
+      //   case 'TPV':
+      //     this.updateTPV(parsedData); 
+      //     break;
+      // }
+      
+    } catch (error) {
+      console.log('Error', error)
     }
-
-    // if(parsedData != null) {
-    //   console.log(parsedData)
-    //   this.updateSatellites(parsedData);
-    // }
-
-    
-    switch (parsedData.type) {
-      case 'GSV':
-        this.updateSatellites(parsedData);
-        break;
-      case 'GGA':
-        this.updateTPV(parsedData); 
-        break;
-      case 'GSA':
-        this.updateTPVGSA(parsedData); 
-        break;
-    }
-
-    // switch (parsedData.class) {
-    //   case 'SKY':
-    //     this.updateSatellites(parsedData);
-    //     break;
-    //   case 'TPV':
-    //     this.updateTPV(parsedData); 
-    //     break;
-    // }
   }
+  
+
   updateTPVGSA(data) {
     const tableData = {
       'hdop': data['hdop'],
@@ -266,21 +280,21 @@ class Dashboard extends Component {
   }
   
   updateSatellites(data) {
-    // console.log('SATELITE = ', data);
     this.satelliteData = data;
     if(this.satelliteData.satellites.length > 0) {
+      this.state.isSkyPlotDataAvailable = false
       this.plotCalculations();
       this.populateGraphData();
+    }else{
+      this.state.isSkyPlotDataAvailable = true
     }
   }
   
   updateTPV(data) {
-    // console.log('TPV = ', data);
     this.updateTableData(data);
   }
   
   updateTableData(data) {
-    // console.log(data)
     if (!this.satelliteData) {
       return;
     }
@@ -313,11 +327,12 @@ class Dashboard extends Component {
     }
   }
   
+  
   toggleGPS() {
     const { socket } = this.props;
     const state = !this.state.GPS ? 'subscribe' : 'unsubscribe';
     socket && socket.emit(state, 'GPSJSON');
-    console.log(socket)
+    //console.log(socket)
 
     this.setState({
       GPS: !this.state.GPS 
@@ -349,7 +364,7 @@ class Dashboard extends Component {
   }
   
   plotCalculations = (onResize) => {
-    console.log()
+    //console.log()
     
     const data = this.satelliteData;
     
@@ -478,8 +493,8 @@ class Dashboard extends Component {
     }
   };
   
-  spiritLevelCalculations() {
-    const data = this.imuData;
+  spiritLevelCalculations(value) {
+    const data = value
     const canvas = document.querySelector('#spirit-level-container canvas');
     const cx = canvas.getContext("2d");
 
@@ -552,9 +567,9 @@ class Dashboard extends Component {
   
       let newcBposition;
   
-     // if( (parseInt(scaleCH(CFangleX)) >= 1 && parseInt(scaleCH(CFangleX)) <= 73) && (parseInt(scaleCV(CFangleY)) >= 1 && parseInt(scaleCV(CFangleY)) <= 62) ) {
+     if( (parseInt(scaleCH(CFangleX)) >= 1 && parseInt(scaleCH(CFangleX)) <= 73) && (parseInt(scaleCV(CFangleY)) >= 1 && parseInt(scaleCV(CFangleY)) <= 62) ) {
         newcBposition = [parseInt(scaleCH(CFangleX)), parseInt(scaleCV(CFangleY))];
-      //}
+     }
       //else {
         //newcBposition = [73, 52];
       //}
@@ -594,7 +609,7 @@ class Dashboard extends Component {
       };
       hbBubble.src = "img/spirit-level/Vectorillustration_design_4_bottom_bubble.png";
   
-      vbBubble.onload = () => {
+      vbBubble.onload = () => { 
         cx.drawImage(vbBubble, newData['vBposition'][0], newData['vBposition'][1], 22, 22);
         // cx.drawImage(vbBubble, newData['vBposition'][0], newData['vBposition'][1], 28, 34);
       };
@@ -672,29 +687,36 @@ class Dashboard extends Component {
             position: 'relative',
             border: 0
           }} className='col-sm-12 col-md-6 col-lg-6 card'>
-            <div id="svg-container" className='card-block pb-0'>
-              <ResizeObserver
-                onResize={() => this.plotCalculations(true)}
-              />
-              <canvas style={{ position: 'absolute' }}>
-              </canvas>
-              <ReactSVG
-                path="img/skyplot.svg"
-                callback={svg => {
-                  svg.setAttribute('height', '100%');
-                  svg.setAttribute('width', '100%');
-                  svg.setAttribute('style', 'max-height: 450px;');
-                  svg.querySelector('#Combined-Shape').setAttribute('fill', '#88e885');
-                }}
-                className="skyplot"
-              />
-            </div>
+           { !this.state.isSkyPlotDataAvailable ?
+          <div id="svg-container" className='card-block pb-0'>
+            <ResizeObserver
+              onResize={() => this.plotCalculations(true)}
+            />
+            <canvas style={{ position: 'absolute' }}>
+            </canvas>
+            <ReactSVG
+              path="img/skyplot.svg"
+              callback={svg => {
+                svg.setAttribute('height', '100%');
+                svg.setAttribute('width', '100%');
+                svg.setAttribute('style', 'max-height: 450px;');
+                svg.querySelector('#Combined-Shape').setAttribute('fill', '#88e885');
+              }}
+              className="skyplot"
+            />
+          </div>
+          :
+            <div className='my-auto' >
+            <LoadingSpinner />
+            </div> }
+
           </div>
           
           <div style={{ position: 'relative' }} className='col-sm-12 col-md-6 col-lg-6 mb-4 background-white'>
-            <div className='row'>
-              <div className="row col-sm-6 col-md-6 col-lg-6">
-                <div id="spirit-level-container" className="card-block">
+        <div className='row'>
+        <div className="row col-sm-6 col-md-6 col-lg-6">
+        {/* { !this.state.isIMUDataAvailable ?   */}
+              <div id="spirit-level-container" className="card-block">
                   <canvas style={{
                     position: 'absolute',
                     top: '1.25rem',
@@ -704,31 +726,30 @@ class Dashboard extends Component {
                   </canvas>
                   <img onLoad={() => {
                     let canvas = document.querySelector('#spirit-level-container canvas');
-  
                     canvas.setAttribute('height', '150px');
                     canvas.setAttribute('width', '150px');
                   }} style={{
                     maxHeight: '150px',
                     position: 'relative'
                   }} className="spirit-level" src="img/spirit-level/Vectorillustration_design_4_no_bubble.png" alt=""/>
+                             
                 </div>
-                <div className="card-block">
+                {/* :
+           <div style = {{height:'190px', width: '200px', paddingTop:'80px'}} >
+          <LoadingSpinner />
+              </div> } */}
+              <div className="card-block">
                   <h5 style = {{marginBottom:'15px'}}>In built GPS Active</h5>
                 </div>
-              </div>
-
-
+              </div> 
+              
 
               <div className='row col-sm-6 col-md-6 col-lg-6 card' style={{border:"none",position:'relative'}}>
                 <div style={{position:"absolute",bottom:'0',width:'100%'}}>
                   <HorizontalProgress progress={this.state.progress} />
                 </div>                
-
-                
+         
               </div>
-
-
-
 
               {/* <div className='card-block col-sm-6 col-md-6 col-lg-6'>
                 <div className="form-group row">
@@ -773,9 +794,6 @@ class Dashboard extends Component {
                 </div>
               </div> */}
 
-
-
-
             </div>
 
             {/* <div className='row'>
@@ -784,9 +802,9 @@ class Dashboard extends Component {
               </div>
             </div> */}
 
-            <div className=" card dashboard-table">
-              <table className=" table-striped">
-                <tbody>
+            <div className=" card dashboard-table" >
+            <table className=" table-striped" style ={{width:'100%'}}> 
+               <tbody>
                   <tr>
                     <th style = {{width:'50%'}}> Latitude</th>
                     <td>
@@ -807,7 +825,7 @@ class Dashboard extends Component {
                   </tr>
                   <tr>
                     <th style = {{width:'50%'}}> Solution</th>
-                    {/* <th>Fix Time</th> */}
+                  
                     <td>
                       {this.state.tableData && this.state.tableData.quality }
                     </td>
@@ -842,9 +860,7 @@ class Dashboard extends Component {
                     <th style = {{width:'50%'}}>Date</th>
                     <td>    
                       {this.state.todaysDate }        
-                      {/* <Moment format="DD-MM-YYYY">
-                        {new Date()}
-                      </Moment> */}
+                    
                     </td>
                   </tr>
                   <tr>
@@ -861,12 +877,13 @@ class Dashboard extends Component {
                   
                 </tbody>
               </table>
+                      
+              {/* <div className='my-auto' >
+              <LoadingSpinner />
+              </div> */}
             </div>
           </div>
         </div>
-
-
-        
 
         <div className='row'>
           <div className='col-sm-12 card card-inverse'>
@@ -874,6 +891,7 @@ class Dashboard extends Component {
               <Bar data={this.state.graphData}
                    options={options}/>
             </div>
+          
           </div>
         </div>
       </div>
@@ -882,19 +900,3 @@ class Dashboard extends Component {
 }
 
 export default socketConnect(Dashboard);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

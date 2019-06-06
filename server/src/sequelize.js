@@ -9,12 +9,12 @@ const { sequelize } = models;
 
 module.exports = (callback) => {
   
-  function initSequelize(err) {
+  function initSequelize(err) { 
     if (err) {
       throw err;
     }
     if (db.wipe) {
-      console.log('-- Wiping existing database.');
+     // console.log('-- Wiping existing database.');
     }
     
     sequelize
@@ -59,7 +59,7 @@ module.exports = (callback) => {
             }
           ])
           .then(function() {
-            console.log('-- Database synced '.concat(db.wipe ? ': data it\'s wiped & schema recreated' : ''));
+          //  console.log('-- Database synced '.concat(db.wipe ? ': data it\'s wiped & schema recreated' : ''));
             if (callback) callback();
           });
       });
@@ -74,7 +74,8 @@ module.exports = (callback) => {
     });
     connection.connect();
     connection.query(`CREATE DATABASE IF NOT EXISTS ${db.database};`, initSequelize);
-  // } else if ( db.dialect === 'postgres' ) {
+  } 
+  // else if ( db.dialect === 'postgres' ) {
   //   // TODO: make a check if the db exists and create it only if doesn't
   //   pgtools.dropdb({
   //     user: db.username,
@@ -91,5 +92,4 @@ module.exports = (callback) => {
   //   });
   // }
   // add support for more dbs
-  }
 };

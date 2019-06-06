@@ -53,7 +53,7 @@ class HeaderView extends Component {
           <li className='nav-item px-3'>
             <a href='/#/dashboard' className='nav-link'>Dashboard</a>
           </li>
-          <li className='nav-item px-3'>
+          {/* <li className='nav-item px-3'>
             <a href='/#/connection' className='nav-link' onClick={() => {document.body.classList.remove('sidebar-hidden');}}>Connection</a>
           </li>
           <li className='nav-item px-3'>
@@ -64,10 +64,20 @@ class HeaderView extends Component {
           </li>
           <li className='nav-item px-3'>
             <a href='/#/survey' className='nav-link' onClick={() => {document.body.classList.remove('sidebar-hidden');}}>Survey</a>
+          </li> */}
+           <li className='nav-item px-3'>
+            <a href='/#/connection/wifi' className='nav-link' onClick={() => {document.body.classList.remove('sidebar-hidden');}}>WiFi</a>
+          </li>
+          <li className='nav-item px-3'>
+            <a href='/#/logging' className='nav-link' onClick={() => {document.body.classList.remove('sidebar-hidden');}}>Logging</a>
           </li>
           <li className='nav-item px-3'>
             <a href='/#/licenses' className='nav-link' onClick={() => {document.body.classList.remove('sidebar-hidden');}}>Licenses</a>
           </li>
+          <li className='nav-item px-3'>
+            <a href='/#/firmware' className='nav-link' onClick={() => {document.body.classList.remove('sidebar-hidden');}}>Firmware</a>
+          </li>
+          
           <li className='nav-item px-3'>
             <a href='/#/about' className='nav-link' onClick={() => {document.body.classList.remove('sidebar-hidden');}}>About</a>
           </li>

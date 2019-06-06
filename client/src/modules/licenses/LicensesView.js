@@ -159,10 +159,10 @@ class LicensesView extends Component {
                       aria-hidden="true"
                     />{" "}
                     <lable className="col-md-3">
-                      Onyx Starfire License Status
+                      Onyx Starfire License Status:
                     </lable>
                     {this.state.isActiveLicense && <label className="form-control-label" htmlFor="select">
-                    <label style = {{color: '#33cc33'}}> {this.state.isActiveLicense}</label> {" : "} Valid Until: {''}
+                    <label style = {{color: '#33cc33'}}> {this.state.isActiveLicense}</label> Valid Until {''}
                     <label style = {{color: '#F31B10'}}><Moment parse="YYYY-MM-DD HH:mm">
                      {this.state.expiryData}
                      </Moment></label>
@@ -181,11 +181,11 @@ class LicensesView extends Component {
                       style={{ color:  this.state.optionListData && this.state.optionListData.length >0 ? "#33cc33" : "#F31B10", fontSize: "25px" }}
                       aria-hidden="true"
                     />{" "}
-                    <lable className="col-md-3">Onyx Options Status:  {" "}</lable>
+                    <lable className="col-md-3" >Onyx Options Status:  {" "}</lable>
                     <lable style = {{color: this.state.optionListData && this.state.optionListData.length >0 ?'#33cc33': "#F31B10"}}>
                     { this.state.optionListData && this.state.optionListData.length >0 ? "Option is Active": "Option is Inactive"}
                     </lable>
-                    <lable className="col-md-7"> {this.state.listOfActiveOption.map((val, i)=>{ 
+                    <lable className="col-md-5"> {this.state.listOfActiveOption.map((val, i)=>{ 
                       if(i === 0){
                        return `${val} = ${this.state.maxDataRate}, `
                       }else if (i === 1){
@@ -202,9 +202,15 @@ class LicensesView extends Component {
                       className="col-md-3 form-control-label"
                       htmlFor="select"
                     >
-                      Onyx Starfire license
+                      Onyx Starfire License
                     </label>
+                    <i
+                      className= "fa fa-times-circle"
+                      style={{ color: '#fff',fontSize: "25px" }}
+                      aria-hidden="true"
+                    />
                     <div className="col-md-7">
+                    
                       <input
                         className="form-control"
                         type="text"
@@ -212,7 +218,7 @@ class LicensesView extends Component {
                         // onSubmit={this.OnyxLicensesNo}
                         maxLength={34}
                         value={this.state.StarFireLicensesNo}
-                        placeholder={"enter 32 digit licenses number"}
+                        placeholder={"Enter 32 character license number"}
                       />
                       <h6 style={{ marginTop: "5px", color: this.state.licenseActivationStatusNo ===1? "#33cc33": "#F31B10" }}>
                         {this.state.StarFireLicensesNo.length === 35 && this.state.licenseActivationStatus}
@@ -239,6 +245,11 @@ class LicensesView extends Component {
                     >
                       Onyx Options
                     </label>
+                    <i
+                      className= "fa fa-times-circle"
+                      style={{ color: '#fff',fontSize: "25px" }}
+                      aria-hidden="true"
+                    />
                     <div className="col-md-7">
                       <input
                         className="form-control"
@@ -246,7 +257,7 @@ class LicensesView extends Component {
                         maxLength={34}
                         value={this.state.OnyxLicensesNo}
                         onChange={this.OnyxLicensesNo}
-                        placeholder={"enter 32 digit licenses number"}
+                        placeholder={"Enter 32 character license number"}
                       />
                       <h6 style={{ marginTop: "5px", color: this.state.optionActivationStatusNo ===1? "#33cc33": "#F31B10"  }}>
                       {this.state.OnyxLicensesNo.length === 35 && this.state.optionActivationStatus}
@@ -266,10 +277,10 @@ class LicensesView extends Component {
                   </div>
                 </form>
               </div>
-             : (
-                <LoadingSpinner />
-              )
-            }
+              : (
+                 <LoadingSpinner />
+               )
+             }
               <div className="card-footer" />
             </div>
                    

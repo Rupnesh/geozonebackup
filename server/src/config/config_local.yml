@@ -1,13 +1,29 @@
 environment: local
 api:
   port: 8080
+# api:
+#   port: 3000
 
-CLOUDAMQP_URL: amqp://oynylrww:GgJXP1k3PYaAZ_8NXPmNbf8OZRyTnu3k@donkey.rmq.cloudamqp.com/oynylrww
+# CLOUDAMQP_URL: amqp://oynylrww:GgJXP1k3PYaAZ_8NXPmNbf8OZRyTnu3k@donkey.rmq.cloudamqp.com/oynylrww
+CLOUDAMQP_URL: amqp://guest:guest@rabbitmq
+
+# db:
+#   username: root
+#   password:
+#   database: falcon
+#   dialect: postgres
+#   host: '127.0.0.1'
+#   port: 5432
+#   wipe: true
+#   logging: false
+# secret: 'falcon2018'
+# apiVersion: 'v1'
+
 
 # db:
 #   username: postgres
 #   password: postgres
-#   database: postgres
+#   database: falcon
 #   dialect: postgres
 #   host: '127.0.0.1'
 #   port: 5432
@@ -21,12 +37,13 @@ db:
   password: gzkuzo1
   database: geozonedb
   dialect: postgres
-  host: '10.8.1.170'
+  host: 'db'
   port: 5432
   wipe: true
   logging: false
 secret: 'falcon2018'
 apiVersion: 'v1'
+
 
 smtpConfig:
   host: smtp.gmail.com
