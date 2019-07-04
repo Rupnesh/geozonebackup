@@ -78,6 +78,7 @@ class Dashboard extends Component {
     imuDataArray: {},
     todaysDate:'',
     isIMUDataAvailable:true,
+    batteryStatus:0,
     isSkyPlotDataAvailable:true
   };
   satelliteData = null;
@@ -93,6 +94,7 @@ class Dashboard extends Component {
     this.toggleIMU = this.toggleIMU.bind(this);
     this.handleIMU1Data = this.handleIMU1Data.bind(this);
     this.handleGPSJSONData = this.handleGPSJSONData.bind(this);
+    this.handleBatteryData = this.handleBatteryData.bind(this)
 
 
     
@@ -143,6 +145,7 @@ class Dashboard extends Component {
     
     socket && socket.emit('subscribe', 'imuOut');
 
+    socket && socket.emit('subscribe', 'data-batteryStatus');
       // socket && socket.emit('subscribe', 'IMU_1');
     
     socket.on('data-onyxCmdOut', this.handleGPSJSONData);
@@ -151,6 +154,7 @@ class Dashboard extends Component {
 
     socket.on('data-imuOut',  this.handleIMU1Data);
 
+    socket.on('data-batteryStatus',  this.handleBatteryData);
     // socket.on('data-IMU_1',  this.handleIMU1Data);
 
     setInterval(() => {
@@ -169,11 +173,17 @@ class Dashboard extends Component {
     // socket && socket.emit('unsubscribe', 'GPSJSON');
 
     socket && socket.emit('unsubscribe', 'imuOut');
-
+    socket && socket.emit('unsubscribe', 'data-batteryStatus');
     // socket && socket.emit('unsubscribe', 'IMU_1');
     this.umMounted = true;
   }
-  
+
+  handleBatteryData(data){
+    if(data){
+      this.setState({batteryStatus:+(data.internal_battery)})
+    }
+//    console.log("BatteryData", data)
+  }  
   handleIMU1Data(data) {
 
    
@@ -738,15 +748,15 @@ class Dashboard extends Component {
            <div style = {{height:'190px', width: '200px', paddingTop:'80px'}} >
           <LoadingSpinner />
               </div> } */}
-              <div className="card-block">
+              {/* <div className="card-block">
                   <h5 style = {{marginBottom:'15px'}}>In built GPS Active</h5>
-                </div>
+                </div> */}
               </div> 
               
 
               <div className='row col-sm-6 col-md-6 col-lg-6 card' style={{border:"none",position:'relative'}}>
                 <div style={{position:"absolute",bottom:'0',width:'100%'}}>
-                  <HorizontalProgress progress={this.state.progress} />
+                  <HorizontalProgress progress={this.state.batteryStatus} />
                 </div>                
          
               </div>
@@ -808,13 +818,13 @@ class Dashboard extends Component {
                   <tr>
                     <th style = {{width:'50%'}}> Latitude</th>
                     <td>
-                      {this.state.tableData && this.state.tableData.lat }
+                      {this.state.tableData && this.state.tableData.lat && (+this.state.tableData.lat).toFixed(6) }
                     </td>
                   </tr>
                   <tr>
                     <th style = {{width:'50%'}}> Longitude</th>
                     <td>
-                      {this.state.tableData && this.state.tableData.lon }
+                      {this.state.tableData && this.state.tableData.lon && (+this.state.tableData.lon).toFixed(6) }
                     </td>
                   </tr>
                   <tr>
@@ -827,7 +837,7 @@ class Dashboard extends Component {
                     <th style = {{width:'50%'}}> Solution</th>
                   
                     <td>
-                      {this.state.tableData && this.state.tableData.quality }
+                      {this.state.tableData && this.state.tableData.quality ? this.state.tableData.quality : 'no fix' }
                     </td>
                   </tr>
 
@@ -853,7 +863,7 @@ class Dashboard extends Component {
                   <tr>
                     <th style = {{width:'50%'}}> Satellites Used</th>
                     <td>
-                      {this.state.tableData && this.state.tableData.totalsatellite }
+                      {this.state.tableData && this.state.tableData.totalsatellite ? this.state.tableData.totalsatellite : '0' }
                     </td>
                   </tr>
                   <tr>

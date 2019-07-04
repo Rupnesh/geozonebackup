@@ -32,7 +32,8 @@ class WifiView extends Component {
         nf_email:"",
         nf_password:"",
         loading:true,
-        ConnectedStatus:''
+        ConnectedStatus:null,
+        statusMSGName:''
         
 
     };
@@ -44,21 +45,58 @@ class WifiView extends Component {
 
   componentDidMount() {
     // this.state.WIFIList.sort((a, b) => a.strength - b.strength);
-
-   this.wifiListApiCall()
+    this.getStatusOfWiFi()
+    this.wifiListApiCall()
+   // this.getStatusOfWiFi()
   }
 
-  wifiListApiCall = () => {
-    AxiosPromise.get(api.GET_WIFI_LIST)
+  wifiListApiCall = (url) => {
+    AxiosPromise.get(api.getWifiOn)
+    .then(response => {
+      if(response.data.wifistatus) {
+      setTimeout(() => {
+        this.getListOfWifi()
+      }, 5000); 
+      
+      }
+    
+    })
+    .catch(error => {
+      console.log("error", error);
+    //  this.setState({ loading: false });
+    });
+  }
+
+  getListOfWifi = () =>{
+    AxiosPromise.get(api.wifiList)
     .then(response => {
       if(response.data) {
        let output = Object.keys(response.data).map(function(key) {
           return {type: key, name: response.data[key]};
        });
+       
         this.setState({  WIFIList1: output, loading: false })
-        // this.setState({  WIFIList1: response.data }, function () {
+      //   // this.setState({  WIFIList1: response.data }, function () {
         //   console.log(this.state.WIFIList1);
         // })
+      }
+    
+    })
+    .catch(error => {
+      console.log("error", error);
+    //  this.setState({ loading: false });
+    });
+  }
+
+  getStatusOfWiFi = () => {
+    AxiosPromise.get(api.wifiStatus)
+    .then(response => {
+        if(response.data) {
+          this.setState({ConnectedStatus: response.data.status, statusMSG1:response.data.message1,
+             statusMSG2:response.data.message2,
+             statusMSG3: response.data.message3,
+            statusMSGName: response.data.message4,
+            WIFI: true });
       }
     
     })
@@ -71,24 +109,9 @@ class WifiView extends Component {
 
   scanWIFI() {
     this.setState({loading : true, WIFIList1:[] })
-    this.wifiListApiCall()
+    this.getListOfWifi()
 
-    // this.setState({  loading : true, WIFIList1:[] }, function () {
-    //   console.log(this.state.WIFIList1);
-      
-    // })
-
-    // const users = GETAPI(api.GET_WIFI_LIST,"")
-    // .then(response => {
-    //   if(response.success) {
-        
-    //     this.setState({loading : false})
-    //     this.setState({
-    //       WIFIList1: response.data
-    //     });
-    //   }
-
-    // });
+   
   }
 
 
@@ -113,19 +136,9 @@ class WifiView extends Component {
     })
     .catch(error => {
       console.log("error", error);
-    //  this.setState({ loading: false });
     });
-      // console.log(this.state.WIFI)
-      // GETAPI(api.OFF_WIFI,"")
-      // .then(response => {
-      //   if(response.success) {
-
-      //   }
-
-      // });
     }
     else {
-      // console.log(this.state.WIFI)
       this.setState({loading : true})
       this.setState({ WIFIList1: []});
 
@@ -146,7 +159,10 @@ class WifiView extends Component {
     AxiosPromise.post(api.LOGIN_WITH_WIFI, data)
     .then(response => {
       if(response.data) {
-        this.setState({ConnectedStatus: response.data.status, statusMSG1:response.data.message1, statusMSG2:response.data.message2, statusMSG3: response.data.message3 });
+        this.setState({ConnectedStatus: response.data.status,
+           statusMSG1:response.data.message1, 
+           statusMSG2:response.data.message2, statusMSG3: response.data.message3,      
+            statusMSGName: response.data.message4, });
       }
     })
     .catch(error =>
@@ -202,7 +218,7 @@ class WifiView extends Component {
 
         <div className='card-block col-sm-6 col-md-6 col-lg-6'>
           {/* { this.state.WIFI ? "Connected to "+this.state.connectedWIFI : "Not Connected"} */}
-          { (this.state.WIFI && this.state.ConnectedStatus == 1) ?   this.state.statusMSG1 + ', ' + this.state.statusMSG2 + ', ' + this.state.statusMSG3: this.state.statusMSG1 }
+          { (this.state.ConnectedStatus === 1) ?   this.state.statusMSGName +', '+this.state.statusMSG1 + ', ' + this.state.statusMSG2 + ', ' + this.state.statusMSG3: this.state.statusMSG1 }
           {/* { (this.state.WIFI && this.state.ConnectedStatus == 0) ?   this.state.statusMSG1 + '/' + this.state.statusMSG2 : this.state.statusMSG1 } */}
         </div>
         </div>

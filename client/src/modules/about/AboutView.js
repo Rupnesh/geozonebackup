@@ -4,92 +4,64 @@ import { api } from "../../config/api";
 import Moment from "react-moment";
 import moment from "moment-timezone";
 import LoadingSpinner from "../../views/Components/LoadingSpinner";
+import { socketConnect } from 'socket.io-react';
 
-var data = {
-    "GNSS": {
-        "GNSS": [
-            {
-                "GNSS Receiver Board": "Navcom Onyx R2"
-            },
-            {
-                "GNSS Receiver Serial Number": 1290
-            },
-            {
-                "GNSS Antenna Type": "Tallysman"
-            }
-        ]
-    },
-    "GSM": {
-        "GSM": [
-            {
-                "GSM Modem Version": "Quectel u-GSM UG96"
-            },
-            {
-                "GSM Modem Firmware": 1.25
-            },
-            {
-                "GSM Modem Serial Number": 84037
-            },
-            {
-                "GSM Modem IMEI": 865851038406104
-            },
-            {
-                "GSM modem Status": [
-                    "ON",
-                    "connected"
-                ]
-            }
-         ]
-    },
-    "SD-Card": {
-        "SD-Card": [
-            {
-                "SD Card": "Not inserted"
-            },
-            {
-                "SD Card Space": "availabled space"
-            }
-        ]
-    },
-    "UHF": {
-        "UHF": [
-            {
-                "UHF Modem Version": "Satelline-M3-TR4-TA23"
-            },
-            {
-                "UHF Modem Serial Number": 1913000077
-            }
-        ]
-    },
-    "falcon-version": {
-        "falcon-version": [
-            {
-                "Falcon Version": 1
-            },
-            {
-                "Falcon Firmware": 1
-            },
-            {
-                "Falcon Serial Number": 1290
-            }
-        ]
-    }
-}
 
 class AboutView extends Component {
+    
   componentDidMount() {
     this.callAboutApi();
+    this.callSDCardApi();
+
+    const { socket } = this.props;
+    socket.socketConnect
+          
+    socket && socket.emit('subscribe', 'data-batteryStatus');
+    
+     socket.on('data-batteryStatus', this.handleBatteryStatus);
+   
+  }
+
+  
+  componentWillUnmount(){
+    const { socket } = this.props;
+    socket.socketConnect
+    socket && socket.emit('unsubscribe', 'data-batteryStatus');
+    // clearInterval(this.interval)
   }
   constructor(props) {
     super(props);
     this.state = {
-        isLoading: false
+        isLoading: false,
+        sdCardDetails:null,
+        batteryPercentage:"--",
+        batterySecondPercentage:0,
+        batteryPlugInInserted:"--",
     };
+    //this.handleBatteryStatus = this.handleBatteryStatus.bind(this)
+  }
+
+  componentWillUnmount() {
+
+    const { socket } = this.props;
+    socket && socket.emit('unsubscribe', 'data-batteryStatus');
+   
+  }
+  handleBatteryStatus(data) {
+    if (data){
+        this.setState({
+            batteryPercentage: data.InternalBatteryLevel,
+            batterySecondPercentage: data.plugInbatteryLevel,
+            batteryStatus:data.batteryVoltage,
+            batteryVoltageThreshold: data.batteryVoltageThreshold
+        })
+    }
+
   }
 
   callAboutApi = () => {
     this.setState({isLoading:false})
-    AxiosPromise.get(api.about_list).then(data=> {
+    AxiosPromise.get(api.hardware_about).then(data=> {
         if (data) {
            this.setState({aboutList: data.data, isLoading: true})
         }
@@ -100,21 +72,68 @@ class AboutView extends Component {
       });
   };
 
-  renderList = (value, index) => {
-      if(this.state.aboutList){
-      return(
-        this.state.aboutList[value] && this.state.aboutList[value][value] && this.state.aboutList[value][value].map((val, i)=>{
-        return(
-            <div>
-        <div className="form-group row">
-            <label className="col-md-3 form-control-label" htmlFor="select">{Object.keys(val)[0]} :</label>
-            <div className="col-md-9">
-                  <label className="col-md-3 form-control-label" htmlFor="select">{val[Object.keys(val)[0]]}</label>
-            </div>
-        </div>
-        </div>
-        )
-    }))
+
+  callSDCardApi = () => {
+    AxiosPromise.get(api.about_list).then(data=> {
+        if (data.data.status === 1) {
+           this.setState({sdCardDetails: data.data})
+        }else{
+            this.callSDCardApi();
+        }
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
+  };
+
+//   getBatteryStatus = () => {
+//     AxiosPromise.get(api.batteryStatus).then(data=> {
+//         if (data) {
+//             this.setState({
+//                 batteryPercentage: data.internal_battery,
+//                 batterySecondPercentage: data.secondary_battery,
+//                 batteryStatus:data.volatage})
+//           //console.log("DATA BATTERY", data)
+//         }
+//       })
+//       .catch(error => {
+//         console.log("error", error);
+//       });
+//   };
+
+  renderList = (data, value, index) => {
+      if(data){
+          try {
+            return(
+                data[value] && data[value][value] && data[value][value].map((val, i)=>{
+                return(
+                    <div>
+                <div className=" row">
+                    <label className="col-md-3 " htmlFor="select">{Object.keys(val)[0]} :</label>
+                    { Array.isArray(val[Object.keys(val)[0]]) ? 
+                     Object.keys(val)[0] === "SD_Card_Space" ?
+                      <div className="col-md-9">
+                      <label className="col-md-3 " htmlFor="select">Memory Free: {val[Object.keys(val)[0]][0]}</label>
+                      <label className="col-md-3 " htmlFor="select">Used: {val[Object.keys(val)[0]][1]}</label>
+                      <label className="col-md-3 " htmlFor="select">Total: {val[Object.keys(val)[0]][2]}</label>
+                </div> :   <div className="col-md-9">
+                      <label style= {{marginLeft:'15px'}} htmlFor="select">{val[Object.keys(val)[0]][0]},</label>
+                      <label className="col-md-3 " htmlFor="select">{val[Object.keys(val)[0]][1]}</label>
+                </div> 
+                    :
+                    <div className="col-md-9">
+                          <label className="col-md-3 " htmlFor="select">{val[Object.keys(val)[0]]}</label>
+                    </div> 
+                    }
+                </div>
+                </div>
+                )
+            }))
+              
+          } catch (error) {
+           console.log("aboutListError", error)   
+          }
+     
   }
 }
 
@@ -129,30 +148,84 @@ class AboutView extends Component {
                             </div>
                             { this.state.isLoading ?
                             <div className="card-block">
-                                <form action="" method="post">
-                                <div className="form-group row">
-                               {this.state.aboutList && <strong className="col-md-3 form-control-label" htmlFor="select">{Object.keys(this.state.aboutList[Object.keys(this.state.aboutList)[0]])[0]}</strong> }
+                                <form >
+                                <div className=" row">
+                               {this.state.aboutList && 
+                               <strong className="col-md-3 " style = {{marginBottom:'10px'}} 
+                               htmlFor="select">{Object.keys(this.state.aboutList[Object.keys(this.state.aboutList)[1]])[0]}</strong> }
                                     </div>    
                                                   
-                                { this.renderList('GNSS',0)}
-                                <div className="form-group row">
-                                {this.state.aboutList && <strong className="col-md-3 form-control-label" htmlFor="select">{Object.keys(this.state.aboutList[Object.keys(this.state.aboutList)[1]])[0]}</strong>}
+                                { this.renderList(this.state.aboutList,'GNSS',0)}
+                                <div className=" row">
+                                {this.state.aboutList && 
+                                <strong className="col-md-3 " style = {{marginBottom:'10px'}} 
+                                htmlFor="select">{Object.keys(this.state.aboutList[Object.keys(this.state.aboutList)[2]])[0]}</strong>}
                                     </div>    
                           
-                                { this.renderList('GSM',1)}
-                                <div className="form-group row">
-                                {this.state.aboutList && <strong className="col-md-3 form-control-label" htmlFor="select">{Object.keys(this.state.aboutList[Object.keys(this.state.aboutList)[2]])[0]}</strong>}
+                                { this.renderList(this.state.aboutList,'GSM',1)}
+                                <div className=" row">
+                                {this.state.aboutList && 
+                                <strong className="col-md-3"   style = {{marginBottom:'10px'}}
+                                htmlFor="select">{Object.keys(this.state.aboutList[Object.keys(this.state.aboutList)[3]])[0]}</strong>}
                                     </div>    
-                                { this.renderList('SD-card',2)}
-                                <div className="form-group row">
-                                {this.state.aboutList &&  <strong className="col-md-3 form-control-label" htmlFor="select">{Object.keys(this.state.aboutList[Object.keys(this.state.aboutList)[3]])[0]}</strong>}
+                                { this.renderList(this.state.aboutList,'UHF',2)}
+                                <div className=" row">
+                                {this.state.aboutList &&
+                                     <strong className="col-md-3 " style = {{marginBottom:'10px'}} 
+                                     htmlFor="select">{Object.keys(this.state.aboutList[Object.keys(this.state.aboutList)[0]])[0]}</strong>}
+                                    </div> 
+                                    { this.renderList(this.state.aboutList, 'Falcon-version',3)}  
+                                <div>  
+                                    <div className=" row">
+                                     <strong className="col-md-3 " style = {{marginBottom:'10px'}} 
+                                     htmlFor="select">Battery Status</strong>
                                     </div>    
-                                { this.renderList('UHF',3)}
-                                <div className="form-group row">
-                                {this.state.aboutList && <strong className="col-md-3 form-control-label" htmlFor="select">{Object.keys(this.state.aboutList[Object.keys(this.state.aboutList)[4]])[0]}</strong>}
+                                    <div className=" row">
+                                     <label className="col-md-3 " htmlFor="select">Internal Battery Level: </label>
+                                   <div className="col-md-9">
+                                    <label className="col-md-3 " htmlFor="select">{this.state.batteryPercentage}%</label>
+                                  </div>
+                                  </div>
+
+                                  <div className=" row">
+                                     <label className="col-md-3 " htmlFor="select">Battery Status: </label>
+                                   <div className="col-md-9">
+                                    <label className="col-md-3 " htmlFor="select">{this.state.batteryStatus >= 3 ? "Charging":"Not Charging"}</label>
+                                  </div>
+                                  </div>
+
+                                  <div className=" row">
+                                     <label className="col-md-3 " htmlFor="select">Plug-In battery status: </label>
+                                   <div className="col-md-9">
+                                    <label className="col-md-3 " htmlFor="select">{this.state.batterySecondPercentage !== 0 ? "Inserted" : 'Not Inserted'}</label>
+                                  </div>
+                                  </div>
+
+                                  <div className=" row">
+                                     <label className="col-md-3 " htmlFor="select">Plug-In battery Level:  </label>
+                                   <div className="col-md-9">
+                                    <label className="col-md-3 " htmlFor="select">{this.state.batterySecondPercentage}%</label>
+                                  </div>
+                                  </div>
+
+                                </div>     
+                               
+                                {this.state.sdCardDetails ?
+                                <div>  
+                                    <div className=" row">
+                                     <strong className="col-md-3 " style = {{marginBottom:'10px'}} 
+                                     htmlFor="select">{Object.keys(this.state.sdCardDetails[Object.keys(this.state.sdCardDetails)[0]])[0]}</strong>
                                     </div>    
-                                { this.renderList('falcon-version',4)}
-                                   
+                                { this.renderList(this.state.sdCardDetails, 'SD-card',0)}
+                                </div>
+                                :
+                                     <div className=" row">
+                                       <strong className="col-md-3 " style = {{marginBottom:'10px'}}  htmlFor="select">SD-card :</strong>
+                                     <div className="col-md-9">
+                                           <label className="col-md-3 " htmlFor="select">No SD-Card</label>
+                                     </div>
+                                     </div>
+                                     }
 
                                 </form>
                             </div>: <LoadingSpinner/>
@@ -160,6 +233,8 @@ class AboutView extends Component {
                             {/* <div className="card-footer">
                                 <button type="submit" className="btn btn-sm btn-success"><i className="fa fa-dot-circle-o"></i> Sync</button>
                             </div>
+
+
                             <div className="card-footer">
                                 <button type="submit" className="btn btn-sm btn-success"><i className="fa fa-dot-circle-o"></i> Sync</button>
                             </div> */}
@@ -171,4 +246,5 @@ class AboutView extends Component {
     }
 }
 
-export default AboutView;
+export default socketConnect(AboutView)
+

@@ -162,7 +162,7 @@ class LicensesView extends Component {
                       Onyx Starfire License Status:
                     </lable>
                     {this.state.isActiveLicense && <label className="form-control-label" htmlFor="select">
-                    <label style = {{color: '#33cc33'}}> {this.state.isActiveLicense}</label> Valid Until {''}
+                    <label style = {{color: '#33cc33', marginRight:'10px'}}> {this.state.isActiveLicense}</label> Valid Until {''}
                     <label style = {{color: '#F31B10'}}><Moment parse="YYYY-MM-DD HH:mm">
                      {this.state.expiryData}
                      </Moment></label>
@@ -216,7 +216,7 @@ class LicensesView extends Component {
                         type="text"
                         onChange={this.licensesNumber}
                         // onSubmit={this.OnyxLicensesNo}
-                        maxLength={34}
+                        maxLength={35}
                         value={this.state.StarFireLicensesNo}
                         placeholder={"Enter 32 character license number"}
                       />
@@ -226,7 +226,7 @@ class LicensesView extends Component {
                       <button
                         type="button"  
                         disabled={
-                          this.state.StarFireLicensesNo.length === 35
+                          this.state.StarFireLicensesNo.length >= 30
                             ? false
                             : true
                         }
@@ -254,7 +254,7 @@ class LicensesView extends Component {
                       <input
                         className="form-control"
                         type="text"
-                        maxLength={34}
+                        maxLength={35}
                         value={this.state.OnyxLicensesNo}
                         onChange={this.OnyxLicensesNo}
                         placeholder={"Enter 32 character license number"}
@@ -265,7 +265,7 @@ class LicensesView extends Component {
                       <button
                         type="button"
                         disabled={
-                          this.state.OnyxLicensesNo.length === 35 ? false : true
+                          this.state.OnyxLicensesNo.length >= 30 ? false : true
                         }
                         className="btn btn-sm btn-success"
                         style = {{marginTop:'10px'}}
@@ -277,10 +277,10 @@ class LicensesView extends Component {
                   </div>
                 </form>
               </div>
-              : (
-                 <LoadingSpinner />
-               )
-             }
+                   : (
+                    <LoadingSpinner />
+                  )
+                }
               <div className="card-footer" />
             </div>
                    

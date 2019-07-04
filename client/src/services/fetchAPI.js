@@ -78,8 +78,6 @@ export const postApiFlask = (api, data ) =>{
 
 export const AxiosPromise = {
 
- 
-
  // making of custom object in required format
 
  axios: function (type, url, data, headerData, disableLoader) {
@@ -126,9 +124,9 @@ export const AxiosPromise = {
 
  // GET function callback
 
- get: async function (url, headerData, showErrorDialog) {
+ get: async function (url, headerData, nodeBackEnd = false) {
 
- return axios.get(constants.hostflask + url, headerData)
+ return nodeBackEnd ? axios.get(constants.hostNodeBackEnd + url, headerData, nodeBackEnd) : axios.get(constants.hostflask + url, headerData, nodeBackEnd)
 
  .then(response => {
 

@@ -14,7 +14,7 @@ class LoggingView extends Component {
       file: "",
       numbers: [],
       logStatus: [],
-      memoryStatus: [],
+      memoryStatus: { Free_Memory:0,Used_Memory:0,Total_memory: 0 },
       selectedLoggingType: "",
       selectedLoggingRate:'',
       loading: false,
@@ -25,30 +25,30 @@ class LoggingView extends Component {
     listData: [],
     displayMessage:false,
     durationStatus:'',
-	  selectedValue:''
+    selectedValue:'',
+    ejectSDCardStatus:'',
+    sdCardStatus:false
     };
   }
 
+  
   componentDidMount() {
     this.callApi();
     this.props.getListApiCall(api.log_list)
   }
 
   callApi = () => {
-    this.getListData();
     this.setState({ loading: true });
-	
     AxiosPromise.get(api.logging_status)
       .then(response => {
         if (response.data.status === 1) {
           this.callMemoryStatusApi()
-          this.setState({ logStatus: response.data.data });
-
+          this.setState({ logStatus: response.data.data, loading: false });
         }
       })
       .catch(error => {
         console.log("error", error);
-      //  this.setState({ loading: false });
+        //this.setState({ loading: false });
       });
   };
 
@@ -56,8 +56,27 @@ class LoggingView extends Component {
     AxiosPromise.get(api.memory_status)
     .then(response => {
       if (response && response.data && response.data.status === 1) {
-        this.setState({ memoryStatus: response.data.data, loading: false, displayMessage: false });
+        this.setState({ memoryStatus: response.data.data, displayMessage: false, sdCardStatus: true});
+        this.getListData();
+      }else {
+        this.setState({sdCardStatus: false})
       }
+    }).catch(error => {
+      console.log("error", error);
+      //this.setState({ loading: false });
+    });
+  }
+
+  ejectSDCard = () =>{
+    AxiosPromise.get(api.sdCardEject)
+    .then(response => {
+      if(response.data.status === 1){
+        setTimeout(() => {
+          this.setState({ejectSDCardStatus:''})
+        }, 20000);
+        this.setState({ejectSDCardStatus:'Now you can easily eject SD card safely.'})
+      }
+      //console.log('EjectSDCard', response)
     }).catch(error => {
       console.log("error", error);
       //this.setState({ loading: false });
@@ -100,9 +119,9 @@ class LoggingView extends Component {
     AxiosPromise.post(api.log_file_exist, data)
       .then(response => {
         if (response.data.status === 1) {
-          this.setState({logFileStatus: 'Not Exists'})
+          this.setState({logFileStatus: 'Ok'})
         }else{
-          this.setState({logFileStatus: 'That Log name is taken, Try another'})
+          this.setState({logFileStatus: 'This file already exists, Please type different name.'})
         }
       })
       .catch(error => 
@@ -188,7 +207,7 @@ class LoggingView extends Component {
         })
         .catch(error => console.log("error", error));
       }else{
-        alert('Something is missing. Please check it again you have entered all require data')
+        alert('Something is missing. Please make sure you have filled all required fields.')
       }
     }
 
@@ -207,14 +226,14 @@ class LoggingView extends Component {
 
       onEnterDuration = (data) => {
        let duration = parseInt(data.target.value)
-       if (duration){
+       if (duration || duration === 0){
        if(0 <= duration && duration <= 280  ){
         this.setState({durationStatus: ''})
        }else{
-        this.setState({durationStatus: 'Range for the log duration is 0 to 280 so please enter in between data'})
+        this.setState({durationStatus: 'Log duration must be a number of minutes between 0 and 280'})
        }
       }else{
-        this.setState({durationStatus: 'Log duration must be in integer format'})
+        this.setState({durationStatus: 'Log duration must be a number of minutes between 0 and 280'})
       }
     }
 
@@ -226,7 +245,7 @@ class LoggingView extends Component {
         <div className="row">
           <div style = {{width:'100%'}}>
             <div className="card">
-             {!this.state.loading ? (
+        {!this.state.loading ? (
                 <div className="card-block">
                   <form action="" method="post">
                     <div
@@ -238,38 +257,49 @@ class LoggingView extends Component {
 
                     <div
                       className="form-group row"
-                      style={{ marginLeft: "0px" }}
+                      //style={{ marginLeft: "0px"}}
                     >
+                    <div className={'col-md-4 not-login'}
+                   >
                       <i
                         className={
                             (this.state.endButtonDisable ? 
                               "fa fa-times-circle"
                             : "fa fa-check-circle") 
                         }
-                        style={{ color: "#F31B10", fontSize: "25px" }}
+                        style={{ color: this.state.endButtonDisable  ? "#F31B10" :  "#74CD58", fontSize: "25px", }}
                         aria-hidden="true"
                       />{" "}
-                      <lable className="ml-3">
-                        {this.state.logStatus.LOGGING == "OFF"
+                      <lable className="ml-3" style = {{fontSize:14}}>
+                        {this.state.endButtonDisable 
                           ? "Not logging"
                           : "Logging"}
                       </lable>
+                      </div>
+                     { this.state.sdCardStatus &&  <div className = 'col-md-1'>
+                      <button onClick={()=>this.ejectSDCard()} type="button" className="btn btn-sm btn-success"><i className="fa fa-dot-circle-o"></i> Eject SD card</button>
+                      </div>
+                     }
+                      <h6 style = {{marginTop:'5px', color: 'green', marginLeft:'15px'}}> 
+                      {this.state.ejectSDCardStatus}
+                        </h6>
                     </div>
+
                     <div
                       className="form-group row"
                       style={{ marginLeft: "0px" }}
                     >
                       <i
                         className={
-                          this.state.logStatus.SD_CARD == "INSERTED"
+                          this.state.sdCardStatus
                             ? "fa fa-check-circle"
                             : "fa fa-times-circle"
                         }
-                        style={{ color: "#74CD58", fontSize: "25px" }}
+                        style={{ color: this.state.sdCardStatus ? "#74CD58" :"#F31B10", fontSize: "25px" }}
                         aria-hidden="true"
-                      />{" "}
+                      />{" "} 
                       <lable className="ml-3">
-                        {this.state.logStatus.SD_CARD == "INSERTED"
+                        {this.state.sdCardStatus
                           ? "SD Card inserted"
                           : "SD Card not inserted"}
                       </lable>
@@ -299,7 +329,7 @@ class LoggingView extends Component {
                         className="col-md-4 form-control-label"
                         htmlFor="select"
                       >
-                        Logging Type
+                        Logging Type <label style = {{color:'#F31B10'}}>*</label>
                       </label>
                       <div className="col-md-4">
                         <select
@@ -323,7 +353,7 @@ class LoggingView extends Component {
                         className="col-md-4 form-control-label"
                         htmlFor="select"
                       >
-                        Logging Rate 
+                        Logging Rate <label style = {{color:'#F31B10'}}>*</label>
                       </label>
                       <div className="col-md-4">
                         <select
@@ -350,7 +380,7 @@ class LoggingView extends Component {
                         className="col-md-4 form-control-label"
                         htmlFor="select"
                       >
-                        New Log File Name
+                        New Log File Name <label style = {{color:'#F31B10'}}>*</label>
                       </label>
                       <div className="col-md-4">
                         <input
@@ -365,7 +395,7 @@ class LoggingView extends Component {
                       </div>
                       <div className="col-md-3"
                       >
-                       <h6 style = {{marginTop:'8px', color: this.state.logFileStatus === 'Not Exists' ? 'green':'red'}}> {
+                       <h6 style = {{marginTop:'8px', color: this.state.logFileStatus === 'Ok' ? 'green':'red'}}> {
                             this.state.displayMessage &&
                             this.state.logFileStatus 
                        }
@@ -378,7 +408,7 @@ class LoggingView extends Component {
                         className="col-md-4 form-control-label"
                         htmlFor="select"
                       >
-                        Log Duration <label style = {{color:'gray'}}>(default 0 for no duration limit)</label>
+                        Log Duration <label style = {{color:'#F31B10'}}>*</label> <label style = {{color:'gray'}}>(default 0 for no duration limit)</label>
                       </label>
                       <div className="col-md-4">
                         <input
@@ -482,7 +512,7 @@ class LoggingView extends Component {
                     </div>
                   </form>
                 </div>
-              ) : (
+               ) : (
                 <LoadingSpinner />
               )
             }

@@ -1,6 +1,6 @@
 export var api = {   
     // node wifi api 
-    GET_WIFI_LIST: 'wifi/on',
+    getWifiOn: 'wifi/on',
     OFF_WIFI: 'wifi/off',
     LOGIN_WITH_WIFI: 'wifi/cred',
 
@@ -21,6 +21,15 @@ export var api = {
     post_option_status:'licenses/optionStatus1',
     license_active: 'licenses/licenseActive1',
     about_list:'aboutDevice',
+    hardware_about:'aboutDeviceHardware',
+    batteryStatus:'aboutBattery',
+    sdCardEject:'ejectSD',
+    checkUpdate:'firmware/checkstatus',
+    updateSoftware:'/firmware/updateSoftware',
+    wifiStatus:'wifi/status',
+    wifiList:'wifi/list'
+
+
 
 }
 
