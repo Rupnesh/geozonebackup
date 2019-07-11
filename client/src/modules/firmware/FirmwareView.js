@@ -25,7 +25,16 @@ class FirmwareView extends Component {
     this.state = {
       isUpdateAvailable: false,
       loading:true,
-      updateData:'New update here'
+      updateData:'New update available',
+      updateData2:'',
+      updateData3:'',
+      updateData4:'',
+      updateData5:'',
+      updateData6:'',
+      updateData7:'',
+      disableButton:true,
+      startUpdating:false
+
     };
   }
 
@@ -51,25 +60,25 @@ class FirmwareView extends Component {
     // this.setState({updateData: data.step })
       switch (data) {
         case 1:
-          this.setState({updateData: " Downloading latest update..."})
+          this.setState({updateData: " Downloading latest update", disableButton: false, startUpdating:true})
           break;
           case 2:
-          this.setState({updateData: " Stopping services..."})
+          this.setState({updateData2: " Stopping services"})
           break;
           case 3:
-          this.setState({updateData: "  Backing up old version..."})
+          this.setState({updateData3: "  Backing up old version"})
           break;
           case 4:
-          this.setState({updateData: " Extracting update..."})
+          this.setState({updateData4: " Extracting update"})
           break;
           case 5:
-          this.setState({updateData: " Installing update..."})
+          this.setState({updateData5: " Installing update"})
           break;
           case 6:
-          this.setState({updateData: " Starting services..."})
+          this.setState({updateData6: " Starting services"})
           break;
           case 7:
-          this.setState({updateData: "Update completed"})
+          this.setState({updateData7: "Update completed", startUpdating: false})
           break;
       
         default:
@@ -131,6 +140,25 @@ class FirmwareView extends Component {
    
   // }
 
+  updateRender =(data) => {
+    if(data){
+        return(
+        <div>
+          <div className='form-group row' style={{ marginLeft: '0px' }}>
+        <i
+          className='fa fa-check-circle'
+          style={{ color: '#74CD58', fontSize: '25px' }}
+          aria-hidden='true'
+        />{' '}
+        <lable className='ml-3'>{data}</lable>
+        </div>
+        </div>
+        )
+      }
+
+  }
+
+
 
   render() {
     return (
@@ -163,34 +191,40 @@ class FirmwareView extends Component {
                     <div className='form-group card-columns' style={{ marginBottom: '0px' }}>
                       <strong>Falcon Firmware</strong>
                     </div>
-                    <label>version {this.state.firmwareVersion}</label>
+                    <label>Version {this.state.firmwareVersion}</label>
                     {this.state.firmwareUpdateAvailable ? 
                     <div>
-                      <div className='form-group row' style={{ marginLeft: '0px' }}>
-                      <i
-                        className='fa fa-check-circle'
-                        s
-                        style={{ color: '#74CD58', fontSize: '25px' }}
-                        aria-hidden='true'
-                      />{' '}
-                      <lable className='ml-3'>{this.state.updateData}</lable>
-                    </div>
-                    <div className='form-group row' style={{ marginLeft: '0px' }}>
-                      <i
-                        className='fa fa-download'
-                        style={{ color: '#74CD58', fontSize: '25px' }}
-                        aria-hidden='true'
-                      />{' '}
-                      <u
-                        className='ml-3'
-                        htmlFor='check3'
-                        style={{ cursor: 'pointer' }}
-                        onClick={() => this.softwareUpdate()}
-                      >
-                        Download and install new version
-                      </u>
-                    </div>
-                    </div>
+                    
+                  {this.updateRender(this.state.updateData)}
+                  {this.updateRender(this.state.updateData2)}
+                  {this.updateRender(this.state.updateData3)}
+                  {this.updateRender(this.state.updateData4)}
+                  {this.updateRender(this.state.updateData5)}
+                  {this.updateRender(this.state.updateData6)}
+                  {this.updateRender(this.state.updateData7)}
+                  {this.state.startUpdating &&
+                      <div> 
+                     
+                         <LoadingSpinner/> </div> }
+                  
+                 {this.state.disableButton && <div className='form-group row' style={{ marginLeft: '0px' }}>
+                    <i
+                      className='fa fa-download'
+                      style={{ color: '#74CD58', fontSize: '25px' }}
+                      aria-hidden='true'
+                    />{' '}
+                    <u
+                      className='ml-3'
+                      htmlFor='check3'
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => this.softwareUpdate()}
+                    >
+                      Download and install new version
+                    </u>
+                  </div>
+                 }
+                  </div>
+                  
                     :
                     <div className='form-group row' style={{ marginLeft: '0px' }}>
                       <i
@@ -205,9 +239,9 @@ class FirmwareView extends Component {
                       <strong>Onyx Firmware</strong>
                     </div>
 
-                    <label>version {this.state.onyxVersion}</label>
+                    <label>Version {this.state.onyxVersion}</label>
                     
-                    {this.state.loading ? 
+                    {/* {this.state.loading ? 
                     <div className='form-group row' style={{ marginLeft: '0px' }}>
                       <i
                         className='fa fa-download'
@@ -224,7 +258,7 @@ class FirmwareView extends Component {
                       </u>
                     </div>: (
                      <LoadingSpinner />
-                )}
+                )} 
                     <div className='form-group row' style={{ marginLeft: '0px' }}>
                       <i
                         className='fa fa-check-circle'
@@ -241,6 +275,7 @@ class FirmwareView extends Component {
                       <strong>GSM Firmware</strong>
                     </div>
                     <label>version {this.state.gsmVersion}</label>
+                    */}
                   </form>
                 // ) : (
                 //   <LoadingSpinner />

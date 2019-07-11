@@ -38,7 +38,6 @@ class AboutView extends Component {
         batterySecondPercentage:0,
         batteryPlugInInserted:"--",
     };
-    //this.handleBatteryStatus = this.handleBatteryStatus.bind(this)
   }
 
   componentWillUnmount() {
@@ -47,16 +46,20 @@ class AboutView extends Component {
     socket && socket.emit('unsubscribe', 'data-batteryStatus');
    
   }
-  handleBatteryStatus(data) {
+  handleBatteryStatus = (data) => {
     if (data){
-        this.setState({
-            batteryPercentage: data.InternalBatteryLevel,
-            batterySecondPercentage: data.plugInbatteryLevel,
-            batteryStatus:data.batteryVoltage,
-            batteryVoltageThreshold: data.batteryVoltageThreshold
-        })
+        try {
+            this.setState({
+                batteryPercentage: data.internal_battery,
+                batterySecondPercentage: data.secondary_battery,
+                batteryStatus:data.volatage,
+                batteryVoltageThreshold: data.batteryVoltageThreshold
+            })
+        } catch (error) {
+            console.log("BatteryData",error)
+        }
+        
     }
-
   }
 
   callAboutApi = () => {
@@ -194,12 +197,12 @@ class AboutView extends Component {
                                   </div>
                                   </div>
 
-                                  <div className=" row">
+                                  {/* <div className=" row">
                                      <label className="col-md-3 " htmlFor="select">Plug-In battery status: </label>
                                    <div className="col-md-9">
                                     <label className="col-md-3 " htmlFor="select">{this.state.batterySecondPercentage !== 0 ? "Inserted" : 'Not Inserted'}</label>
                                   </div>
-                                  </div>
+                                  </div> */}
 
                                   <div className=" row">
                                      <label className="col-md-3 " htmlFor="select">Plug-In battery Level:  </label>
