@@ -12,14 +12,17 @@ class AboutView extends Component {
   componentDidMount() {
     this.callAboutApi();
     this.callSDCardApi();
+    this.callGSMDeviceApi();
 
     const { socket } = this.props;
     socket.socketConnect
           
     socket && socket.emit('subscribe', 'data-batteryStatus');
     
-     socket.on('data-batteryStatus', this.handleBatteryStatus);
-   
+    socket.on('data-batteryStatus', this.handleBatteryStatus);
+
+
+    
   }
 
   
@@ -29,7 +32,7 @@ class AboutView extends Component {
     socket && socket.emit('unsubscribe', 'data-batteryStatus');
     // clearInterval(this.interval)
   }
-  constructor(props) {
+  constructor(props) { 
     super(props);
     this.state = {
         isLoading: false,
@@ -60,6 +63,22 @@ class AboutView extends Component {
         }
         
     }
+  }
+
+  callGSMDeviceApi = () => {
+    AxiosPromise.get(api.GSMstatus, '', '')
+			.then(data => {
+				if (data.status) {
+					this.setState({
+            APN: data.data.APN,
+            GSM_Connection_status: data.data.GSM_Connection_status,
+            GSM_status: data.data.GSM_status
+					})
+				}
+			})
+			.catch(error => {
+				console.log("error", error);
+			});  
   }
 
   callAboutApi = () => {
@@ -104,40 +123,80 @@ class AboutView extends Component {
 //       });
 //   };
 
-  renderList = (data, value, index) => {
-      if(data){
-          try {
-            return(
-                data[value] && data[value][value] && data[value][value].map((val, i)=>{
-                return(
-                    <div>
-                <div className=" row">
-                    <label className="col-md-3 " htmlFor="select">{Object.keys(val)[0]} :</label>
-                    { Array.isArray(val[Object.keys(val)[0]]) ? 
-                     Object.keys(val)[0] === "SD_Card_Space" ?
-                      <div className="col-md-9">
-                      <label className="col-md-3 " htmlFor="select">Memory Free: {val[Object.keys(val)[0]][0]}</label>
-                      <label className="col-md-3 " htmlFor="select">Used: {val[Object.keys(val)[0]][1]}</label>
-                      <label className="col-md-3 " htmlFor="select">Total: {val[Object.keys(val)[0]][2]}</label>
-                </div> :   <div className="col-md-9">
-                      <label style= {{marginLeft:'15px'}} htmlFor="select">{val[Object.keys(val)[0]][0]},</label>
-                      <label className="col-md-3 " htmlFor="select">{val[Object.keys(val)[0]][1]}</label>
-                </div> 
-                    :
-                    <div className="col-md-9">
-                          <label className="col-md-3 " htmlFor="select">{val[Object.keys(val)[0]]}</label>
-                    </div> 
-                    }
-                </div>
-                </div>
-                )
-            }))
+//   renderList = (data, value, index) => {
+//       if(data){
+//           try {
+//             return(
+//                 data[value] && data[value][value] && data[value][value].map((val, i)=>{
+//                 return(
+//                     <div>
+//                 <div className=" row">
+//                     <label className="col-sm-5 col-md-5 col-lg-4" htmlFor="select">{Object.keys(val)[0]} :</label>
+//                     { Array.isArray(val[Object.keys(val)[0]]) ?  
+//                      Object.keys(val)[0] === "SD_Card_Space" ?
+//                       <div className="col-sm-7 col-md-7 col-lg-8">
+//                       <label className="col-md-5 " htmlFor="select">Memory Free: {val[Object.keys(val)[0]][0]}</label>
+//                       <label className="col-md-5 " htmlFor="select">Used: {val[Object.keys(val)[0]][1]}</label>
+//                       <label className="col-md-5 " htmlFor="select">Total: { 
+//                         val[Object.keys(val)[0]][2]}</label>
+//                 </div> :   <div className="col-sm-5 col-md-5 col-lg-4">
+//                       <label style= {{marginLeft:'15px'}} htmlFor="select">{val[Object.keys(val)[0]][0]},</label>
+//                       <label className="col-md-5 " htmlFor="select">{val[Object.keys(val)[0]][1]}</label>
+//                 </div> 
+//                     :
+//                     <div className="col-sm-7 col-md-7 col-lg-8">
+//                           <label className="col-md-5 " htmlFor="select">{val[Object.keys(val)[0]]}</label>
+//                     </div> 
+//                     }
+//                 </div>
+//                 </div>
+//                 )
+//             }))
               
-          } catch (error) {
-           console.log("aboutListError", error)   
-          }
+//           } catch (error) {
+//            console.log("aboutListError", error)   
+//           }
      
-  }
+//   }
+// }
+
+
+
+renderList = (data, value, index) => {
+  if(data){
+      try {
+        return(
+            data[value] && data[value][value] && data[value][value].map((val, i)=>{
+            return(
+                <div>
+            <div className=" row">
+                <label className="col-5 col-sm-4 col-md-4 col-lg-3" htmlFor="select">{Object.keys(val)[0].replace(/_/g," ")}:</label>
+                { Array.isArray(val[Object.keys(val)[0]]) ? 
+                 Object.keys(val)[0] === "SD_Card_Space" ?
+                  <div className="col-7 col-sm-8 col-md-8 col-lg-9">
+                  <label className="col-md-4 " htmlFor="select">Memory Free: {val[Object.keys(val)[0]][0]}</label>
+                  <label className="col-md-4 " htmlFor="select">Used: {val[Object.keys(val)[0]][1]}</label>
+                  <label className="col-md-4 " htmlFor="select">Total: { 
+                    val[Object.keys(val)[0]][2]}</label>
+            </div> :   <div className="col-7 col-sm-8 col-md-8 col-lg-9">
+                  <label style= {{marginLeft:'15px'}} htmlFor="select">{val[Object.keys(val)[0]][0]},</label>
+                  <label className="col-md-4 " htmlFor="select">{val[Object.keys(val)[0]][1]}</label>
+            </div> 
+                :
+                <div className="col-7 col-sm-8 col-md-8 col-lg-9">  
+                      <label className="col-md-4 " htmlFor="select">{ (val[Object.keys(val)[0]]).toString().trim().length !== 0 ? val[Object.keys(val)[0]] : ''}</label>
+                </div> 
+                }
+            </div>
+            </div>
+            )
+        }))
+          
+      } catch (error) {
+       console.log("aboutListError", error)   
+      }
+ 
+}
 }
 
     render() {
@@ -166,34 +225,48 @@ class AboutView extends Component {
                                     </div>    
                           
                                 { this.renderList(this.state.aboutList,'GSM',1)}
+
+                                <div className=" row">
+                                <label className="col-5 col-sm-4 col-md-4 col-lg-3" htmlFor="select">GSM Modem Status :</label>
+                                <div className="col-7 col-sm-8 col-md-8 col-lg-9">
+                                  <label style= {{marginLeft:'15px'}} htmlFor="select">{this.state.GSM_status}, {this.state.GSM_Connection_status}</label>
+                                  {/* <label className="col-md-4 " style={{paddingLeft: '2px'}} htmlFor="select">{this.state.GSM_Connection_status}</label> */}
+                                </div>
+                                </div>
+
                                 <div className=" row">
                                 {this.state.aboutList && 
                                 <strong className="col-md-3"   style = {{marginBottom:'10px'}}
                                 htmlFor="select">{Object.keys(this.state.aboutList[Object.keys(this.state.aboutList)[3]])[0]}</strong>}
-                                    </div>    
+                                    </div>  
+
+                                 
+                                 
                                 { this.renderList(this.state.aboutList,'UHF',2)}
+
                                 <div className=" row">
                                 {this.state.aboutList &&
-                                     <strong className="col-md-3 " style = {{marginBottom:'10px'}} 
-                                     htmlFor="select">{Object.keys(this.state.aboutList[Object.keys(this.state.aboutList)[0]])[0]}</strong>}
-                                    </div> 
-                                    { this.renderList(this.state.aboutList, 'Falcon-version',3)}  
+                                  <strong className="col-md-3 " style = {{marginBottom:'10px'}} 
+                                  htmlFor="select">{Object.keys(this.state.aboutList[Object.keys(this.state.aboutList)[0]])[0] === "Falcon-version" ? "Falcon version":''}</strong>}
+                                </div> 
+                                
+                                { this.renderList(this.state.aboutList, 'Falcon-version',3)}  
                                 <div>  
                                     <div className=" row">
                                      <strong className="col-md-3 " style = {{marginBottom:'10px'}} 
                                      htmlFor="select">Battery Status</strong>
                                     </div>    
                                     <div className=" row">
-                                     <label className="col-md-3 " htmlFor="select">Internal Battery Level: </label>
-                                   <div className="col-md-9">
-                                    <label className="col-md-3 " htmlFor="select">{this.state.batteryPercentage}%</label>
+                                     <label className="col-5 col-sm-4 col-md-4 col-lg-3" htmlFor="select">Internal Battery Level: </label>
+                                   <div className="col-7 col-sm-8 col-md-8 col-lg-9">
+                                    <label className="col-7 col-sm-8 col-md-8 col-lg-9" htmlFor="select">{this.state.batteryPercentage}%</label>
                                   </div>
                                   </div>
 
                                   <div className=" row">
-                                     <label className="col-md-3 " htmlFor="select">Battery Status: </label>
-                                   <div className="col-md-9">
-                                    <label className="col-md-3 " htmlFor="select">{this.state.batteryStatus >= 3 ? "Charging":"Not Charging"}</label>
+                                     <label className="col-5 col-sm-4 col-md-4 col-lg-3" htmlFor="select">Battery Status: </label>
+                                   <div className="col-7 col-sm-8 col-md-8 col-lg-9">
+                                    <label className="col-7 col-sm-8 col-md-8 col-lg-9" htmlFor="select">{this.state.batteryStatus >= 3 ? "Charging":"Not Charging"}</label>
                                   </div>
                                   </div>
 
@@ -204,12 +277,12 @@ class AboutView extends Component {
                                   </div>
                                   </div> */}
 
-                                  <div className=" row">
+                                  {/* <div className=" row">
                                      <label className="col-md-3 " htmlFor="select">Plug-In battery Level:  </label>
                                    <div className="col-md-9">
                                     <label className="col-md-3 " htmlFor="select">{this.state.batterySecondPercentage}%</label>
                                   </div>
-                                  </div>
+                                  </div> */}
 
                                 </div>     
                                
@@ -223,9 +296,9 @@ class AboutView extends Component {
                                 </div>
                                 :
                                      <div className=" row">
-                                       <strong className="col-md-3 " style = {{marginBottom:'10px'}}  htmlFor="select">SD-card :</strong>
-                                     <div className="col-md-9">
-                                           <label className="col-md-3 " htmlFor="select">No SD-Card</label>
+                                       <strong className="col-5 col-sm-4 col-md-4 col-lg-3" style = {{marginBottom:'10px'}}  htmlFor="select">SD-card :</strong>
+                                     <div className="col-7 col-sm-8 col-md-8 col-lg-9">
+                                           <label className="col-7 col-sm-8 col-md-8 col-lg-9" htmlFor="select">No SD-Card</label>
                                      </div>
                                      </div>
                                      }

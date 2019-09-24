@@ -11,10 +11,14 @@ const routes = {
 
   '/logging': 'Logging',
   '/firmware': 'Firmware',
+  '/onyx': 'Onyx',
+  '/superpole': 'Superpole',
 
   '/components': 'Components',
   '/charts': 'Charts',
-  '/connection/wifi': 'WiFi',
+
+  '/wifi': 'WiFi',
+
   '/connection/bluetooth': 'BlueTooth',
   '/connection/cable': 'Cable',
   '/gps/main': 'Main',

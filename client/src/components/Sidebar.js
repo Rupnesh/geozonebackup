@@ -85,7 +85,11 @@ class Sidebar extends Component {
               <NavLink to={'/cloud'} className='nav-link' activeClassName='active'><i className="fa fa-cloud"></i> Cloud</NavLink>
             </li>*/}
              <li className='nav-item'>
-              <NavLink to={'/connection/wifi'} className='nav-link' activeClassName='active'><i className="fa fa-wifi"></i> WiFi</NavLink>
+              <NavLink to={'/wifi'} className='nav-link' activeClassName='active'><i className="fa fa-wifi"></i> WiFi</NavLink>
+            </li>
+
+            <li className='nav-item'>
+              <NavLink to={'/superpole'} className='nav-link' activeClassName='active'><i className = 'fa fa-google-wallet'></i> Superpole</NavLink>
             </li>
 
             <li className='nav-item'> 
@@ -104,6 +108,10 @@ class Sidebar extends Component {
             <li className='nav-item'>
               <NavLink to={'/firmware'} className='nav-link' activeClassName='active'><i className = 'fa fa-google-wallet'></i> Firmware</NavLink>
             </li>
+            <li className='nav-item'>
+              <NavLink to={'/onyx'} className='nav-link' activeClassName='active'><i className = 'fa fa-google-wallet'></i> Onyx</NavLink>
+            </li>
+           
 
             <li className='nav-item'>
               <NavLink to={'/about'} className='nav-link' activeClassName='active'> <i className="fa fa-file-text"></i> About</NavLink>

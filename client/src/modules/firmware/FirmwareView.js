@@ -3,6 +3,7 @@ import LoadingSpinner from '../../views/Components/LoadingSpinner';
 import { AxiosPromise } from "../../services/fetchAPI";
 import { api } from "../../config/api";
 import { socketConnect } from 'socket.io-react';
+import $ from 'jquery';
 
 var data = {
   statusCode: 200,
@@ -39,6 +40,10 @@ class FirmwareView extends Component {
   }
 
   softwareUpdate = () => {
+    alert('Software update process is going on, please do not press back or refresh button.')
+    $('.sidebar').css('pointer-events','none');
+		$('.app-header').css('pointer-events','none');    
+
     this.softwareUpdateCall()
     setTimeout(() => {
       this.softwareUpdateCall()
@@ -79,6 +84,8 @@ class FirmwareView extends Component {
           break;
           case 7:
           this.setState({updateData7: "Update completed", startUpdating: false})
+          $('.sidebar').css('pointer-events','');
+		      $('.app-header').css('pointer-events',''); 
           break;
       
         default:
@@ -122,7 +129,7 @@ class FirmwareView extends Component {
             })
           }
       })
-      .then(error => {
+      .catch(error => {
         console.log("error", error);
       });
    
@@ -175,7 +182,7 @@ class FirmwareView extends Component {
                   type='button'
                   onClick={this.endLogFile}
                   disabled={this.state.endButtonDisable}
-                  className='col-md-2 btn ripple'
+                  className='col-md-4 col-lg-4 col-sm-4 btn ripple'
                   style={{
                     borderRadius: '5px',
                     margin: '5px',

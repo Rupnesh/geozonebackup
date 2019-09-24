@@ -151,6 +151,7 @@ class LicensesView extends Component {
               <div className="card-block">
                 <form action="" method="post">
                   <div className="form-group row" style={{ marginLeft: "0px" }}>
+                    <div className="col-md-5 col-lg-5 col-xl-4" style={{paddingLeft:'0px'}}>
                     <i
                       className={
                         !this.state.isActiveLicense ? "fa fa-times-circle" : "fa fa-check-circle"
@@ -161,6 +162,9 @@ class LicensesView extends Component {
                     <lable className="col-md-3">
                       Onyx Starfire License Status:
                     </lable>
+                    </div>
+
+                    <div className="col-md-7 col-lg-7 col-xl-8" style={{paddingLeft:'0px'}}>
                     {this.state.isActiveLicense && <label className="form-control-label" htmlFor="select">
                     <label style = {{color: '#33cc33', marginRight:'10px'}}> {this.state.isActiveLicense}</label> Valid Until {''}
                     <label style = {{color: '#F31B10'}}><Moment parse="YYYY-MM-DD HH:mm">
@@ -168,11 +172,13 @@ class LicensesView extends Component {
                      </Moment></label>
                     </label>
                     }
+                    </div>
                   </div>
                   <div
                     className="form-group row"
                     style={{ marginLeft: "0px", marginBottom: "20px" }}
                   >
+                    <div className="col-md-5 col-lg-5 col-xl-4" style={{paddingLeft:'0px'}}>
                     <i
                       className={
                         this.state.optionListData && this.state.optionListData.length >0 ? "fa fa-check-circle"
@@ -182,6 +188,9 @@ class LicensesView extends Component {
                       aria-hidden="true"
                     />{" "}
                     <lable className="col-md-3" >Onyx Options Status:  {" "}</lable>
+                    </div>
+
+                    <div className="col-md-7 col-lg-7 col-xl-8" style={{paddingLeft:'0px'}}>
                     <lable style = {{color: this.state.optionListData && this.state.optionListData.length >0 ?'#33cc33': "#F31B10"}}>
                     { this.state.optionListData && this.state.optionListData.length >0 ? "Option is Active": "Option is Inactive"}
                     </lable>
@@ -195,21 +204,26 @@ class LicensesView extends Component {
                       }
                   }
                     )} </lable>
+
+                    </div>
                   
                   </div>
                   <div className="form-group row">
                     <label
-                      className="col-md-3 form-control-label"
+                      className="col-md-5 col-lg-5 col-xl-4 form-control-label"
                       htmlFor="select"
                     >
                       Onyx Starfire License
                     </label>
-                    <i
+
+                    <div className="col-md-7 col-lg-5 col-xl-5">
+                      
+                    {/* <i
                       className= "fa fa-times-circle"
-                      style={{ color: '#fff',fontSize: "25px" }}
+                      style={{ color: '#fff',fontSize: "25px",float:'left' }}
                       aria-hidden="true"
-                    />
-                    <div className="col-md-7">
+                    /> */}
+                    
                     
                       <input
                         className="form-control"
@@ -220,6 +234,8 @@ class LicensesView extends Component {
                         value={this.state.StarFireLicensesNo}
                         placeholder={"Enter 32 character license number"}
                       />
+                      
+
                       <h6 style={{ marginTop: "5px", color: this.state.licenseActivationStatusNo ===1? "#33cc33": "#F31B10" }}>
                         {this.state.StarFireLicensesNo.length === 35 && this.state.licenseActivationStatus}
                       </h6>
@@ -237,20 +253,21 @@ class LicensesView extends Component {
                         <i className="fa fa-dot-circle-o" /> Set License
                       </button>
                     </div>
+
                   </div>
                   <div className="form-group row">
                     <label
-                      className="col-md-3 form-control-label"
+                      className="col-md-5 col-lg-5 col-xl-4 form-control-label"
                       htmlFor="select"
                     >
                       Onyx Options
                     </label>
-                    <i
+                    {/* <i
                       className= "fa fa-times-circle"
                       style={{ color: '#fff',fontSize: "25px" }}
                       aria-hidden="true"
-                    />
-                    <div className="col-md-7">
+                    /> */}
+                    <div className="col-md-7 col-lg-5 col-xl-5">
                       <input
                         className="form-control"
                         type="text"

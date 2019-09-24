@@ -32,6 +32,8 @@ import About from '../../modules/about'
 
 import Logging from '../../modules/logging';
 import FirmwareMain from '../../modules/firmware';
+import Onyx from '../../modules/onyx';
+import Superpole from '../../modules/superpole';
 
 
 import Cards from '../../views/Components/Cards';
@@ -58,10 +60,14 @@ export default class MainView extends PureComponent {
                 <Route path='/dashboard' name='Dashboard' component={Dashboard}/>
                 <Route path='/collections' name='Collections' component={Collections}/>
                 <Route path='/components/buttons' name='Buttons' component={Buttons}/>
-                <Route path='/connection/wifi' name='WiFi' component={WiFi}/>
+
+                <Route path='/wifi' name='WiFi' component={WiFi}/>
+
                 <Route path='/connection/bluetooth' name='BlueTooth' component={BlueTooth}/>
                 <Route path='/connection/cable' name='Cable' component={Cable}/>
-                <Redirect from='/connection' to='/connection/wifi'/>
+                
+                {/* <Redirect from='/connection' to='/connection/wifi'/> */}
+
                 <Route path='/gps/main' name='Main' component={GpsMain}/>
                 <Route path='/gps/device' name='Device' component={Device}/>
                 <Route path='/gps/calibration' name='Calibration' component={Calibration}/>
@@ -80,6 +86,8 @@ export default class MainView extends PureComponent {
 
                 <Route path='/logging' name='Logging' component={Logging}/>
                 <Route path='/firmware' name='Firmware' component={FirmwareMain}/>
+                <Route path='/onyx' name='Onyx' component={Onyx}/>
+                <Route path='/superpole' name='Superpole' component={Superpole}/>
 
 
 

@@ -143,18 +143,41 @@ class Dashboard extends Component {
       // socket && socket.emit('subscribe', 'GPSJSON');
     }
     
+    
     socket && socket.emit('subscribe', 'imuOut');
+
+    //socket && socket.emit( 'superpoleStatus');
+
+    //socket && socket.emit( 'loadOnyxfile'); 
+
+    //socket && socket.emit( 'updateOnyxSoftware');
+
+    
+    // socket && socket.emit( 'superpole_Imudata','imuOut');
+    
 
     socket && socket.emit('subscribe', 'data-batteryStatus');
       // socket && socket.emit('subscribe', 'IMU_1');
     
     socket.on('data-onyxCmdOut', this.handleGPSJSONData);
+
+    //socket.on('updateOnyxSoftware', this.handleOnyx);
+
+    
     
     // socket.on('data-GPSJSON', this.handleGPSJSONData);
 
     socket.on('data-imuOut',  this.handleIMU1Data);
 
     socket.on('data-batteryStatus',  this.handleBatteryData);
+
+    //socket.on('superpoleStatus',  this.handlesStatus);
+
+    //socket.on('loadOnyxfile',  this.handleOnyxfile);
+
+    //  socket.on('superpole_Imudata',  this.handlesStatus);
+
+
     // socket.on('data-IMU_1',  this.handleIMU1Data);
 
     setInterval(() => {
@@ -173,9 +196,30 @@ class Dashboard extends Component {
     // socket && socket.emit('unsubscribe', 'GPSJSON');
 
     socket && socket.emit('unsubscribe', 'imuOut');
+
     socket && socket.emit('unsubscribe', 'data-batteryStatus');
     // socket && socket.emit('unsubscribe', 'IMU_1');
     this.umMounted = true;
+  }
+
+  handleOnyx(data){
+    if(data){
+//      console.log('socket connected',data);
+  }
+  }
+
+  handleOnyxfile(data){
+    if(data)
+    {
+      console.log('loadfiledata',data);
+    }
+  }
+
+  handlesStatus(data){
+    console.log('socket connect....')
+    if(data){
+    console.log('superpole data -------------',data);
+    }
   }
 
   handleBatteryData(data){
@@ -213,9 +257,8 @@ class Dashboard extends Component {
       // const newData = this.state.imuDataArray
   
       const newData = {
-        cfangleX: jsonData && jsonData['cfangleX'],
-        cfangleY: jsonData && jsonData['cfangleY'],
-        cfangleZ: jsonData && jsonData['cfangleZ']
+        kalmanX : jsonData && jsonData['kalmanX'],
+        kalmanY : jsonData && jsonData['kalmanY']
       };
       //console.log(newData)
   
@@ -504,136 +547,155 @@ class Dashboard extends Component {
   };
   
   spiritLevelCalculations(value) {
-    const data = value
+  
+    const data = value 
     const canvas = document.querySelector('#spirit-level-container canvas');
     const cx = canvas.getContext("2d");
 
-    const hSlideLimit = [1, 75];
-    const vSlideLimit = [0, 80];
-    const ChSlideLimit = [13, 70];
-    const CvSlideLimit = [11, 75];
-
+    //slidelimit for horizontal,vertical bar ,circle
+    const hSlideLimit = [1, 85];
+    const vSlideLimit = [1, 84];
+    const ChSlideLimit = [-7,59];
+    const CvSlideLimit = [-7,60];
     const angleLimit = 42;
-    // const angleLimit = 42;
-    const ACC_LPF_FACTOR = 0.3;
 
-    let CFangleX = data['cfangleX'];
-    let CFangleY = data['cfangleY'];
-    let CFangleZ = data['cfangleZ'];
-    
-    function scaleH(value) {
-      const min = -angleLimit;
-      const max = angleLimit;
-      const minScale = hSlideLimit[0];
-      const maxScale = hSlideLimit[1];
-      return minScale + (value - min) / (max - min) * (maxScale - minScale);
-    }
-    
-    function scaleV(value) {
-      const min = -angleLimit;
-      const max = angleLimit;
-      const minScale = vSlideLimit[0];
-      const maxScale = vSlideLimit[1];
-      return minScale + (value - min) / (max - min) * (maxScale - minScale);
-    }
-    
-    //#These two are used to scale the value appropriately for the bubble within the circle
-    function scaleCH(value) {
-      const min = -angleLimit;
-      const max = angleLimit;
-      const minScale = ChSlideLimit[0];
-      const maxScale = ChSlideLimit[1];
-      return minScale + (value - min) / (max - min) * (maxScale - minScale);
-    }
-    
-    function scaleCV(value) {
-      const min = -angleLimit;
-      const max = angleLimit;
-      const minScale = CvSlideLimit[0];
-      const maxScale = CvSlideLimit[1];
-      return minScale + (value - min) / (max - min) * (maxScale - minScale);
-    }
-    
-    function is_in_circle(circle_x, circle_y, r, x, y) {
-      const d = Math.sqrt((x - circle_x) ** 2 + (y - circle_y) ** 2);
-      
-      return d <= r;
-    }
-    
-    if (CFangleX > angleLimit)
-      CFangleX = angleLimit;
-    if (CFangleX < -angleLimit)
-      CFangleX = -angleLimit;
-    if (CFangleY > angleLimit)
-      CFangleY = angleLimit;
-    if (CFangleY < -angleLimit)
-      CFangleY = -angleLimit;
-    
-      const hBposition = [parseInt(scaleH(CFangleX)), 121];    
-      const vBposition = [120.5, parseInt(scaleV(CFangleY))];
-      // const hBposition = [parseInt(scaleH(CFangleX)), 118.5];
-      // const vBposition = [117.5, parseInt(scaleV(CFangleY))];    
-      // const newcBposition = [parseInt(scaleCH(CFangleX)), parseInt(scaleCV(CFangleY))];
+	const crosshairCenterX = (ChSlideLimit[1] + ChSlideLimit[0]) / 2;
+	const crosshairCenterY = (CvSlideLimit[1] + CvSlideLimit[0]) / 2;
+    let kalmanX = data['kalmanX'];
+    let kalmanY = data['kalmanY'];
   
-      let newcBposition;
-  
-     if( (parseInt(scaleCH(CFangleX)) >= 1 && parseInt(scaleCH(CFangleX)) <= 73) && (parseInt(scaleCV(CFangleY)) >= 1 && parseInt(scaleCV(CFangleY)) <= 62) ) {
-        newcBposition = [parseInt(scaleCH(CFangleX)), parseInt(scaleCV(CFangleY))];
-     }
-      //else {
-        //newcBposition = [73, 52];
-      //}
-      // const newcBposition = [73, 52];
-  
-      let cBposition;    
-      //#confirm that center bubble is within the circle;
-      if (is_in_circle(52, 52, 42, newcBposition[0], newcBposition[1])) {
-        cBposition = newcBposition
-      }
+    let x = kalmanX; // this is the raw data, the real angle of the IMU
+    let y = kalmanY;
+	let angle;	//this is the angle where the bubble is from the center of the crosshair
+	let xRanged; // this is the angle range corrected so maximum 5
+	let yRanged;
+	let xScaled;  //this is the real IMU angle -5 to 5 degrees scaled to pixels (width of the crosshair)
+	let yScaled;
+	let xfinalPx;  //this is the final pixel coordinate, corrected with the bubble size and crosshair center position
+	let yfinalPx;
+	let bubbleWidth = 22;  
+  function scaleH(value) {
+        const min = -angleLimit;
+        const max = angleLimit;
+        const minScale = hSlideLimit[0];
+        const maxScale = hSlideLimit[1];
+        return minScale + (value - min) / (max - min) * (maxScale - minScale);
+  }
+  function scaleV(value) {
+        const min = -angleLimit;
+        const max = angleLimit;
+        const minScale = vSlideLimit[0];
+        const maxScale = vSlideLimit[1];
+        return minScale + (value - min) / (max - min) * (maxScale - minScale);
+  }
+  if (kalmanX > angleLimit)
+      kalmanX = angleLimit;
+  if (kalmanX < -angleLimit)
+      kalmanX = -angleLimit;
+  if (kalmanY > angleLimit)
+      kalmanY = angleLimit;
+  if (kalmanY < -angleLimit)
+      kalmanY = -angleLimit;
+
+      const hBposition = [parseInt(scaleH(kalmanX)), 121];
+      const vBposition = [120.5, parseInt(scaleV(kalmanY))];
+
+	let distanceFromCenter = Math.sqrt(x**2 + y**2);  //hypothenusis (in degrees angle, not in pixel)
+	if (distanceFromCenter > 5)
+        {distanceFromCenter = 5;} //limiting hypothenusis to keep the bubble in the area
+  //calculating x and y with maximum hypothenusis of 5
+   if((x > 0 && (y<0 || y>0)))                         //calculating x,y when the position of bubble is in 1st/4th quadrant
+   {   angle = -Math.atan(y/x);
+	 	   xRanged = distanceFromCenter * Math.cos(angle); 
+	 	  yRanged = distanceFromCenter * Math.sin(angle);
+   }
+   if((x < 0 && (y<0 || y>0)))                        //calculating x,y when the position of bubble is in 2nd/3rd quadrant
+   {  angle = Math.atan(y/x);
+      xRanged = -(distanceFromCenter * Math.cos(angle));
+      yRanged = (distanceFromCenter * Math.sin(angle));
+
+   }
+	if( y == 0 && x > 0)
+  {   angle = Math.PI/2;
+	    yRanged = distanceFromCenter * Math.cos(angle);  //accounting for if y=0, so no division by 0
+      xRanged = distanceFromCenter * Math.sin(angle);
+	}
+	if (y == 0 && x < 0)
+  { angle = -Math.PI/2;
+      yRanged = distanceFromCenter * Math.cos(angle);
+      xRanged= distanceFromCenter * Math.sin(angle);
+  }
+   if( x == 0 && y > 0)
+   {   angle = -Math.PI/2;
+	     xRanged = distanceFromCenter * Math.cos(angle);  //accounting for if x=0, so no division by 0
+       yRanged = distanceFromCenter * Math.sin(angle);
+	 }
+	 if (x == 0 && y < 0)
+   {   angle = Math.PI/2;
+       xRanged = distanceFromCenter * Math.cos(angle);
+       yRanged= distanceFromCenter * Math.sin(angle);
+	 }
+	if (y == 0 && x == 0)
+  {
+        xRanged = 0; 
+        yRanged = 0;
+  }
+	xScaled = ChSlideLimit[0] + (xRanged - (-5)) / (5 - (-5)) * (ChSlideLimit[1] - ChSlideLimit[0]);  //scaling from degrees to pixels
+	yScaled = CvSlideLimit[0] + (yRanged - (-5)) / (5 - (-5)) * (CvSlideLimit[1] - CvSlideLimit[0]);
+	xfinalPx = xScaled - 0.5 * bubbleWidth + crosshairCenterX;  //setting offset due to center of crosshair position and bubble size
+	yfinalPx = yScaled - 0.5 * bubbleWidth + crosshairCenterY;
+
+    let newcBposition;
+    newcBposition = [xfinalPx,yfinalPx]; 
+   
     const newData = {
       hBposition: hBposition,
       vBposition: vBposition,
-      cBposition: cBposition
+      cBposition: newcBposition
     };
-    
     if (JSON.stringify(newData) !== JSON.stringify(this.spiritLevelData)) {
       let cBubble = new Image();
       let hbBubble = new Image();
       let vbBubble = new Image();
-      let bubbleWidth = 22;
-      // let bubbleWidth = 28;
-      
+      let cBubbleDark = new Image();
+
       this.spiritLevelData = newData;
       cx.clearRect(0, 0, canvas.width, canvas.height);
       cx.beginPath();
-      cx.moveTo(52, 0);
-      cx.lineTo(52, 100);
+      let xPosition = 52; 
+      let yPosition = 105;
+      let x1Position = 53;
+      cx.moveTo(52, 0);                   //moving to coordiante(52,0)
+      cx.lineTo(xPosition, yPosition);    //drawing vertical line from xPosition to yPosition
       cx.stroke();
-      cx.moveTo(0, 53);
-      cx.lineTo(100, 53);
+      cx.moveTo(0, 53);                   //moving to coordiante(0,53)
+      cx.lineTo(yPosition, x1Position);   //drawing horizontal line from yPosition to x1Position
       cx.stroke();
       cx.closePath();
       hbBubble.onload = () => {
         cx.drawImage(hbBubble, newData['hBposition'][0], newData['hBposition'][1], 22, 22);
-        // cx.drawImage(hbBubble, newData['hBposition'][0], newData['hBposition'][1], 35, 28);
+       // cx.drawImage(hbBubble, newData['hBposition'][0], newData['hBposition'][1], 35, 28);
       };
       hbBubble.src = "img/spirit-level/Vectorillustration_design_4_bottom_bubble.png";
-  
-      vbBubble.onload = () => { 
+      
+      vbBubble.onload = () => {
         cx.drawImage(vbBubble, newData['vBposition'][0], newData['vBposition'][1], 22, 22);
         // cx.drawImage(vbBubble, newData['vBposition'][0], newData['vBposition'][1], 28, 34);
       };
-      vbBubble.src = "img/spirit-level/Vectorillustration_design_4_right_bubble.png";
-  
+       vbBubble.src = "img/spirit-level/Vectorillustration_design_4_right_bubble.png";
+      
       cBubble.onload = () => {
-        if (newData['cBposition']) {
-          cx.drawImage(cBubble, newData['cBposition'][0], newData['cBposition'][1], bubbleWidth, bubbleWidth);
+        if( (newData['cBposition'][0] >= 34.4 &&  newData['cBposition'][0] <= 47.6) && (newData['cBposition'][1] >=34.6 && newData['cBposition'][1] <=47.4 )){
+          cx.drawImage(cBubbleDark,newData['cBposition'][0], newData['cBposition'][1],bubbleWidth,bubbleWidth);
+        }
+        else{
+          cx.drawImage(cBubble,newData['cBposition'][0], newData['cBposition'][1],bubbleWidth,bubbleWidth);
         }
       };
-      cBubble.src = "img/spirit-level/Vectorillustration_design_4_center_bubble.png";
+      cBubbleDark.src = "img/spirit-level/Vectorillustration_design_4_center_bubble_dark.png";
+      cBubble.src = "img/spirit-level/Vectorillustration_design_4_center_bubble.png"
     }
-  };
-  
+  }
   populateGraphData = () => {
     const data = this.satelliteData;
     let labels = [];
@@ -724,7 +786,7 @@ class Dashboard extends Component {
           
           <div style={{ position: 'relative' }} className='col-sm-12 col-md-6 col-lg-6 mb-4 background-white'>
         <div className='row'>
-        <div className="row col-sm-6 col-md-6 col-lg-6">
+        <div className="row col-sm-6 col-md-7 col-lg-7">
         {/* { !this.state.isIMUDataAvailable ?   */}
               <div id="spirit-level-container" className="card-block">
                   <canvas style={{
@@ -754,7 +816,7 @@ class Dashboard extends Component {
               </div> 
               
 
-              <div className='row col-sm-6 col-md-6 col-lg-6 card' style={{border:"none",position:'relative'}}>
+              <div className='row col-sm-6 col-md-5 col-lg-5 card battery-margin' style={{border:"none",position:'relative'}}>
                 <div style={{position:"absolute",bottom:'0',width:'100%'}}>
                   <HorizontalProgress progress={this.state.batteryStatus} />
                 </div>                
@@ -818,19 +880,19 @@ class Dashboard extends Component {
                   <tr>
                     <th style = {{width:'50%'}}> Latitude</th>
                     <td>
-                      {this.state.tableData && this.state.tableData.lat && (+this.state.tableData.lat).toFixed(6) }
+                      {this.state.tableData && this.state.tableData.lat && (+this.state.tableData.lat).toFixed(3) }
                     </td>
                   </tr>
                   <tr>
                     <th style = {{width:'50%'}}> Longitude</th>
                     <td>
-                      {this.state.tableData && this.state.tableData.lon && (+this.state.tableData.lon).toFixed(6) }
+                      {this.state.tableData && this.state.tableData.lon && (+this.state.tableData.lon).toFixed(3) }
                     </td>
                   </tr>
                   <tr>
                     <th style = {{width:'50%'}}> Altitude</th>
                     <td>
-                      {this.state.tableData && this.state.tableData.alt }
+                      {this.state.tableData && this.state.tableData.alt && (+this.state.tableData.alt).toFixed(1) }
                     </td>
                   </tr>
                   <tr>

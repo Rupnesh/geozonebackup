@@ -1,3 +1,14 @@
+
+@media (max-width: 600px) {
+  
+  .battery-margin {
+    width: 92%;
+    margin: 34px 3px 0;
+    margin-bottom: 1.5rem;
+  }
+  
+}
+
 .progress {
   background-color: #f5f5f5;
   border-radius: 3px;

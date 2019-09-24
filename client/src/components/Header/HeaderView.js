@@ -2,21 +2,34 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Dropdown, DropdownMenu, DropdownItem } from 'reactstrap';
 import auth from '../../utils/authentication';
-const authData = auth.get();
+//const authData = auth.get();
+// const authData = auth.getAuth();
 /* globals document */
 class HeaderView extends Component {
   
   constructor(props) {
     super(props);
-
     this.toggle = this.toggle.bind(this);
     this.logout = this.logout.bind(this);
   
     this.props.getUserData();
     
+    // this.state = {
+    //   dropdownOpen: false
+    // };
+
     this.state = {
-      dropdownOpen: false
+      dropdownOpen: false,
+      username: ''
     };
+
+    auth.get().then((res) => {
+      this.authData = res;
+      //console.log("header res....",res)
+      this.setState({ username: res.userId }, () => {
+        console.log(this.state.username)
+      });
+    })
   }
   
   toggle() {
@@ -87,7 +100,8 @@ class HeaderView extends Component {
             <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
               <button onClick={this.toggle} className='nav-link dropdown-toggle mr-2' data-toggle='dropdown' type='button' aria-haspopup='true' aria-expanded={this.state.dropdownOpen}>
                 <img src={'img/avatars/6.jpg'} className='img-avatar' alt='admin@bootstrapmaster.com'/>
-                <span className='d-md-down-none'>{authData.userId}</span>
+                <span className='d-md-down-none'>{this.state.username ? this.state.username : ''}</span>
+                {/* <span className='d-md-down-none'>{authData.userId}</span> */}
               </button>
               
               <DropdownMenu className='dropdown-menu-right'>

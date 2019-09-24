@@ -3,8 +3,10 @@ export var api = {
     getWifiOn: 'wifi/on',
     OFF_WIFI: 'wifi/off',
     LOGIN_WITH_WIFI: 'wifi/cred',
+    LOGIN_WITH_WIFI_CRED_STATUS: 'wifi/status_cred',
 
     //flask api's
+    login: 'login',
     logging_status: 'logging',
     memory_status: 'logging/memory',
     log_file_exist: 'logging/logfile',
@@ -13,6 +15,8 @@ export var api = {
     log_file_delete: 'logging/logDelete',
     start_api_call:'logging/logstart',
     stop_api_call:'logging/logstop',
+
+    GSMstatus:'GSMstatus',
 
     //licenses api 
     //     licenses_option_status:'licenses/optionStatus',
@@ -27,7 +31,19 @@ export var api = {
     checkUpdate:'firmware/checkstatus',
     updateSoftware:'/firmware/updateSoftware',
     wifiStatus:'wifi/status',
-    wifiList:'wifi/list'
+    wifiList:'wifi/list',
+
+    wifiListOnToogle: 'wifi/on_toggle',
+
+    //Onyx firmware
+    checkBandwidth: 'checkBandwidth',
+    onyxUpdateAvailable: 'onyxUpdateAvailable',
+    onyxUpdate: 'onyxUpdate',
+
+    //Superpole
+    captureSuperpole: 'SuperPoleTest',
+    GGAMsgRate: 'GGAMsgRate',
+    GGAMsgNumber: 'GGAMsgNumber'
 
 
 

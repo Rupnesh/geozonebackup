@@ -15,6 +15,8 @@
     "fast-boot": "^1.0.7",
     "history": "^4.6.1",
     "moment-timezone": "^0.5.23",
+    "network-config": "^2.0.0",
+    "network-information": "^1.0.1",
     "node-sass": "^4.5.3",
     "prop-types": "^15.5.10",
     "react": "^15.6.1",

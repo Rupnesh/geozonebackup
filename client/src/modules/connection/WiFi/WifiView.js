@@ -45,7 +45,7 @@ class WifiView extends Component {
 
   componentDidMount() {
     // this.state.WIFIList.sort((a, b) => a.strength - b.strength);
-    this.getStatusOfWiFi()
+   
     this.wifiListApiCall()
    // this.getStatusOfWiFi()
   }
@@ -55,9 +55,39 @@ class WifiView extends Component {
     .then(response => {
       if(response.data.wifistatus) {
       setTimeout(() => {
-        this.getListOfWifi()
-      }, 5000); 
-      
+        this.getStatusOfWiFi()
+      }, 7000); 
+      //  let output = Object.keys(response.data).map(function(key) {
+      //     return {type: key, name: response.data[key]};
+      //  });
+      //   this.setState({  WIFIList1: output, loading: false })
+      //   // this.setState({  WIFIList1: response.data }, function () {
+        //   console.log(this.state.WIFIList1);
+        // })
+      }
+    
+    })
+    .catch(error => {
+      console.log("error", error);
+    //  this.setState({ loading: false });
+    });
+  }
+
+
+  wifiListApiCallOnToggle = (url) => {
+    AxiosPromise.get(api.wifiListOnToogle)
+    .then(response => {
+      if(response.data.wifistatus) {
+      setTimeout(() => {
+        this.getStatusOfWiFi()
+      }, 7000); 
+      //  let output = Object.keys(response.data).map(function(key) {
+      //     return {type: key, name: response.data[key]};
+      //  });
+      //   this.setState({  WIFIList1: output, loading: false })
+      //   // this.setState({  WIFIList1: response.data }, function () {
+        //   console.log(this.state.WIFIList1);
+        // })
       }
     
     })
@@ -92,6 +122,7 @@ class WifiView extends Component {
     AxiosPromise.get(api.wifiStatus)
     .then(response => {
         if(response.data) {
+        this.getListOfWifi()
           this.setState({ConnectedStatus: response.data.status, statusMSG1:response.data.message1,
              statusMSG2:response.data.message2,
              statusMSG3: response.data.message3,
@@ -111,7 +142,22 @@ class WifiView extends Component {
     this.setState({loading : true, WIFIList1:[] })
     this.getListOfWifi()
 
-   
+    // this.setState({  loading : true, WIFIList1:[] }, function () {
+    //   console.log(this.state.WIFIList1);
+      
+    // })
+
+    // const users = GETAPI(api.GET_WIFI_LIST,"")
+    // .then(response => {
+    //   if(response.success) {
+        
+    //     this.setState({loading : false})
+    //     this.setState({
+    //       WIFIList1: response.data
+    //     });
+    //   }
+
+    // });
   }
 
 
@@ -126,11 +172,11 @@ class WifiView extends Component {
     });
 
     if(this.state.WIFI === true) {
-
+      this.setState({toggleLoader:true})
       AxiosPromise.get(api.OFF_WIFI)
       .then(response => {
-      if(response) {
-
+      if(response.data.wifistatus === false) { 
+        this.setState({toggleLoader:false})
       }
     
     })
@@ -142,9 +188,9 @@ class WifiView extends Component {
       this.setState({loading : true})
       this.setState({ WIFIList1: []});
 
-     this.wifiListApiCall()
+    //  this.wifiListApiCall()
 
-      
+    this.wifiListApiCallOnToggle();     
     }
     
   }
@@ -158,17 +204,45 @@ class WifiView extends Component {
 
     AxiosPromise.post(api.LOGIN_WITH_WIFI, data)
     .then(response => {
-      if(response.data) {
-        this.setState({ConnectedStatus: response.data.status,
-           statusMSG1:response.data.message1, 
-           statusMSG2:response.data.message2, statusMSG3: response.data.message3,      
-            statusMSGName: response.data.message4, });
+      if(response.data.status === 1) {
+        
+
+            setTimeout(() => {
+              console.log("api....",api.LOGIN_WITH_WIFI_CRED_STATUS)
+              //AxiosPromise.get("wifi/status_cred")
+              AxiosPromise.get(api.wifiStatus)
+                .then(response => {
+
+
+                this.setState({ConnectedStatus: response.data.status,
+                          statusMSG1:response.data.message1, 
+                          statusMSG2:response.data.message2, statusMSG3: response.data.message3,      
+                          statusMSGName: response.data.message4, });
+                  
+                });
+            }, 8000); 
+
+
       }
     })
     .catch(error =>
       console.log("error", error));
 
     this.setState({ connectedWIFI: this.state.selectedWIFI })
+
+    // AxiosPromise.post(api.LOGIN_WITH_WIFI, data)
+    // .then(response => {
+    //   if(response.data) {
+    //     this.setState({ConnectedStatus: response.data.status,
+    //        statusMSG1:response.data.message1, 
+    //        statusMSG2:response.data.message2, statusMSG3: response.data.message3,      
+    //         statusMSGName: response.data.message4, });
+    //   }
+    // })
+    // .catch(error =>
+    //   console.log("error", error));
+
+    // this.setState({ connectedWIFI: this.state.selectedWIFI })
   }
 
   handleChange = (event) => {
@@ -196,6 +270,8 @@ class WifiView extends Component {
     if(!this.state.WIFI) {
       cursorStyle = { cursor:"not-allowed"}
     }
+    const { nf_password } = this.state;
+    const enabled = nf_password.length > 0 && this.state.selectedWIFI;
          
     return (
       <div className="animated fadeIn">
@@ -203,7 +279,7 @@ class WifiView extends Component {
         <div className="row">
         <div className='card-block col-sm-6 col-md-6 col-lg-6'>
           <div className="form-group row ">
-            <label className="col-md-5 form-control-label mw-75" htmlFor="recordata">Enable/ Disable WiFi</label>
+            <label className="col-md-6 form-control-label mw-75" htmlFor="recordata">Enable/ Disable WiFi</label>
             <label className="switch switch-3d switch-primary">
               <input
               type="checkbox"
@@ -213,12 +289,15 @@ class WifiView extends Component {
               <span className="switch-label"></span>
               <span className="switch-handle"></span>
             </label>
+
+            {this.state.toggleLoader ? <LoadingSpinner /> : ""}
+
           </div>
         </div>
 
         <div className='card-block col-sm-6 col-md-6 col-lg-6'>
           {/* { this.state.WIFI ? "Connected to "+this.state.connectedWIFI : "Not Connected"} */}
-          { (this.state.ConnectedStatus === 1) ?   this.state.statusMSGName +', '+this.state.statusMSG1 + ', ' + this.state.statusMSG2 + ', ' + this.state.statusMSG3: this.state.statusMSG1 }
+          { (this.state.ConnectedStatus == 1) ?   this.state.statusMSGName +', '+this.state.statusMSG1 + ', ' + this.state.statusMSG2 + ', ' + this.state.statusMSG3: this.state.statusMSG1 }
           {/* { (this.state.WIFI && this.state.ConnectedStatus == 0) ?   this.state.statusMSG1 + '/' + this.state.statusMSG2 : this.state.statusMSG1 } */}
         </div>
         </div>
@@ -288,7 +367,7 @@ class WifiView extends Component {
                   </form> 
               </div>
               <div className="card-footer">
-                  <button onClick={()=>this.loginToWIFI()} type="submit" disabled={!this.state.WIFI} style={cursorStyle} className="btn btn-sm btn-success"><i className="fa fa-dot-circle-o"></i> Connect to WiFi</button>
+                  <button onClick={()=>this.loginToWIFI()} type="submit" disabled={!enabled} style={cursorStyle} className="btn btn-sm btn-success"><i className="fa fa-dot-circle-o"></i> Connect to WiFi</button>
               </div>
             </div>
           </div>

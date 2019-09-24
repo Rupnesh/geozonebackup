@@ -15,8 +15,8 @@ function connect() {
       }).then((ch) => {        
         resolve(ch);
       }).catch((e) => {
-        console.warn(e);
-        console.log("TEST")
+        //console.warn(e);
+        //console.log("TEST")
         reject(e);
       });
     });
@@ -119,7 +119,7 @@ function connect() {
       if(typeof res4 === "object" && !res4.looptime ) {
         setTimeout(async()=>{
           PubSubService.publish(exchange,"")
-          console.log('no data 1',checkImuData,res4);
+          //console.log('no data 1',checkImuData,res4);
         },10000)
       }
     }
