@@ -33,12 +33,12 @@
     "redux-form": "^6.7.0",
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.2.0",
-    "sass-loader": "^6.0.5",
+    "sass-loader": "^13.2.0",
     "socket.io-client": "^2.0.3",
     "socket.io-react": "^1.2.0"
   },
   "devDependencies": {
-    "css-loader": "^0.28.1",
+    "css-loader": "^6.7.3",
     "enzyme": "^2.2.0",
     "eslint": "^3.19.0",
     "eslint-config-airbnb": "^15.0.1",
@@ -47,10 +47,10 @@
     "eslint-plugin-jsx-a11y": "^5.0.3",
     "eslint-plugin-react": "^7.0.1",
     "eslint-watch": "^3.1.0",
-    "file-loader": "^0.11.1",
+    "file-loader": "^6.2.0",
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.0",
     "gulp-sass": "^2.3.2",
-    "react-scripts": "1.0.13"
+    "react-scripts": "5.0.1"
   }
 }
