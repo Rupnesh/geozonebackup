@@ -51,6 +51,6 @@
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.0",
     "gulp-sass": "^2.3.2",
-    "react-scripts": "1.0.13"
+    "react-scripts": "5.0.1"
   }
 }
